@@ -5,12 +5,119 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.BoardingActivity">
-    
-    
- <androidx.viewpager.widget.ViewPager
-     android:id="@+id/viewPager"
+
+
+ <ImageView
      android:layout_width="match_parent"
-     android:layout_height="wrap_content"/>
+     android:layout_height="wrap_content"
+     android:id="@+id/imageview"
+     android:src="@drawable/frame1"
+
+     app:layout_constraintBottom_toTopOf="@+id/textView2"
+     app:layout_constraintEnd_toEndOf="parent"
+     app:layout_constraintStart_toStartOf="parent"
+     app:layout_constraintTop_toTopOf="parent" />
+
+
+ <androidx.viewpager2.widget.ViewPager2
+     android:id="@+id/viewpager2"
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content"
+
+
+
+     app:layout_constraintBottom_toTopOf="@+id/dots_indicator"
+     app:layout_constraintEnd_toEndOf="parent"
+     app:layout_constraintHorizontal_bias="0.0"
+     app:layout_constraintStart_toStartOf="parent"
+     app:layout_constraintTop_toTopOf="parent"
+     app:layout_constraintVertical_bias="0.599" />
+
+
+ <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
+     android:id="@+id/dots_indicator"
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:layout_marginTop="50dp"
+     android:visibility="invisible"
+     app:dotsColor="@color/white"
+     app:dotsCornerRadius="6dp"
+     app:dotsSize="12dp"
+     app:dotsSpacing="3dp"
+     app:dotsWidthFactor="2.5"
+     app:layout_constraintBottom_toTopOf="@+id/textView2"
+     app:layout_constraintEnd_toEndOf="parent"
+     app:layout_constraintHorizontal_bias="0.446"
+     app:layout_constraintStart_toStartOf="parent"
+     app:layout_constraintTop_toBottomOf="@+id/imageview"
+     app:layout_constraintVertical_bias="0.765"
+     app:progressMode="true"
+     app:selectedDotColor="#0CAA0D" />
+
+ <TextView
+     android:id="@+id/textView2"
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content"
+     android:layout_marginBottom="24dp"
+     android:fontFamily="@font/poppins_light"
+android:text="The best booking app of the Hunza  \n
+to make your day great!"
+
+     android:textAlignment="center"
+     android:textSize="12sp"
+     app:layout_constraintBottom_toTopOf="@+id/btnStart"
+     app:layout_constraintEnd_toEndOf="parent"
+     app:layout_constraintStart_toStartOf="parent" />
+
+
+ <TextView
+     android:id="@+id/btnStart"
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content"
+     android:layout_marginStart="32dp"
+     android:layout_marginEnd="32dp"
+     android:layout_marginBottom="32dp"
+     android:background="@drawable/getstart_back"
+     android:fontFamily="@font/poppins_light"
+
+
+     android:paddingTop="13dp"
+     android:paddingBottom="10dp"
+     android:text="Get Started"
+
+     android:textAlignment="center"
+     android:textColor="@color/white"
+     android:textSize="16sp"
+     android:textStyle="bold"
+     app:layout_constraintBottom_toBottomOf="parent"
+     app:layout_constraintEnd_toEndOf="parent"
+     app:layout_constraintStart_toStartOf="parent" />
+ <TextView
+     android:id="@+id/btnNext"
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content"
+     android:layout_marginStart="32dp"
+     android:layout_marginEnd="32dp"
+     android:layout_marginBottom="32dp"
+     android:background="@drawable/getstart_back"
+     android:fontFamily="@font/poppins_light"
+
+
+     android:paddingTop="13dp"
+     android:paddingBottom="10dp"
+     android:text="Next"
+     android:visibility="invisible"
+
+     android:textAlignment="center"
+     android:textColor="@color/white"
+     android:textSize="16sp"
+     android:textStyle="bold"
+     app:layout_constraintBottom_toBottomOf="parent"
+     app:layout_constraintEnd_toEndOf="parent"
+     app:layout_constraintStart_toStartOf="parent" />
+
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

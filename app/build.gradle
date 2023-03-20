@@ -42,4 +42,8 @@ dependencies {
 
     //dots indicator
     implementation 'com.tbuonomo:dotsindicator:4.3'
+
+
+
+
 }

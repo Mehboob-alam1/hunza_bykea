@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">Hunza Bykea</string>
+
+
+    <string name="frame2description">With Hunza Bikeya, You can book a bike rider in hunza anywhere anytime.</string>
+    <string name="frame2Heading">Book your Rider</string>
+
+    <string name="frame3description">Let’s keep burning, to archive yours goals,We
+provide professional taxi services for you.</string>
+    <string name="frame3Heading">Best Experience of Riding</string>
+
+    <string name="frame4description">Your satisfaction is our number one priority
+Let’s make your day great with Hunza Bikeya!</string>
+    <string name="frame4Heading">Let’s Start</string>
+    <string name="text_start">d</string>
+
 </resources>
