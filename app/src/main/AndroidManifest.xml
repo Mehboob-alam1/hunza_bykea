@@ -13,8 +13,18 @@
         android:theme="@style/Theme.HunzaBykea"
         tools:targetApi="31">
         <activity
+            android:name=".ui.DashboardActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.OtpActivity"
-            android:exported="false">
+            android:exported="true"
+            android:theme="@style/Theme.MyTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -30,12 +40,6 @@
             android:name=".ui.BoardingActivity"
             android:exported="true"
             android:theme="@style/Theme.MyTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />

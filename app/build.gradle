@@ -40,10 +40,10 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
-    //dots indicator
+
     implementation 'com.tbuonomo:dotsindicator:4.3'
+    implementation 'com.github.aabhasr1:OtpView:v1.1.2'
 
-
-
+    implementation 'com.github.mukeshsolanki.android-otpview-pinview:otpview:3.1.0'
 
 }

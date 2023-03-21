@@ -1,18 +1,25 @@
 package com.mehboob.hunzabykea.ui;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.mehboob.hunzabykea.R;
 import com.mehboob.hunzabykea.databinding.ActivityLoginBinding;
 
+import java.util.concurrent.TimeUnit;
+
 public class LoginActivity extends AppCompatActivity {
 
     ActivityLoginBinding binding;
+    ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,21 +27,41 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(binding.getRoot());
 
+        progressDialog = new ProgressDialog(this);
+
         binding.btnConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (binding.editTextNumber.getText().toString().isEmpty())
-                {
-                    Toast.makeText(LoginActivity.this, "Enter the number", Toast.LENGTH_SHORT).show();
-                }
-                else
-                {
-                    String number = binding.editTextNumber.getText().toString();
-                    Intent intent = new Intent(LoginActivity.this,OtpActivity.class);
 
-                    startActivity(intent);
-                }
+CheckValidation();
             }
         });
     }
+
+    private void CheckValidation() {
+
+        if (binding.edittextNumber.getText().toString().isEmpty() && binding.edittextNumber
+                .getText().toString().trim().length()!=11)
+        {
+            Toast.makeText(this, "Enter a Valid Number ", Toast.LENGTH_SHORT).show();
+            binding.textviewError.setVisibility(View.VISIBLE);
+        }
+
+        else
+        {
+
+            progressDialog.setTitle("Sending Otp");
+            progressDialog.setMessage("Please Wait");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+
+            String number = binding.edittextNumber.getText().toString();
+
+            Intent intent = new Intent(LoginActivity.this,OtpActivity.class);
+            intent.putExtra("number",number);
+            startActivity(intent);
+        }
+    }
+
+
 }
