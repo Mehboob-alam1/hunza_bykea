@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:context=".ui.DashboardActivity">
+
+<!--    <androidx.drawerlayout.widget.DrawerLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:id="@+id/drawerLayout"-->
+
+<!--        tools:openDrawer="start"-->
+<!--        >-->
+<!--        <com.google.android.material.navigation.NavigationView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:id="@+id/navigationView"-->
+<!--      -->
+<!--            android:layout_gravity="start"-->
+<!--app:itemIconTint="#0CAA0D"-->
+<!--            app:headerLayout="@layout/navigation_drawer_layout"-->
+<!--            app:menu="@menu/navigation_drawer_layout"-->
+<!--            />-->
+<!--    </androidx.drawerlayout.widget.DrawerLayout>-->
+
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        app:layout_constraintBottom_toBottomOf="parent">
+
+
+
+    </com.google.android.material.bottomnavigation.BottomNavigationView>
+
+
+
+
+<!--    <FrameLayout-->
+<!--        android:id="@+id/framlayout"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

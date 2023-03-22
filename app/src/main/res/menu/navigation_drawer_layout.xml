@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <item
+        android:id="@+id/home"
+        android:title="Home"
+        android:icon="@drawable/setting"
+
+        />
+
+    <item
+        android:id="@+id/booking"
+        android:icon="@drawable/bookmark"
+
+        android:title="Booking" />
+
+
+    <item
+        android:id="@+id/walllet"
+        android:title=" Wallet"
+        android:icon="@drawable/wallet"/>
+
+    <item
+        android:id="@+id/rate"
+        android:title="Rates"
+        android:icon="@drawable/star"
+        />
+    <item
+        android:id="@+id/about"
+        android:title="About Us"
+        android:icon="@drawable/about"/>
+
+    <item
+        android:id="@+id/contact"
+        android:title="Contact Us"
+        android:icon="@drawable/contact"/>
+
+</menu>

@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="136dp"
-        android:fontFamily="@font/rubik"
+
         android:text="Welcome!"
         android:textColor="#0CAA0D"
         android:textSize="20sp"
@@ -26,7 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:fontFamily="@font/poppins_light"
+
         android:text="Enter the information below"
         android:textColor="#090909"
         android:textSize="15sp"
@@ -44,7 +44,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="16dp"
-        android:fontFamily="@font/poppins_light"
+android:fontFamily="@font/poppins_light"
         android:text="Enter your Contact Number"
         android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
@@ -59,31 +59,32 @@
 
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="80dp"
         android:background="@drawable/backgrond_transparent"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         app:layout_constraintBottom_toTopOf="@+id/btnConnect"
         app:layout_constraintEnd_toEndOf="@+id/btnConnect"
-        app:layout_constraintStart_toStartOf="@+id/btnConnect">
+        app:layout_constraintStart_toStartOf="@+id/btnConnect"
+        tools:ignore="Orientation">
 
         <EditText
-            android:id="@+id/editTextNumber"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
+android:id="@+id/edittextNumber"
             android:background="@null"
             android:drawableStart="@drawable/calling"
 
             android:drawablePadding="15dp"
-            android:fontFamily="@font/rubik"
+
             android:hint="03XXXXXXXX"
             android:padding="10dp"
             android:paddingTop="15dp"
 
             android:paddingBottom="15dp"
             android:textColor="@color/black"
-            android:textSize="16sp" />
+            android:textSize="18sp" />
     </LinearLayout>
 
     <TextView
@@ -94,7 +95,7 @@
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="50dp"
         android:background="@drawable/getstart_back"
-        android:fontFamily="@font/poppins_light"
+android:fontFamily="@font/poppins_light"
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
         android:text="Connect"
@@ -108,11 +109,30 @@
         app:layout_constraintStart_toStartOf="@+id/textView5" />
 
     <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textviewError"
+        android:layout_marginStart="70dp"
+        android:layout_marginEnd="70dp"
+        android:layout_marginBottom="8dp"
+        android:textAlignment="center"
+        android:visibility="invisible"
+
+        android:fontFamily="@font/poppins_light"
+        android:text="*Please enter a valid mobile number"
+        android:textColor="#F81212"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toTopOf="@+id/btnConnect"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+
+    <TextView
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="64dp"
-        android:fontFamily="@font/poppins_light"
+        android:layout_marginBottom="75dp"
         android:text="Privacy Policy!"
         android:textColor="#23D82A"
 
