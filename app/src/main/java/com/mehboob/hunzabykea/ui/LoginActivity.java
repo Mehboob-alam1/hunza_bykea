@@ -17,8 +17,8 @@ import java.util.concurrent.TimeUnit;
 
 public class LoginActivity extends AppCompatActivity {
 
-    ActivityLoginBinding binding;
-    ProgressDialog progressDialog;
+   private ActivityLoginBinding binding;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,20 +27,20 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(binding.getRoot());
 
-        progressDialog = new ProgressDialog(this);
+
 
         binding.btnConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-CheckValidation();
+checkValidation();
             }
         });
     }
 
-    private void CheckValidation() {
+    private void checkValidation() {
 
-        if (binding.edittextNumber.getText().toString().isEmpty() && binding.edittextNumber
+        if (binding.edittextNumber.getText().toString().isEmpty() || binding.edittextNumber
                 .getText().toString().trim().length()!=11)
         {
             Toast.makeText(this, "Enter a Valid Number ", Toast.LENGTH_SHORT).show();
@@ -50,10 +50,6 @@ CheckValidation();
         else
         {
 
-            progressDialog.setTitle("Sending Otp");
-            progressDialog.setMessage("Please Wait");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
 
             String number = binding.edittextNumber.getText().toString();
 
