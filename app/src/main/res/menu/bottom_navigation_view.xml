@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/home1"
+        android:title="Home"
+        android:icon="@drawable/home1"
+
+        />
+
+    <item
+        android:id="@+id/booking1"
+        android:icon="@drawable/booking1"
+
+        android:title="Booking" />
+
+
+    <item
+        android:id="@+id/wallet1"
+        android:title=" Wallet"
+        android:icon="@drawable/wallet1"/>
+
+    <item
+        android:id="@+id/notification1"
+        android:title="Notifications"
+        android:icon="@drawable/notification1"
+        />
+
+    <item
+        android:id="@+id/account1"
+        android:title="Account"
+        android:icon="@drawable/account1"/>
+</menu>
