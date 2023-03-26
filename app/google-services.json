@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "642396485573",
+    "project_id": "hunza-bykea",
+    "storage_bucket": "hunza-bykea.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:642396485573:android:4f4794436bb929c00d7dac",
+        "android_client_info": {
+          "package_name": "com.mehboob.hunzabykea"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "642396485573-8alg8n85sgfv7a3oo22smu537ogjt5lm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAAlnXUMrbQJ5efaXew-M6jrFKySiZYbg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "642396485573-8alg8n85sgfv7a3oo22smu537ogjt5lm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

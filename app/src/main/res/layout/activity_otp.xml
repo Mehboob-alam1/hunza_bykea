@@ -19,10 +19,11 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
+            android:id="@+id/btnBack"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center"
 
+            android:layout_gravity="center"
             android:padding="16dp"
             android:src="@drawable/arrow_back" />
 
@@ -30,7 +31,7 @@
 
 
     <TextView
-        android:id="@+id/textView6"
+        android:id="@+id/txtOtpVerification"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -49,7 +50,7 @@
         app:layout_constraintTop_toBottomOf="@+id/cardView" />
 
     <TextView
-        android:id="@+id/textView8"
+        android:id="@+id/txtCodeSent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -62,12 +63,12 @@
         android:text="Please Enter the SMS code send  on"
         android:textColor="@color/black"
         android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@+id/textView6"
-        app:layout_constraintStart_toStartOf="@+id/textView6"
-        app:layout_constraintTop_toBottomOf="@+id/textView6" />
+        app:layout_constraintEnd_toEndOf="@+id/txtOtpVerification"
+        app:layout_constraintStart_toStartOf="@+id/txtOtpVerification"
+        app:layout_constraintTop_toBottomOf="@+id/txtOtpVerification" />
 
     <TextView
-        android:id="@+id/textViewNumber"
+        android:id="@+id/txtNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
@@ -79,26 +80,37 @@
         android:text="03XXXXXXXX"
         android:textColor="@color/green_700"
         android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@+id/textView8"
-        app:layout_constraintStart_toStartOf="@+id/textView8"
-        app:layout_constraintTop_toBottomOf="@+id/textView8" />
+        app:layout_constraintEnd_toEndOf="@+id/txtCodeSent"
+        app:layout_constraintStart_toStartOf="@+id/txtCodeSent"
+        app:layout_constraintTop_toBottomOf="@+id/txtCodeSent" />
 
     <TextView
-        android:id="@+id/textView9"
-        android:layout_width="match_parent"
+        android:id="@+id/txtCode"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
-        android:layout_marginEnd="16dp"
         android:fontFamily="@font/poppins_light"
         android:text="OTP Code"
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/textViewNumber"
-        app:layout_constraintStart_toStartOf="@+id/textViewNumber"
-        app:layout_constraintTop_toBottomOf="@+id/textViewNumber" />
+        app:layout_constraintStart_toStartOf="@+id/txtNumber"
+        app:layout_constraintTop_toBottomOf="@+id/txtNumber" />
 
+    <TextView
+        android:id="@+id/txtTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/poppins_light"
+        android:text=""
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtNumber" />
 
     <in.aabhasjindal.otptextview.OtpTextView
         android:id="@+id/otp_view"
@@ -110,24 +122,38 @@
         app:height="45dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView9"
+        app:layout_constraintTop_toBottomOf="@+id/txtCode"
         app:length="6"
 
-
-        app:otp="123456"
         app:otp_box_background="@drawable/box_background"
         app:otp_text_size="22dp"
         app:width="45dp" />
+
+    <TextView
+
+        android:id="@+id/txtInvalidOtp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/poppins_light"
+        android:text="Invalid OTP Code"
+android:visibility="gone"
+        android:textColor="@color/red"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/otp_view"
+        app:layout_constraintStart_toStartOf="@+id/otp_view"
+        app:layout_constraintTop_toBottomOf="@+id/otp_view" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnVerify"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/getstart_back"
 
+        android:background="@drawable/getstart_back"
         android:fontFamily="@font/poppins_light"
         android:paddingTop="12dp"
         android:paddingBottom="10dp"
@@ -137,6 +163,21 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/otp_view" />
+        app:layout_constraintTop_toBottomOf="@+id/txtInvalidOtp" />
+
+    <TextView
+android:id="@+id/txtSentAgain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="12dp"
+        android:visibility="gone"
+        android:fontFamily="@font/poppins_light"
+        android:text="Resend"
+        android:textColor="@color/green_700"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/txtCodeSent"
+        app:layout_constraintTop_toBottomOf="@+id/btnVerify" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

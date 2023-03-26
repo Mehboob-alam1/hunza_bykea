@@ -13,6 +13,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.firebase.FirebaseException;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthProvider;
 import com.mehboob.hunzabykea.R;
 import com.mehboob.hunzabykea.databinding.ActivityLoginBinding;
 
@@ -22,6 +25,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private ActivityLoginBinding binding;
     private int state = 1;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +33,7 @@ public class LoginActivity extends AppCompatActivity {
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
 
         setContentView(binding.getRoot());
-
+progressDialog= new ProgressDialog(this);
         binding.edittextNumber.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -38,8 +42,8 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    changeButtonState(0);
 
-                changeButtonState(0);
             }
 
             @Override
@@ -60,7 +64,7 @@ public class LoginActivity extends AppCompatActivity {
     private void checkValidation() {
 
         if (binding.edittextNumber.getText().toString().isEmpty() || binding.edittextNumber
-                .getText().toString().trim().length() != 11) {
+                .getText().toString().trim().length() != 10) {
             Toast.makeText(this, "Enter a Valid Number ", Toast.LENGTH_SHORT).show();
 
             binding.textviewError.setVisibility(View.VISIBLE);
@@ -70,12 +74,52 @@ public class LoginActivity extends AppCompatActivity {
 
 
             changeButtonState(0);
-            String number = binding.edittextNumber.getText().toString();
 
-            Intent intent = new Intent(LoginActivity.this, OtpActivity.class);
-            intent.putExtra("number", number);
-            startActivity(intent);
+      String countryCode=      binding.ccp.getSelectedCountryCode();
+            String number = binding.edittextNumber.getText().toString();
+            String phoneNumber = "+"+countryCode+number;
+sendOtp(phoneNumber);
         }
+    }
+
+    private void sendOtp(String phoneNumber) {
+        progressDialog.setTitle("Sending Otp");
+        progressDialog.setMessage("PLease Wait");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        PhoneAuthProvider.getInstance().verifyPhoneNumber(phoneNumber,
+                60L,
+                TimeUnit.SECONDS, LoginActivity.this,
+                new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+                    @Override
+                    public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
+
+
+
+                    }
+
+                    @Override
+                    public void onVerificationFailed(@NonNull FirebaseException e) {
+
+                        Log.d("Exception",e.getMessage());
+                        progressDialog.dismiss();
+                    }
+
+                    @Override
+                    public void onCodeSent(@NonNull String s, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+
+
+                        progressDialog.dismiss();
+
+                        Intent intent = new Intent(LoginActivity.this,OtpActivity.class);
+                        intent.putExtra("verificationID" ,s);
+                        intent.putExtra("number",phoneNumber);
+                        startActivity(intent);
+
+
+                    }
+                });
     }
 
     private void changeButtonState(int state) {
