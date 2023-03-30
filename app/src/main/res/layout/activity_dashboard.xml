@@ -1,31 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.DashboardActivity">
+
+
+<androidx.drawerlayout.widget.DrawerLayout
+
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    tools:context=".ui.DashboardActivity">
-<LinearLayout
+   >
+<RelativeLayout
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical"
    >
    <include
        android:id="@+id/appBar"
        layout="@layout/app_bar_layout"/>
-</LinearLayout>
+
+   <FrameLayout
+       android:id="@+id/frameContainer"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_above="@+id/bottomNavigation"
+       android:layout_alignParentStart="true"
+       android:layout_alignParentEnd="true"
+       android:layout_below="@+id/appBar"
+       />
+
+   <com.google.android.material.bottomnavigation.BottomNavigationView
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_alignParentBottom="true"
+       android:background="@color/white"
+android:id="@+id/bottomNavigation"
+       app:menu="@menu/bottom_navigation_view"/>
+
+</RelativeLayout>
 
 
    <com.google.android.material.navigation.NavigationView
        android:layout_width="wrap_content"
        android:layout_height="match_parent"
+       app:headerLayout="@layout/header_layout"
        android:layout_gravity="start"
+       android:id="@+id/navView"
        app:menu="@menu/navigation_drawer_layout" />
+
 
 </androidx.drawerlayout.widget.DrawerLayout>
 
 
-
+</LinearLayout>
