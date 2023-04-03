@@ -1,7 +1,10 @@
 plugins {
     id 'com.android.application'
     id 'com.google.gms.google-services'
-}
+
+        id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin' version '2.0.1' apply false
+    }
+
 
 android {
     namespace 'com.mehboob.hunzabykea'
@@ -51,5 +54,8 @@ dependencies {
     //otp views
     implementation 'com.github.aabhasr1:OtpView:v1.1.2'
     implementation 'com.github.mukeshsolanki.android-otpview-pinview:otpview:3.1.0'
+    //maps
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+
 
 }
