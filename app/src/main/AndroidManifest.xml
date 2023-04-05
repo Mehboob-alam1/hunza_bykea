@@ -22,13 +22,7 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyByjxpqzgFTwiVGBBPxILJjElF2c9vR2Go" />
-        <activity
-            android:name=".ui.MapsActivity"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+
         <activity
             android:name=".ui.DashboardActivity"
             android:exported="true"
@@ -47,6 +41,10 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+<activity android:name=".MapsActivity"
+    android:exported="false">
+
+</activity>
         <activity
             android:name=".ui.LoginActivity"
             android:exported="false"
