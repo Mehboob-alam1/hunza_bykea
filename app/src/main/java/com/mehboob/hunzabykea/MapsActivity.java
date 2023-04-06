@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -31,6 +32,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -38,6 +43,7 @@ import com.mehboob.hunzabykea.databinding.ActivityMapsBinding;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -55,10 +61,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private double longitude;
     private double latitude;
-    private GoogleApiClient googleApiClient;
+    private GoogleApiClient googleApiClient,mGoogleApiClient;
     private FusedLocationProviderClient mLocationProviderClient;
     private String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,12 +88,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .build();
 
 
+
         binding.btnSearchLocation.setOnClickListener(v -> {
             if (binding.etSearchPlace.getText().toString().isEmpty())
                 Toast.makeText(this, "Enter any location to search", Toast.LENGTH_SHORT).show();
             else
                 geoLocate(binding.etSearchPlace.getText().toString());
 
+        });
+        binding.imgGps.setOnClickListener(v -> {
+            getCurrentLocation();
         });
     }
 
