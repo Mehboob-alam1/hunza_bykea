@@ -7,12 +7,16 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.location.Geocoder;
 import android.view.View;
 import android.widget.Toast;
 
@@ -34,8 +38,17 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.PlaceLikelihood;
+import com.google.android.libraries.places.api.model.RectangularBounds;
+import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -45,6 +58,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
@@ -53,7 +67,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         GoogleMap.OnMarkerDragListener,
         GoogleMap.OnMapLongClickListener,
         GoogleMap.OnMarkerClickListener,
-        View.OnClickListener {
+        View.OnClickListener, GoogleMap.OnCameraMoveListener,
+        GoogleMap.OnCameraIdleListener {
 
     private static final float DEFAULT_ZOOM = 15f;
     private ActivityMapsBinding binding;
@@ -61,11 +76,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private double longitude;
     private double latitude;
-    private GoogleApiClient googleApiClient,mGoogleApiClient;
+    private GoogleApiClient googleApiClient, mGoogleApiClient;
     private FusedLocationProviderClient mLocationProviderClient;
     private String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION};
+    private static int AUTOCOMPLETE_REQUEST_CODE = 1;
+    private   String placeId;
 
+    private PlacesClient placesClient;
+    private Marker marker;
+    private Geocoder geocoder;
+    private static final int PERMISSION_REQUEST_CODE = 123;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,14 +100,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-
+        checkSelfPermission();
+        geocoder = new Geocoder(this, Locale.getDefault());
+        Places.initialize(getApplicationContext(), "AIzaSyByjxpqzgFTwiVGBBPxILJjElF2c9vR2Go");
+        placesClient = Places.createClient(this);
         //Initializing googleApiClient
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
-
 
 
         binding.btnSearchLocation.setOnClickListener(v -> {
@@ -96,10 +119,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 geoLocate(binding.etSearchPlace.getText().toString());
 
         });
+
         binding.imgGps.setOnClickListener(v -> {
             getCurrentLocation();
         });
     }
+
 
     private void geoLocate(String location) {
         Geocoder geocoder = new Geocoder(MapsActivity.this);
@@ -111,12 +136,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         if (list.size() > 0) {
             Address address = list.get(0);
+            String title = address.getAddressLine(0);
             // Toast.makeText(this, ""+address.toString(), Toast.LENGTH_SHORT).show();
 
-            moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM, address.getLocality());
+            moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM, title);
         }
     }
 
+    private boolean checkSelfPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE);
+            return false;
+        } else {
+            return true;
+        }
+
+    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -140,6 +178,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
         mMap.setOnMarkerDragListener(this);
         mMap.setOnMapLongClickListener(this);
+        mMap.setOnCameraMoveListener(this);
     }
 
     //Getting current location
@@ -283,6 +322,130 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
                 }
                 return;
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                // TODO: Handle the error.
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.i(TAG, status.getStatusMessage());
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+            return;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onCameraMove() {
+        LatLng latLng = mMap.getCameraPosition().target;
+        // Create a new marker if it doesn't exist
+        if (marker == null) {
+            marker = mMap.addMarker(new MarkerOptions().position(latLng));
+        } else {
+            // Move the existing marker to the new position
+            marker.setPosition(latLng);
+        }
+        // Execute the geocoding operation on a background thread
+        new GeocodeAsyncTask(marker).execute(latLng);
+    }
+
+    @Override
+    public void onCameraIdle() {
+        LatLng latLng = mMap.getCameraPosition().target;
+
+
+        // Get the place ID for the current location
+        List<Place.Field> placeFields = Arrays.asList(Place.Field.ID);
+        FindCurrentPlaceRequest request = FindCurrentPlaceRequest.newInstance(placeFields);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        placesClient.findCurrentPlace(request).addOnSuccessListener((response) -> {
+            List<PlaceLikelihood> likelihoods = response.getPlaceLikelihoods();
+            if (!likelihoods.isEmpty()) {
+              placeId  = likelihoods.get(0).getPlace().getId();
+
+            }
+
+            // Use the place ID to get the address
+            List<Place.Field> fields = Arrays.asList(Place.Field.ADDRESS);
+            FetchPlaceRequest placeRequest = FetchPlaceRequest.newInstance(placeId,fields);
+
+            placesClient.fetchPlace(placeRequest).addOnSuccessListener((placeResponse) -> {
+                Place place = placeResponse.getPlace();
+                String address = place.getAddress();
+                LatLng latLng1 = place.getLatLng();
+
+                // Update the marker's title with the address
+                if (marker != null) {
+                    marker.setTitle(address);
+                } else {
+                    marker = mMap.addMarker(new MarkerOptions().position(latLng1).title(address));
+                }
+            }).addOnFailureListener((exception) -> {
+                // Handle the exception
+            });
+        }).addOnFailureListener((exception) -> {
+            // Handle the exception
+        });
+    }
+
+    private class GeocodeAsyncTask  extends AsyncTask<LatLng, Void, String> {
+
+        private Marker marker;
+
+        public GeocodeAsyncTask(Marker marker) {
+            this.marker = marker;
+        }
+
+        @Override
+        protected String doInBackground(LatLng... params) {
+            LatLng latLng = params[0];
+            Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+            List<Address> addresses;
+            try {
+                addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+                if (addresses.size() > 0) {
+                    Address address = addresses.get(0);
+                    String title = address.getAddressLine(0);
+//                    StringBuilder sb = new StringBuilder();
+//                    for (int i = 0; i < address.getMaxAddressLineIndex(); i++) {
+//                        sb.append(address.getAddressLine(i)).append("\n");
+//                    }
+                    return title;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String address) {
+            if (address != null && !address.isEmpty()) {
+                // Update the marker with the new address
+                marker.setTitle(address);
+                marker.showInfoWindow();
+            } else {
+                // Set a default title for the marker
+                marker.setTitle("Marker");
             }
         }
     }

@@ -42,7 +42,8 @@
                 android:value="" />
         </activity>
 <activity android:name=".MapsActivity"
-    android:exported="false">
+    android:exported="false"
+    android:hardwareAccelerated="true">
 
 </activity>
         <activity
