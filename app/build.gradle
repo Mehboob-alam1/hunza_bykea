@@ -66,8 +66,12 @@ dependencies {
     //places
 
     implementation 'com.google.android.libraries.places:places:3.0.0'
-
-
+///maps utilities
+    implementation 'com.google.maps.android:android-maps-utils:2.2.0'
+    //okhttp
+    implementation 'com.squareup.okhttp3:okhttp:4.9.1'
+//direction api
+    implementation 'com.akexorcist:google-direction-library:1.2.1'
 
 
 
