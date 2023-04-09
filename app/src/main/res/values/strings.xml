@@ -25,7 +25,7 @@ Let’s make your day great with Hunza Bikeya!</string>
     <string name="enter_your_contact_number">Enter your Contact Number</string>
     <string name="enter_the_information_below">Enter the information below</string>
     <string name="welcome">Welcome!</string>
-    <string name="google_maps_api_key">AIzaSyByjxpqzgFTwiVGBBPxILJjElF2c9vR2Go</string>
+    <string name="google_maps_api_key">AIzaSyDSvbjNgfuH8RX3IAZK7LavIua-fIYn8Q8</string>
     <string name="location_dialog_desc">We need access to your\n location to be able to use\n this service</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="search_where_you_go">Search where you go</string>

@@ -37,42 +37,6 @@ public class ViewPagerAdapter extends PagerAdapter {
     }
 
 
-//    @NonNull
-//    @Override
-//    public MyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-//
-//    View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.viewpagerslider,parent,false);
-//        return new MyHolder(view);
-//    }
-//
-//    @Override
-//    public void onBindViewHolder(@NonNull ViewPagerAdapter.MyHolder holder, int position) {
-//        ViewPagerClass viewPagerClass = list.get(position);
-//
-//        holder.imageView.setImageResource(viewPagerClass.getImage());
-//        holder.tv1.setText(viewPagerClass.getHeading());
-//        holder.tv2.setText(viewPagerClass.getDescription());
-//
-//
-//    }
-//
-//    @Override
-//    public int getItemCount() {
-//        return list.size();
-//    }
-//
-//    public class MyHolder extends RecyclerView.ViewHolder {
-//
-//        ImageView imageView;
-//        TextView tv1,tv2;
-//        public MyHolder(@NonNull View itemView) {
-//            super(itemView);
-//
-//            imageView = itemView.findViewById(R.id.imageview2);
-//            tv1 = itemView.findViewById(R.id.textviewHeading);
-//            tv2 = itemView.findViewById(R.id.textviewDescription);
-//        }
-//    }
 
     @SuppressLint("SetTextI18n")
     @NonNull
