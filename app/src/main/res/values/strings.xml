@@ -4,7 +4,7 @@
 
     <string name="frame2description">With Hunza Bikeya, You can book a bike rider in hunza anywhere anytime.</string>
 
-    <string name ="mapbox_access_token">sk.eyJ1IjoiYmFpZ3VsbGFoNDQiLCJhIjoiY2xobTg3cWl4MDQzcTNkbmc4M29jamV1eCJ9.UaBdqZyxWMLD_R3-liX4ZQ</string>
+    <string name="mapbox_access_token">sk.eyJ1IjoiYmFpZ3VsbGFoNDQiLCJhIjoiY2xobTg3cWl4MDQzcTNkbmc4M29jamV1eCJ9.UaBdqZyxWMLD_R3-liX4ZQ</string>
 
     <string name="frame2Heading">Book your Rider</string>
 
