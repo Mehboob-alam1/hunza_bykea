@@ -90,10 +90,11 @@ dependencies {
     implementation 'com.github.jd-alexander:library:1.1.0'
 
 
-
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-services:2.2.9'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-telemetry:5.1.0@aar'
 
     implementation 'org.maplibre.gl:android-sdk:9.2.1'
 
-
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
 
 }

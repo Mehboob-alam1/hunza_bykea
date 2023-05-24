@@ -1,7 +1,10 @@
 package com.mehboob.hunzabykea.ui.fragments;
 
+import static android.app.PendingIntent.FLAG_IMMUTABLE;
+
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -81,6 +84,7 @@ public class HomeFragment extends Fragment {
 //            }
             if (isServicesOk()){
                 Intent i = new Intent(requireContext(), MapsActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 getContext().startActivity(i);
             }
 

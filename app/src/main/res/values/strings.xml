@@ -33,6 +33,7 @@ Let’s make your day great with Hunza Bikeya!</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="search_where_you_go">Search where you go</string>
     <string name="search">Search</string>
+    <string name="user_location_permission_not_granted">User not allowed the permissions</string>
 
 
 </resources>
