@@ -35,7 +35,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 
-
 import com.google.android.gms.maps.GoogleMap;
 
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -56,6 +55,7 @@ import com.mapbox.mapboxsdk.Mapbox;
 
 
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.location.LocationComponent;
@@ -110,7 +110,7 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
     private final static int ALL_PERMISSIONS_RESULT = 101;
     LocationTrack locationTrack;
 
-    private Point origin,destination;
+    private Point origin, destination;
     MarkerOptions markerOptions;
 
     @Override
@@ -151,15 +151,26 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
 
                             double longitude = locationTrack.getLongitude();
                             double latitude = locationTrack.getLatitude();
-                       markerOptions= new MarkerOptions();
-                       markerOptions.title("My location");
-                       markerOptions.position(new LatLng(latitude,longitude));
-                       mapboxMap.addMarker(markerOptions);
+                            markerOptions = new MarkerOptions();
+                            markerOptions.title("My location");
+                            markerOptions.position(new LatLng(latitude, longitude));
+                            mapboxMap.addMarker(markerOptions);
 
                             origin = Point.fromLngLat(longitude, latitude);
                             sharedPref.saveLatitude(String.valueOf(latitude));
 
                             sharedPref.saveLongitude(String.valueOf(longitude));
+
+
+                            CameraPosition position = new CameraPosition.Builder()
+                                    .target(new LatLng(latitude, longitude))
+                                    .zoom(10)
+                                    .tilt(20)
+                                    .build();
+
+
+                            mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), millisecondSpeed);
+
 
                             // Toast.makeText(getApplicationContext(), "Longitude:" + Double.toString(longitude) + "\nLatitude:" + Double.toString(latitude), Toast.LENGTH_SHORT).show();
                         } else {
@@ -168,12 +179,11 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
                         }
 
 
-
                         MapsActivity.this.mapboxMap.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
                             @Override
                             public boolean onMapClick(@NonNull LatLng latLng) {
-                                 destination=Point.fromLngLat(latLng.getLongitude(),latLng.getLatitude());
-                                getRoute(mapboxMap,origin,destination);
+                                destination = Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude());
+                                getRoute(mapboxMap, origin, destination);
 
                                 return true;
                             }
@@ -181,15 +191,15 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
 
                         });
 
-                        style.addImage("red-pin-icon-id", BitmapUtils.getBitmapFromDrawable(ContextCompat.getDrawable(MapsActivity.this,R.drawable.ic_baseline_place_24)));
-                        style.addLayer(new SymbolLayer("icon-layer-id","icon-source-id").withProperties(
+                        style.addImage("red-pin-icon-id", BitmapUtils.getBitmapFromDrawable(ContextCompat.getDrawable(MapsActivity.this, R.drawable.ic_baseline_place_24)));
+                        style.addLayer(new SymbolLayer("icon-layer-id", "icon-source-id").withProperties(
                                 iconImage("red-pin-icon-id"),
                                 iconIgnorePlacement(true),
                                 iconAllowOverlap(true),
-                                iconOffset(new Float[]{0f,-0f})
+                                iconOffset(new Float[]{0f, -0f})
                         ));
                         style.addSource(new GeoJsonSource("route-source-id"));
-                        LineLayer routeLayer= new LineLayer("route-layer-id","route-source-id");
+                        LineLayer routeLayer = new LineLayer("route-layer-id", "route-source-id");
 
                         routeLayer.setProperties(
                                 lineCap(Property.LINE_CAP_ROUND),
@@ -199,10 +209,10 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
                         );
                         style.addLayer(routeLayer);
 
-                        mapboxMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(origin.latitude(),origin.longitude()),11.7f));
-                        Point userDest= Point.fromLngLat(107.6848254,-6.9218571);
-                        Point userPoint= Point.fromLngLat(105.6848254,-9.9218571);
-                        getRoute(mapboxMap,userPoint,userDest);
+                        mapboxMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(origin.latitude(), origin.longitude()), 11.7f));
+                        Point userDest = Point.fromLngLat(107.6848254, -6.9218571);
+                        Point userPoint = Point.fromLngLat(105.6848254, -9.9218571);
+                        getRoute(mapboxMap, userPoint, userDest);
                     }
                 });
             }
@@ -435,31 +445,30 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
                 if (response == null) {
                     Log.d(TAG, "No routes found make sure you have correct access token");
                     return;
-                }
-                else if (response.body().routes().size() < 1) {
+                } else if (response.body().routes().size() < 1) {
                     Log.d(TAG, "No routes found");
                     return;
                 }
 
                 assert response.body() != null;
-                DirectionsRoute drivingRoute=response.body().routes().get(0);
-                if (mapboxMap!=null){
+                DirectionsRoute drivingRoute = response.body().routes().get(0);
+                if (mapboxMap != null) {
                     mapboxMap.getStyle(new Style.OnStyleLoaded() {
                         @Override
                         public void onStyleLoaded(@NonNull Style style) {
-                            GeoJsonSource routeLineSource =style.getSourceAs("route-source-id");
-                            GeoJsonSource iconGeoJsonSource =style.getSourceAs("icon-source-id");
+                            GeoJsonSource routeLineSource = style.getSourceAs("route-source-id");
+                            GeoJsonSource iconGeoJsonSource = style.getSourceAs("icon-source-id");
 
-                            if (routeLineSource!=null){
+                            if (routeLineSource != null) {
                                 routeLineSource.setGeoJson(LineString.fromPolyline(drivingRoute.geometry(), PRECISION_6));
 
-                                if (iconGeoJsonSource==null){
-                                    iconGeoJsonSource=new GeoJsonSource("icon-source-id", Feature.fromGeometry(Point.fromLngLat(destination.longitude(),destination.latitude())));
+                                if (iconGeoJsonSource == null) {
+                                    iconGeoJsonSource = new GeoJsonSource("icon-source-id", Feature.fromGeometry(Point.fromLngLat(destination.longitude(), destination.latitude())));
 
                                     style.addSource(iconGeoJsonSource);
 
-                                }else {
-                                    iconGeoJsonSource.setGeoJson(Feature.fromGeometry(Point.fromLngLat(destination.longitude(),destination.latitude())));
+                                } else {
+                                    iconGeoJsonSource.setGeoJson(Feature.fromGeometry(Point.fromLngLat(destination.longitude(), destination.latitude())));
                                 }
                             }
                         }
