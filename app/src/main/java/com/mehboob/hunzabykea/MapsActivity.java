@@ -181,7 +181,13 @@ binding.btnMyLocation.setOnClickListener(v -> {
                             @Override
                             public boolean onMapClick(@NonNull LatLng latLng) {
                                 destination = Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude());
-                                getRoute(mapboxMap, origin, destination);
+
+
+                                if(!RESTRICTED_BOUNDS_AREA.contains(latLng)){
+                                    Toast.makeText(MapsActivity.this, "No service area", Toast.LENGTH_SHORT).show();
+                                }else {
+                                    getRoute(mapboxMap, origin, destination);
+                                }
 //                                isWithinServiceArea = TurfJoins.inside(Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude()), serviceAreaPolygons);
 //
 //                                if (isWithinServiceArea){
@@ -262,6 +268,8 @@ binding.btnMyLocation.setOnClickListener(v -> {
             mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000);
 
 
+            //
+            //
             // Toast.makeText(getApplicationContext(), "Longitude:" + Double.toString(longitude) + "\nLatitude:" + Double.toString(latitude), Toast.LENGTH_SHORT).show();
         } else {
 
