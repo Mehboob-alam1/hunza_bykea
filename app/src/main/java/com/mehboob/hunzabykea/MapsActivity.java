@@ -188,13 +188,7 @@ binding.btnMyLocation.setOnClickListener(v -> {
                                 }else {
                                     getRoute(mapboxMap, origin, destination);
                                 }
-//                                isWithinServiceArea = TurfJoins.inside(Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude()), serviceAreaPolygons);
-//
-//                                if (isWithinServiceArea){
-//                                    getRoute(mapboxMap, origin, destination);
-//                                }else{
-//                                    Toast.makeText(MapsActivity.this, "Service not available", Toast.LENGTH_SHORT).show();
-//                                }
+
 
 
                                 return true;
@@ -216,7 +210,7 @@ binding.btnMyLocation.setOnClickListener(v -> {
                         routeLayer.setProperties(
                                 lineCap(Property.LINE_CAP_ROUND),
                                 lineJoin(Property.LINE_JOIN_ROUND),
-                                lineWidth(5f),
+                                lineWidth(3f),
                                 lineColor(Color.parseColor("#14CA15"))
                         );
                         style.addLayer(routeLayer);
@@ -258,14 +252,15 @@ binding.btnMyLocation.setOnClickListener(v -> {
             sharedPref.saveLongitude(String.valueOf(longitude));
 
 
-            CameraPosition position = new CameraPosition.Builder()
-                    .target(new LatLng(latitude, longitude))
-                    .zoom(16)
+//            CameraPosition position = new CameraPosition.Builder()
+//                    .target(new LatLng(latitude, longitude))
+//                    .zoom(23)
+//
+//                    .build();
 
-                    .build();
+            mapboxMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 23f));
 
-
-            mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000);
+        //    mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000);
 
 
             //
