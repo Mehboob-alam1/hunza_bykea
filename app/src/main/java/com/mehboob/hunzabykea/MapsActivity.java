@@ -3,6 +3,7 @@ package com.mehboob.hunzabykea;
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
+import static com.mapbox.core.constants.Constants.PRECISION_6;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillOpacity;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
@@ -13,7 +14,7 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineCap;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineJoin;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth;
-import static com.mapbox.services.Constants.PRECISION_6;
+
 
 import androidx.annotation.NonNull;
 
@@ -26,6 +27,7 @@ import android.annotation.SuppressLint;
 
 import android.annotation.TargetApi;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 
 import android.graphics.Color;
@@ -34,6 +36,8 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Toast;
 
 
@@ -45,6 +49,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 
+import com.mapbox.api.directions.v5.DirectionsCriteria;
 import com.mapbox.api.directions.v5.MapboxDirections;
 
 
@@ -76,10 +81,9 @@ import com.mapbox.mapboxsdk.style.layers.Property;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.mapboxsdk.utils.BitmapUtils;
-import com.mapbox.services.api.directions.v5.DirectionsCriteria;
 
-import com.mapbox.services.api.utils.turf.TurfJoins;
 import com.mehboob.hunzabykea.databinding.ActivityMapsBinding;
+import com.mehboob.hunzabykea.ui.SearchActivity;
 import com.mehboob.hunzabykea.utils.LocationTrack;
 import com.mehboob.hunzabykea.utils.SharedPref;
 
@@ -221,6 +225,17 @@ binding.btnMyLocation.setOnClickListener(v -> {
                         getRoute(mapboxMap, userPoint, userDest);
                     }
                 });
+            }
+        });
+
+        binding.etSearchLocation.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+               startActivity(new Intent(MapsActivity.this, SearchActivity.class));
+
+
+                return true;
             }
         });
 

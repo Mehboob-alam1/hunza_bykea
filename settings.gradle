@@ -13,11 +13,12 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
 //
-       // maven { url 'https://mapbox.bintray.com/mapbox' }
+        maven { url 'https://mapbox.bintray.com/mapbox' }
 maven { url 'https://jitpack.io' }
         maven {
 
-            url 'https://api.mapbox.com/downloads/v2/releases/maven'
+           // url 'https://api.mapbox.com/downloads/v1/releases/maven'
+         url 'https://api.mapbox.com/downloads/v2/releases/maven'
             authentication {
                 basic(BasicAuthentication)
             }

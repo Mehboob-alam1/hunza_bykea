@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:layout_margin="3dp"
+    android:orientation="horizontal"
+    android:padding="5dp">
+
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="4dp"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/location_mark" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+android:padding="5dp"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:id="@+id/txtLocationTitle"
+            android:layout_height="wrap_content"
+            android:text="BE ENERGY PETROL PUMP"
+            android:ellipsize="end"
+            android:textColor="@color/black"
+    android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/txtLocationCordinates"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="36.28334324235556,74.612132422342"
+          android:textSize="12sp"
+
+           />
+    </LinearLayout>
+
+
+
+</LinearLayout>
+

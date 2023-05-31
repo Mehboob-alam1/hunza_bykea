@@ -66,15 +66,17 @@ dependencies {
     implementation 'com.github.aabhasr1:OtpView:v1.1.2'
     implementation 'com.github.mukeshsolanki.android-otpview-pinview:otpview:3.1.0'
     //maps
-    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+
 
     // location
     implementation "com.google.android.gms:play-services-location:21.0.1"
+
+
     //places
 
-    implementation 'com.google.android.libraries.places:places:3.0.0'
+
 ///maps utilities
-    implementation 'com.google.maps.android:android-maps-utils:2.2.0'
+
     //okhttp
     implementation 'com.squareup.okhttp3:okhttp:4.9.1'
 //direction api
@@ -95,14 +97,24 @@ dependencies {
     implementation 'com.github.jd-alexander:library:1.1.0'
 
 
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-services:2.2.9'
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-telemetry:5.1.0@aar'
+    //implementation 'com.mapbox.mapboxsdk:mapbox-android-services:2.2.9'
+  //  implementation 'com.mapbox.mapboxsdk:mapbox-android-telemetry:5.1.0@aar'
+
 
     implementation 'org.maplibre.gl:android-sdk:9.2.1'
 
-    implementation 'com.google.android.gms:play-services-location:21.0.1'
+
 
     implementation 'com.mapbox.mapboxsdk:mapbox-sdk-services:5.8.0'
+
+
+
+//    implementation "com.mapbox.search:mapbox-search-android-ui:1.0.0-rc.2"
+
+//    implementation "com.mapbox.search:mapbox-search-android:1.0.0-rc.4"
+
+//    implementation "com.mapbox.search:mapbox-search-android-ui:1.0.0-rc.3"
+
 
 
 }
