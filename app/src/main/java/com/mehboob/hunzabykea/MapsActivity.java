@@ -46,6 +46,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 
@@ -84,9 +86,11 @@ import com.mapbox.mapboxsdk.utils.BitmapUtils;
 
 import com.mehboob.hunzabykea.databinding.ActivityMapsBinding;
 import com.mehboob.hunzabykea.ui.SearchActivity;
+import com.mehboob.hunzabykea.ui.models.LocationModel;
 import com.mehboob.hunzabykea.utils.LocationTrack;
 import com.mehboob.hunzabykea.utils.SharedPref;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -107,6 +111,8 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
     private PermissionsManager permissionsManager;
     protected LocationManager locationManager;
 
+    private String searchedLocation;
+
     //
 
     List<Polygon> serviceAreaPolygons = new ArrayList<>();
@@ -125,7 +131,7 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
 
     private final static int ALL_PERMISSIONS_RESULT = 101;
     LocationTrack locationTrack;
-
+    String uerSearchedLoc;
     private Point origin, destination;
     MarkerOptions markerOptions;
     private static final LatLngBounds RESTRICTED_BOUNDS_AREA = new LatLngBounds.Builder()
@@ -143,6 +149,9 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
 
     private final List<List<Point>> points = new ArrayList<>();
     private final List<Point> outerPoints = new ArrayList<>();
+    Gson gson;
+    LocationModel locationModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -153,12 +162,22 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
         permissions.add(ACCESS_FINE_LOCATION);
         permissions.add(ACCESS_COARSE_LOCATION);
 
+if (uerSearchedLoc!=null) {
+    uerSearchedLoc = getIntent().getStringExtra("loc");
+
+    gson = new Gson();
+    Type type = new TypeToken<LocationModel>() {
+    }.getType();
+
+    locationModel = gson.fromJson(uerSearchedLoc, type);
+    binding.etSearchLocation.setText(locationModel.getLatitude() + "," + locationModel.getLongitude());
+}
         permissionsToRequest = findUnAskedPermissions(permissions);
 
-binding.btnMyLocation.setOnClickListener(v -> {
-    enableLocations();
+        binding.btnMyLocation.setOnClickListener(v -> {
+            enableLocations();
 
-});
+        });
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
 
@@ -176,7 +195,6 @@ binding.btnMyLocation.setOnClickListener(v -> {
                         //     enableLocationComponent(style);
 
 
-
                         enableLocations();
 
 
@@ -187,12 +205,11 @@ binding.btnMyLocation.setOnClickListener(v -> {
                                 destination = Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude());
 
 
-                                if(!RESTRICTED_BOUNDS_AREA.contains(latLng)){
+                                if (!RESTRICTED_BOUNDS_AREA.contains(latLng)) {
                                     Toast.makeText(MapsActivity.this, "No service area", Toast.LENGTH_SHORT).show();
-                                }else {
+                                } else {
                                     getRoute(mapboxMap, origin, destination);
                                 }
-
 
 
                                 return true;
@@ -232,13 +249,18 @@ binding.btnMyLocation.setOnClickListener(v -> {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
-               startActivity(new Intent(MapsActivity.this, SearchActivity.class));
+                startActivity(new Intent(MapsActivity.this, SearchActivity.class));
+                finish();
 
 
                 return true;
             }
         });
 
+
+        binding.btnSearchLocation.setOnClickListener(v -> {
+            getRoute(mapboxMap, origin, destination);
+        });
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
@@ -275,7 +297,7 @@ binding.btnMyLocation.setOnClickListener(v -> {
 
             mapboxMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 23f));
 
-        //    mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000);
+            //    mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000);
 
 
             //
@@ -317,6 +339,7 @@ binding.btnMyLocation.setOnClickListener(v -> {
     protected void onStart() {
         super.onStart();
         binding.mapView.onStart();
+        binding.etSearchLocation.setHint("Search where you go");
     }
 
     @SuppressLint("Lifecycle")
@@ -339,6 +362,31 @@ binding.btnMyLocation.setOnClickListener(v -> {
         super.onDestroy();
         binding.mapView.onDestroy();
         locationTrack.stopListener();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+//        if (sharedPref.fetchSearchedLocation() != null) {
+//            searchedLocation = sharedPref.fetchSearchedLocation();
+//
+//            Gson gson = new Gson();
+//            Type type = new TypeToken<LocationModel>() {
+//            }.getType();
+//            LocationModel model = gson.fromJson(searchedLocation, type);
+//            destination = Point.fromLngLat(Double.parseDouble(model.getLongitude()), Double.parseDouble(model.getLatitude()));
+//
+//            binding.etSearchLocation.setText(model.getLatitude() + "," + model.getLongitude());
+//
+//            // getRoute(mapboxMap, origin, destination);
+//        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+      //  binding.etSearchLocation.setHint("Search where you go");
+
     }
 
     @Override
@@ -419,6 +467,7 @@ binding.btnMyLocation.setOnClickListener(v -> {
             finish();
         }
     }
+
     private void showBoundsArea(@NonNull Style loadedMapStyle) {
         outerPoints.add(Point.fromLngLat(RESTRICTED_BOUNDS_AREA.getNorthWest().getLongitude(),
                 RESTRICTED_BOUNDS_AREA.getNorthWest().getLatitude()));
@@ -433,8 +482,7 @@ binding.btnMyLocation.setOnClickListener(v -> {
         points.add(outerPoints);
 
 
-
-       // serviceAreaPolygons.add(Polygon.fromLngLats(Collections.singletonList(points)));
+        // serviceAreaPolygons.add(Polygon.fromLngLats(Collections.singletonList(points)));
 
 
         loadedMapStyle.addSource(new GeoJsonSource("source-id",

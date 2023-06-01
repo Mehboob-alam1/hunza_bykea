@@ -23,7 +23,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         app:cardCornerRadius="8dp"
-        android:visibility="gone"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -48,6 +48,9 @@
                 android:id="@+id/etSearchLocation"
                 android:layout_toEndOf="@+id/serch_img"
                 android:background="@null"
+                android:textSize="12sp"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/poppins_light"
                 android:hint="Search where you go" />
 
 
@@ -86,6 +89,7 @@
         android:background="@drawable/btn_background"
         android:text="Search"
         android:textAllCaps="false"
+        android:id="@+id/btnSearchLocation"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

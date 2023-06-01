@@ -24,9 +24,9 @@ private ArrayList<ExistingLocations> list;
         setContentView(binding.getRoot());
 
         initViews();
-
+//35.92252430578264, 74.32375521127818
       list.add(new ExistingLocations("BE ENERFY PETROL PUMP",new LocationModel("36.2834242132134","3241234231432141234")));
-      list.add(new ExistingLocations("BE ENERFY PETROL PUMP",new LocationModel("36.2834242132134","3241234231432141234")));
+      list.add(new ExistingLocations("Canopy nexus",new LocationModel("35.92252430578264","74.32375521127818")));
       list.add(new ExistingLocations("BE ENERFY PETROL PUMP",new LocationModel("36.2834242132134","3241234231432141234")));
       list.add(new ExistingLocations("BE ENERFY PETROL PUMP",new LocationModel("36.2834242132134","3241234231432141234")));
       list.add(new ExistingLocations("BE ENERFY PETROL PUMP",new LocationModel("36.2834242132134","3241234231432141234")));
@@ -61,8 +61,12 @@ private ArrayList<ExistingLocations> list;
     private void initViews() {
 
         list= new ArrayList<>();
-        adapter= new PredefinedLocationsAdapter(this,list);
+        adapter= new PredefinedLocationsAdapter(this,list,this);
         binding.recyclerLocations.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerLocations.setAdapter(adapter);
+    }
+
+    public void finishMe(){
+        finish();
     }
 }
