@@ -6,55 +6,34 @@
     android:layout_height="match_parent"
     tools:context=".ui.SearchActivity">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView2"
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/search_bar"
+
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        app:cardCornerRadius="8dp"
+        android:hint="Search location"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:searchHintIcon="@color/black">
 
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:background="@color/colorPrimaryDark"
-            android:layout_height="60dp">
+    </androidx.appcompat.widget.SearchView>
 
-            <ImageView
-                android:id="@+id/serch_img"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="8dp"
-                android:padding="5dp"
-                android:src="@drawable/ic_baseline_search_24"
-                 />
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/etSearchLocation"
-                android:layout_toEndOf="@+id/serch_img"
-                android:background="@null"
-                android:hint="Search where you go" />
-
-
-        </RelativeLayout>
-    </androidx.cardview.widget.CardView>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerLocations"
         android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_margin="8dp"
         android:padding="3dp"
-android:id="@+id/recyclerLocations"
-        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardView2" />
+        app:layout_constraintTop_toBottomOf="@+id/search_bar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

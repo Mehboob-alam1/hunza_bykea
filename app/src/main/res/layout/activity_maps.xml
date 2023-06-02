@@ -42,7 +42,7 @@
                 android:padding="5dp"
                 android:src="@drawable/ic_baseline_search_24" />
 
-            <EditText
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/etSearchLocation"
@@ -50,6 +50,7 @@
                 android:background="@null"
                 android:textSize="12sp"
                 android:layout_marginStart="8dp"
+                android:gravity="center_vertical"
                 android:fontFamily="@font/poppins_light"
                 android:hint="Search where you go" />
 

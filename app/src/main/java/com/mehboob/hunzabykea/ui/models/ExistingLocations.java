@@ -15,14 +15,14 @@ public class ExistingLocations {
 
     public ExistingLocations() {
     }
-
+    public void setLocationTitle(String locationTitle) {
+        this.locationTitle = locationTitle;
+    }
     public String getLocationTitle() {
         return locationTitle;
     }
 
-    public void setLocationTitle(String locationTitle) {
-        this.locationTitle = locationTitle;
-    }
+
 
     public LocationModel getLocation() {
         return location;

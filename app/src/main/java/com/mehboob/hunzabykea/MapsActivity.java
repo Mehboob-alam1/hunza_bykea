@@ -162,16 +162,7 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
         permissions.add(ACCESS_FINE_LOCATION);
         permissions.add(ACCESS_COARSE_LOCATION);
 
-if (uerSearchedLoc!=null) {
-    uerSearchedLoc = getIntent().getStringExtra("loc");
 
-    gson = new Gson();
-    Type type = new TypeToken<LocationModel>() {
-    }.getType();
-
-    locationModel = gson.fromJson(uerSearchedLoc, type);
-    binding.etSearchLocation.setText(locationModel.getLatitude() + "," + locationModel.getLongitude());
-}
         permissionsToRequest = findUnAskedPermissions(permissions);
 
         binding.btnMyLocation.setOnClickListener(v -> {
@@ -245,16 +236,8 @@ if (uerSearchedLoc!=null) {
             }
         });
 
-        binding.etSearchLocation.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                startActivity(new Intent(MapsActivity.this, SearchActivity.class));
-                finish();
-
-
-                return true;
-            }
+        binding.etSearchLocation.setOnClickListener(v -> {
+            startActivity(new Intent(MapsActivity.this,SearchActivity.class));
         });
 
 
@@ -364,29 +347,26 @@ if (uerSearchedLoc!=null) {
         locationTrack.stopListener();
     }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-//        if (sharedPref.fetchSearchedLocation() != null) {
-//            searchedLocation = sharedPref.fetchSearchedLocation();
-//
-//            Gson gson = new Gson();
-//            Type type = new TypeToken<LocationModel>() {
-//            }.getType();
-//            LocationModel model = gson.fromJson(searchedLocation, type);
-//            destination = Point.fromLngLat(Double.parseDouble(model.getLongitude()), Double.parseDouble(model.getLatitude()));
-//
-//            binding.etSearchLocation.setText(model.getLatitude() + "," + model.getLongitude());
-//
-//            // getRoute(mapboxMap, origin, destination);
-//        }
-    }
+
 
     @Override
     protected void onResume() {
         super.onResume();
       //  binding.etSearchLocation.setHint("Search where you go");
+        if (sharedPref.fetchSearchedLocation() != null) {
+            searchedLocation = sharedPref.fetchSearchedLocation();
 
+            Gson gson = new Gson();
+            Type type = new TypeToken<LocationModel>() {
+            }.getType();
+            LocationModel model = gson.fromJson(searchedLocation, type);
+            destination = Point.fromLngLat(Double.parseDouble(model.getLongitude()), Double.parseDouble(model.getLatitude()));
+
+            binding.etSearchLocation.setText(model.getLatitude() + "," + model.getLongitude());
+
+            // getRoute(map
+
+        }
     }
 
     @Override

@@ -87,11 +87,7 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-<service android:name="com.mapzen.android.lost.internal.GeofencingIntentService"
-    android:exported="true">
 
-
-</service>
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
