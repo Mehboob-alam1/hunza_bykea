@@ -40,6 +40,14 @@ public class PredefinedLocationsAdapter extends RecyclerView.Adapter<PredefinedL
 
     }
 
+    public void setFilterList(ArrayList<ExistingLocations> filterList )
+    {
+
+        this.locations= filterList;
+
+            notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public LocationHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

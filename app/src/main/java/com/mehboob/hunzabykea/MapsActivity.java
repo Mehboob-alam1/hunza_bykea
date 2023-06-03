@@ -231,6 +231,9 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
                         Point userDest = Point.fromLngLat(107.6848254, -6.9218571);
                         Point userPoint = Point.fromLngLat(105.6848254, -9.9218571);
                         getRoute(mapboxMap, userPoint, userDest);
+
+
+
                     }
                 });
             }
