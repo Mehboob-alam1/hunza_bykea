@@ -34,10 +34,10 @@ android:padding="5dp"
             android:id="@+id/txtLocationCordinates"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="36.28334324235556,74.612132422342"
-          android:textSize="12sp"
+            android:text="demo text"
+            android:textSize="12sp"
 
-           />
+            />
     </LinearLayout>
 
 

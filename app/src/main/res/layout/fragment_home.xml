@@ -21,6 +21,7 @@ android:id="@+id/layout"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:background="#EDEDED"
+        android:paddingBottom="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -37,13 +38,19 @@ android:id="@+id/layout"
         android:id="@+id/linearPrice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:orientation="horizontal"
+        android:padding="5dp"
+        app:layout_constraintBottom_toBottomOf="@+id/linearTop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearTop">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/btnRs35"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_weight="1"
@@ -59,8 +66,10 @@ android:id="@+id/layout"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/reward"
-                app:layout_constraintEnd_toEndOf="@+id/txt_reward"
-                app:layout_constraintStart_toStartOf="@+id/txt_reward"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/textView9"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -72,20 +81,24 @@ android:id="@+id/layout"
                 android:layout_marginTop="2dp"
                 android:text="Reward"
                 android:textColor="@color/red"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/img_reward" />
 
             <TextView
+                android:id="@+id/textView9"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+
+
                 android:layout_alignParentEnd="true"
-
-
                 android:text="RS 35"
                 android:textColor="@color/black"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/img_reward"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/img_reward"
                 app:layout_constraintTop_toTopOf="@+id/img_reward" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -94,6 +107,7 @@ android:id="@+id/layout"
             android:id="@+id/btnRs100"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_weight="1"
@@ -109,9 +123,13 @@ android:id="@+id/layout"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/wallet"
-                app:layout_constraintEnd_toEndOf="@+id/txtWallet"
-                app:layout_constraintStart_toStartOf="@+id/txtWallet"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/textView5"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/wallet_dashboard"
+                app:tint="@color/primarycolor_primary_1st" />
 
             <TextView
                 android:id="@+id/txtWallet"
@@ -122,20 +140,24 @@ android:id="@+id/layout"
                 android:layout_marginTop="2dp"
                 android:text="Wallet"
                 android:textColor="@color/red"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/img_wallet" />
 
             <TextView
+                android:id="@+id/textView5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+
+
                 android:layout_alignParentEnd="true"
-
-
                 android:text="RS 35"
                 android:textColor="@color/black"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/img_wallet"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/img_wallet"
                 app:layout_constraintTop_toTopOf="@+id/img_wallet" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -159,8 +181,10 @@ android:id="@+id/layout"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
-            app:cardBackgroundColor="@color/card_color_green"
+            app:cardBackgroundColor="@color/ride_color"
             app:cardCornerRadius="10dp"
+            app:cardElevation="0dp"
+            app:cardMaxElevation="0dp"
             app:layout_constraintEnd_toStartOf="@id/cardCommingSoon1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -169,26 +193,39 @@ android:id="@+id/layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="5dp">
+                android:paddingTop="10dp">
 
-                <TextView
-                    android:id="@+id/txtRide"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Ride"
-                    android:textAlignment="center"
-                    android:textColor="@color/white"
-                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="100dp"
                     android:layout_gravity="center_horizontal"
-                    android:src="@drawable/ride"
+                    android:src="@drawable/ridecharacter"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/txtRide" />
+
+                <TextView
+                    android:id="@+id/txtRide"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="1dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="@drawable/ride_txt_shape"
+                    android:elevation="5dp"
+                    android:fontFamily="@font/poppins"
+                    android:paddingStart="18dp"
+                    android:paddingTop="5dp"
+                    android:paddingEnd="18dp"
+                    android:paddingBottom="5dp"
+                    android:text="Ride"
+                    android:textColor="@color/black"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    app:layout_constraintTop_toTopOf="parent" />
+
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -198,8 +235,10 @@ android:id="@+id/layout"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
-            app:cardBackgroundColor="@color/card_color_green"
+            app:cardBackgroundColor="@color/transfer_color"
             app:cardCornerRadius="10dp"
+            app:cardElevation="0dp"
+            app:cardMaxElevation="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/cardRide"
             app:layout_constraintTop_toTopOf="parent">
@@ -208,20 +247,33 @@ android:id="@+id/layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="5dp">
+                android:paddingTop="10dp">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Ride"
-                    android:textAlignment="center"
-                    android:textColor="@color/white" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="100dp"
                     android:layout_gravity="center_horizontal"
-                    android:src="@drawable/coming1" />
+                    android:src="@drawable/transfer" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="1dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="@drawable/transfer_txt_shape"
+                    android:elevation="5dp"
+                    android:fontFamily="@font/poppins"
+                    android:paddingStart="18dp"
+                    android:paddingTop="5dp"
+                    android:paddingEnd="18dp"
+                    android:paddingBottom="5dp"
+                    android:text="Cash Transfer"
+                    android:textColor="@color/black"
+                    android:textSize="10sp"
+
+                    android:textStyle="bold" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -230,8 +282,10 @@ android:id="@+id/layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            app:cardBackgroundColor="@color/card_color_green"
+            app:cardBackgroundColor="@color/delivery_color"
             app:cardCornerRadius="10dp"
+            app:cardElevation="0dp"
+            app:cardMaxElevation="0dp"
             app:layout_constraintEnd_toEndOf="@+id/cardRide"
             app:layout_constraintStart_toStartOf="@+id/cardRide"
             app:layout_constraintTop_toBottomOf="@id/cardRide">
@@ -240,20 +294,32 @@ android:id="@+id/layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="5dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Ride"
-                    android:textAlignment="center"
-                    android:textColor="@color/white" />
-
+                android:paddingTop="10dp"
+                >
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="100dp"
                     android:layout_gravity="center_horizontal"
-                    android:src="@drawable/ride" />
+                    android:src="@drawable/delivery" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="1dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="@drawable/delivery_txt_shape"
+                    android:elevation="5dp"
+                    android:fontFamily="@font/poppins"
+                    android:paddingStart="18dp"
+                    android:paddingTop="5dp"
+                    android:paddingEnd="18dp"
+                    android:paddingBottom="5dp"
+                    android:text="Delivery"
+                    android:textColor="@color/black"
+                    android:textSize="10sp"
+
+                    android:textStyle="bold" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -262,7 +328,7 @@ android:id="@+id/layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            app:cardBackgroundColor="@color/card_color_green"
+            app:cardBackgroundColor="@color/grocery_color"
             app:cardCornerRadius="10dp"
             app:layout_constraintEnd_toEndOf="@+id/cardCommingSoon1"
             app:layout_constraintStart_toStartOf="@+id/cardCommingSoon1"
@@ -272,20 +338,33 @@ android:id="@+id/layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="5dp">
+                android:paddingTop="10dp">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Ride"
-                    android:textAlignment="center"
-                    android:textColor="@color/white" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="100dp"
                     android:layout_gravity="center_horizontal"
-                    android:src="@drawable/ride" />
+                    android:src="@drawable/grocery" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="1dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="@drawable/grocery_txt_shape"
+                    android:elevation="5dp"
+                    android:fontFamily="@font/poppins"
+                    android:paddingStart="18dp"
+                    android:paddingTop="5dp"
+                    android:paddingEnd="18dp"
+                    android:paddingBottom="5dp"
+                    android:text="Grocery"
+                    android:textColor="@color/black"
+                    android:textSize="10sp"
+
+                    android:textStyle="bold" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>

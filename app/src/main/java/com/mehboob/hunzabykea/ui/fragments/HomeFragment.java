@@ -66,6 +66,7 @@ public class HomeFragment extends Fragment {
         binding.topBannerRecycler.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL,false));
         binding.bottomBannerRecycler.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL,false));
         binding.topBannerRecycler.setAdapter(bannerAdapter);
+        binding.bottomBannerRecycler.setPadding(250,0,250,0);
 
 
         binding.bottomBannerRecycler.setAdapter(bannerAdapter);

@@ -11,24 +11,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
+        android:layout_marginTop="52dp"
         android:text="@string/welcome"
         android:textColor="#0CAA0D"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.473"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.11"
-        tools:ignore="MissingConstraints" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-
+        android:layout_marginTop="16dp"
         android:text="@string/enter_the_information_below"
         android:textColor="#090909"
         android:textSize="15sp"
@@ -37,119 +33,205 @@
         app:layout_constraintStart_toStartOf="@+id/textView"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
-
     <TextView
-        android:id="@+id/textView3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="32dp"
-        android:fontFamily="@font/poppins_light"
-        android:text="@string/enter_your_contact_number"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="@+id/linearLayout"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/linearLayout"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
-
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="32dp"
-        android:background="@drawable/backgrond_transparent"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        app:layout_constraintEnd_toEndOf="@+id/btnConnect"
-        app:layout_constraintStart_toStartOf="@+id/btnConnect"
-        app:layout_constraintTop_toBottomOf="@+id/textView3"
-        tools:ignore="Orientation">
-        <com.gbksoft.countrycodepickerlib.CountryCodePicker
-            android:id="@+id/ccp"
-            android:layout_width="wrap_content"
-            app:ccp_showFullName="false"
-
-            app:ccp_autoDetectCountry="true"
-            app:ccp_showPhoneCode="true"
-
-            app:ccp_showNameCode="false"
-
-            android:layout_height="wrap_content" />
-
-        <EditText
-
-            android:id="@+id/edittextNumber"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@null"
-
-            android:hint="@string/_03xxxxxxxx"
-            android:inputType="number"
-            android:padding="10dp"
-            android:paddingTop="15dp"
-
-            android:paddingBottom="15dp"
-            android:textColor="@color/black"
-            android:textSize="18sp" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/btnConnect"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="32dp"
-        android:background="@drawable/getstart_back"
-        android:fontFamily="@font/poppins_light"
-        android:paddingTop="15dp"
-
-        android:paddingBottom="15dp"
-        android:text="@string/connect"
-        android:textAlignment="center"
-        android:textColor="@color/white"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textviewError" />
-
-    <TextView
-        android:id="@+id/textviewError"
-        android:layout_width="180dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:fontFamily="@font/poppins_light"
-
-        android:text="@string/please_enter_a_valid_mobile_number"
-        android:textAlignment="center"
-        android:textColor="#F81212"
-        android:textSize="10sp"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
-
-
-    <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:text="@string/privacy_policy"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="132dp"
+        android:text="@string/enter_your_contact_number"
+        android:textColor="#3A3C3E"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
-        android:textColor="#23D82A"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        app:cardBackgroundColor="#E9EAEB"
+        app:cardCornerRadius="24dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="@+id/textView4"
+        app:layout_constraintTop_toBottomOf="@+id/textView4">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="7dp">
+
+            <com.gbksoft.countrycodepickerlib.CountryCodePicker
+                android:id="@+id/ccp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:ccp_autoDetectCountry="false"
+                app:ccp_showFullName="false"
+                app:ccp_showNameCode="false"
+                app:ccp_textSize="14dp"
+                app:ccp_showPhoneCode="true" />
+
+
+            <EditText
+                android:id="@+id/numberEditBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:background="@null"
+                android:hint="3XXXXXXXX"
+                android:inputType="number"
+                android:padding="10dp"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/errorTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/poppins"
+        android:text="@string/please_enter_a_valid_mobile_number"
+        android:textColor="@color/red"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@+id/cardView3"
+        app:layout_constraintStart_toStartOf="@+id/cardView3"
+        app:layout_constraintTop_toBottomOf="@+id/cardView3" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/connectBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        app:cardBackgroundColor="@color/primarycolor_primary_1st"
+        app:cardCornerRadius="24dp"
+        app:layout_constraintEnd_toEndOf="@+id/cardView3"
+        app:layout_constraintStart_toStartOf="@+id/cardView3"
+        app:layout_constraintTop_toBottomOf="@+id/errorTxt">
+
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/poppins_semibold"
+            android:padding="15dp"
+            android:text="@string/connect"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/privacyBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:fontFamily="@font/poppins"
+        android:text="@string/privacy_policy"
+        android:textColor="@color/primarycolor_primary_1st"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/connectBtn"
+        app:layout_constraintStart_toStartOf="@+id/connectBtn"
+        app:layout_constraintTop_toBottomOf="@+id/connectBtn" />
+
+    <!--    <LinearLayout-->
+    <!--        android:id="@+id/linearLayout"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+
+    <!--        android:layout_marginStart="32dp"-->
+    <!--        android:layout_marginTop="32dp"-->
+    <!--        android:layout_marginEnd="32dp"-->
+    <!--        android:background="@drawable/backgrond_transparent"-->
+    <!--        android:paddingTop="10dp"-->
+    <!--        android:paddingBottom="10dp"-->
+    <!--        app:layout_constraintEnd_toEndOf="@+id/btnConnect"-->
+    <!--        app:layout_constraintStart_toStartOf="@+id/btnConnect"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/textView3"-->
+    <!--        tools:ignore="Orientation">-->
+    <!--        <com.gbksoft.countrycodepickerlib.CountryCodePicker-->
+    <!--            android:id="@+id/ccp"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            app:ccp_showFullName="false"-->
+
+    <!--            app:ccp_autoDetectCountry="true"-->
+    <!--            app:ccp_showPhoneCode="true"-->
+
+    <!--            app:ccp_showNameCode="false"-->
+
+    <!--            android:layout_height="wrap_content" />-->
+
+    <!--        <EditText-->
+
+    <!--            android:id="@+id/edittextNumber"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:background="@null"-->
+
+    <!--            android:hint="3XXXXXXXX"-->
+    <!--            android:inputType="number"-->
+    <!--            android:padding="10dp"-->
+    <!--            android:textColor="@color/black"-->
+    <!--            android:textSize="18sp"-->
+    <!--            tools:ignore="HardcodedText" />-->
+    <!--    </LinearLayout>-->
+
+    <!--    <TextView-->
+    <!--        android:id="@+id/btnConnect"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginStart="32dp"-->
+    <!--        android:layout_marginTop="32dp"-->
+    <!--        android:layout_marginEnd="32dp"-->
+    <!--        android:background="@drawable/getstart_back"-->
+    <!--        android:fontFamily="@font/poppins_light"-->
+    <!--        android:paddingTop="15dp"-->
+
+    <!--        android:paddingBottom="15dp"-->
+    <!--        android:text="@string/connect"-->
+    <!--        android:textAlignment="center"-->
+    <!--        android:textColor="@color/white"-->
+    <!--        android:textSize="16sp"-->
+    <!--        android:textStyle="bold"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/textviewError" />-->
+
+    <!--    <TextView-->
+    <!--        android:id="@+id/textviewError"-->
+    <!--        android:layout_width="180dp"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginTop="32dp"-->
+    <!--        android:fontFamily="@font/poppins_light"-->
+
+    <!--        android:text="@string/please_enter_a_valid_mobile_number"-->
+    <!--        android:textAlignment="center"-->
+    <!--        android:textColor="#F81212"-->
+    <!--        android:textSize="10sp"-->
+    <!--        android:visibility="invisible"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />-->
+
+
+    <!--    <TextView-->
+    <!--        android:id="@+id/textView5"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginBottom="32dp"-->
+    <!--        android:text="@string/privacy_policy"-->
+
+    <!--        android:textColor="#23D82A"-->
+    <!--        android:textSize="16sp"-->
+    <!--        android:textStyle="bold"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintHorizontal_bias="0.498"-->
+    <!--        app:layout_constraintStart_toStartOf="parent" />-->
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

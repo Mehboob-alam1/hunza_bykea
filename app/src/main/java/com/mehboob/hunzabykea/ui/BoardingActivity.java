@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.mehboob.hunzabykea.R;
 import com.mehboob.hunzabykea.databinding.ActivityBoardingBinding;
 import com.mehboob.hunzabykea.ui.adapters.ViewPagerAdapter;
@@ -23,6 +24,7 @@ public class BoardingActivity extends AppCompatActivity {
     private ViewPagerAdapter adapter;
 
     private ArrayList<ViewPagerClass> list;
+    FirebaseAuth auth;
 
 
     @Override
@@ -30,6 +32,18 @@ public class BoardingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityBoardingBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        auth = FirebaseAuth.getInstance();
+
+        if (auth.getCurrentUser() != null) {
+            binding.imageview.setVisibility(View.VISIBLE);
+            binding.textView2.setVisibility(View.VISIBLE);
+            binding.btnStart.setVisibility(View.GONE);
+            binding.btnNext.setVisibility(View.GONE);
+            binding.dotsIndicator.setVisibility(View.GONE);
+            startActivity(new Intent(BoardingActivity.this, DashboardActivity.class));
+            finish();
+        }
 
 
         list = new ArrayList<>();
@@ -42,7 +56,6 @@ public class BoardingActivity extends AppCompatActivity {
 
         binding.btnStart.setOnClickListener(view -> {
             binding.imageview.setVisibility(View.GONE);
-
             binding.textView2.setVisibility(View.GONE);
             binding.btnStart.setVisibility(View.INVISIBLE);
             binding.btnNext.setVisibility(View.VISIBLE);
@@ -55,39 +68,39 @@ public class BoardingActivity extends AppCompatActivity {
             binding.dotsIndicator.attachTo(binding.viewpager2);
 
         });
-binding.viewpager2.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-    @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-        switch (position){
-            case 0:
-                controlButtons();
-                break;
-            case 1:
-                controlButtons();
-                break;
-            case 2:
-                binding.btnNext.setVisibility(View.INVISIBLE);
-                binding.btnStart.setVisibility(View.VISIBLE);
+        binding.viewpager2.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                switch (position) {
+                    case 0:
+                        controlButtons();
+                        break;
+                    case 1:
+                        controlButtons();
+                        break;
+                    case 2:
+                        binding.btnNext.setVisibility(View.INVISIBLE);
+                        binding.btnStart.setVisibility(View.VISIBLE);
 
-                binding.btnStart.setOnClickListener(v -> {
-                   // Intent intent = new Intent(BoardingActivity.this, LoginActivity.class);
-            startActivity(new Intent(BoardingActivity.this,LoginActivity.class));
-                });
-        }
+                        binding.btnStart.setOnClickListener(v -> {
+                            // Intent intent = new Intent(BoardingActivity.this, LoginActivity.class);
+                            startActivity(new Intent(BoardingActivity.this, LoginActivity.class));
+                        });
+                }
 
 
-    }
+            }
 
-    @Override
-    public void onPageSelected(int position) {
+            @Override
+            public void onPageSelected(int position) {
 
-    }
+            }
 
-    @Override
-    public void onPageScrollStateChanged(int state) {
+            @Override
+            public void onPageScrollStateChanged(int state) {
 
-    }
-});
+            }
+        });
         binding.btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,8 +116,8 @@ binding.viewpager2.addOnPageChangeListener(new ViewPager.OnPageChangeListener() 
 
     private void controlButtons() {
 
-            binding.btnNext.setVisibility(View.VISIBLE);
-            binding.btnStart.setVisibility(View.INVISIBLE);
+        binding.btnNext.setVisibility(View.VISIBLE);
+        binding.btnStart.setVisibility(View.INVISIBLE);
 
     }
 

@@ -15,17 +15,11 @@
 
         android:title="Booking" />
 
-
     <item
         android:id="@+id/nav_walllet"
         android:title=" Wallet"
         android:icon="@drawable/wallet"/>
 
-    <item
-        android:id="@+id/nav_rate"
-        android:title="Rates"
-        android:icon="@drawable/star"
-        />
     <item
         android:id="@+id/nav_about"
         android:title="About Us"
@@ -35,5 +29,6 @@
         android:id="@+id/nav_contact"
         android:title="Contact Us"
         android:icon="@drawable/contact"/>
+
 
 </menu>

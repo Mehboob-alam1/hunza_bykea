@@ -1,48 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/appbar"
     android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
-    android:id="@+id/appbar">
+    android:layout_height="?attr/actionBarSize">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="center_vertical"
 
         >
 
         <ImageView
-            android:id="@+id/nav_menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
-            android:layout_marginStart="16dp"
-            android:src="@drawable/bars"
+            android:id="@+id/navmenu"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:padding="5dp"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/menuline"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/primarycolor_primary_1st" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/nav_menu"
+            android:layout_toEndOf="@id/navmenu"
             android:text="Hunza Bykea"
             android:textColor="@color/green_700"
-            app:layout_constraintBottom_toBottomOf="@+id/nav_menu"
+            app:layout_constraintBottom_toBottomOf="@+id/navmenu"
             app:layout_constraintEnd_toStartOf="@+id/imageView"
-            app:layout_constraintStart_toEndOf="@+id/nav_menu"
-            app:layout_constraintTop_toTopOf="@+id/nav_menu" />
+            app:layout_constraintStart_toEndOf="@+id/navmenu"
+            app:layout_constraintTop_toTopOf="@+id/navmenu" />
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="14.25dp"
+            android:layout_height="14.25dp"
             android:layout_marginEnd="16dp"
-            android:src="@drawable/telephone"
+            android:src="@drawable/calling"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/primarycolor_primary_1st" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

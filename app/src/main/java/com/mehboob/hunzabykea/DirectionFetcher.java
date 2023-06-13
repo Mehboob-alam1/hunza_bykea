@@ -20,6 +20,7 @@ import okhttp3.Response;
 public class DirectionFetcher implements Runnable {
         private final String apiKey;
         private final LatLng origin;
+
         private final LatLng destination;
         private final OnDirectionsFetchedListener listener;
 

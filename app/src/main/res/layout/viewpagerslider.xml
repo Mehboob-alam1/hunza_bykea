@@ -48,14 +48,5 @@
 
         />
 
-    <LinearLayout
-        android:id="@+id/indicator_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="40dp"
-        android:gravity="center"
-        android:layout_gravity="center"
-        />
 
 </LinearLayout>

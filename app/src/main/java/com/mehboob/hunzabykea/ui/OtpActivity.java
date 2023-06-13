@@ -21,6 +21,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 
+import com.mehboob.hunzabykea.ProfileActivity;
 import com.mehboob.hunzabykea.databinding.ActivityOtpBinding;
 
 import java.util.concurrent.TimeUnit;
@@ -93,7 +94,10 @@ public class OtpActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
 
-                                startActivity(new Intent(OtpActivity.this, DashboardActivity.class));
+                                Intent proIntent = new Intent(OtpActivity.this,ProfileActivity.class);
+                                proIntent.putExtra("pronumber",number);
+                                startActivity(proIntent);
+//                                startActivity(new Intent(OtpActivity.this, DashboardActivity.class));
                                 finish();
 
                             } else {

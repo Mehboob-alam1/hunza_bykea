@@ -4,7 +4,13 @@
     <color name="green_200">#58FD59</color>
     <color name="green_500">#12E814</color>
     <color name="green_700">#14CA15</color>
-    <color name="card_color_green">#85D486</color>
+<!--    <color name="card_color_green">#85D486</color>-->
+    <color name="ride_color">#800CAA0D</color>
+    <color name="transfer_color">#80FF5F55</color>
+    <color name="delivery_color">#DDE7F9</color>
+    <color name="grocery_color">#FFE9D4</color>
+    <color name="amount_bg_color">#EDEDED</color>
+
     <color name="red">#FF5F55</color>
 <!--    <color name="purple_200">#FFBB86FC</color>-->
 <!--    <color name="purple_500">#FF6200EE</color>-->
@@ -25,4 +31,15 @@
     <color name="colorTextAction">#37474F</color>
     <color name="colorButton">#000000</color>
     <color name="colorSeparator">#f2f2f2</color>
+
+    //hunza bykea
+
+    <color name="blackclrHunza">#333030</color>
+    <color name="blackclrHunza2">#4E4E4E</color>
+    <color name="blackclrHunza3">#757575</color>
+    <color name="hunzaSecondaryColor">#C4C4C4</color>
+
+    <color name="primarycolor_primary_1st">#0CAA0D</color>
+
+
 </resources>

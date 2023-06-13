@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.google.firebase.FirebaseException;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.mehboob.hunzabykea.R;
@@ -26,6 +27,7 @@ public class LoginActivity extends AppCompatActivity {
     private ActivityLoginBinding binding;
     private int state = 1;
     private ProgressDialog progressDialog;
+    FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +35,16 @@ public class LoginActivity extends AppCompatActivity {
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
 
         setContentView(binding.getRoot());
-progressDialog= new ProgressDialog(this);
-        binding.edittextNumber.addTextChangedListener(new TextWatcher() {
+        progressDialog = new ProgressDialog(this);
+
+        auth = FirebaseAuth.getInstance();
+
+//        if (auth.getCurrentUser() !=null){
+//            startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
+//        }
+
+
+        binding.numberEditBox.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -42,7 +52,7 @@ progressDialog= new ProgressDialog(this);
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    changeButtonState(0);
+                changeButtonState(0);
 
             }
 
@@ -51,7 +61,7 @@ progressDialog= new ProgressDialog(this);
 
             }
         });
-        binding.btnConnect.setOnClickListener(new View.OnClickListener() {
+        binding.connectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -63,11 +73,11 @@ progressDialog= new ProgressDialog(this);
 
     private void checkValidation() {
 
-        if (binding.edittextNumber.getText().toString().isEmpty() || binding.edittextNumber
+        if (binding.numberEditBox.getText().toString().isEmpty() || binding.numberEditBox
                 .getText().toString().trim().length() != 10) {
             Toast.makeText(this, "Enter a Valid Number ", Toast.LENGTH_SHORT).show();
 
-            binding.textviewError.setVisibility(View.VISIBLE);
+            binding.errorTxt.setVisibility(View.VISIBLE);
 
             changeButtonState(1);
         } else {
@@ -75,16 +85,16 @@ progressDialog= new ProgressDialog(this);
 
             changeButtonState(0);
 
-      String countryCode=      binding.ccp.getSelectedCountryCode();
-            String number = binding.edittextNumber.getText().toString();
-            String phoneNumber = "+"+countryCode+number;
-sendOtp(phoneNumber);
+            String countryCode = binding.ccp.getSelectedCountryCode();
+            String number = binding.numberEditBox.getText().toString();
+            String phoneNumber = "+" + countryCode + number;
+            sendOtp(phoneNumber);
         }
     }
 
     private void sendOtp(String phoneNumber) {
         progressDialog.setTitle("Sending Otp");
-        progressDialog.setMessage("PLease Wait");
+        progressDialog.setMessage("Please Wait");
         progressDialog.setCancelable(false);
         progressDialog.show();
 
@@ -96,13 +106,12 @@ sendOtp(phoneNumber);
                     public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
 
 
-
                     }
 
                     @Override
                     public void onVerificationFailed(@NonNull FirebaseException e) {
 
-                        Log.d("Exception",e.getMessage());
+                        Log.d("Exception", e.getMessage());
                         progressDialog.dismiss();
                     }
 
@@ -112,9 +121,9 @@ sendOtp(phoneNumber);
 
                         progressDialog.dismiss();
 
-                        Intent intent = new Intent(LoginActivity.this,OtpActivity.class);
-                        intent.putExtra("verificationID" ,s);
-                        intent.putExtra("number",phoneNumber);
+                        Intent intent = new Intent(LoginActivity.this, OtpActivity.class);
+                        intent.putExtra("verificationID", s);
+                        intent.putExtra("number", phoneNumber);
                         startActivity(intent);
 
 
@@ -124,9 +133,9 @@ sendOtp(phoneNumber);
 
     private void changeButtonState(int state) {
         if (state == 0) {
-            binding.btnConnect.setBackground(ContextCompat.getDrawable(this, R.drawable.getstart_back));
+            binding.connectBtn.setBackground(ContextCompat.getDrawable(this, R.drawable.getstart_back));
         } else {
-            binding.btnConnect.setBackground(ContextCompat.getDrawable(this, R.drawable.grey_back));
+            binding.connectBtn.setBackground(ContextCompat.getDrawable(this, R.drawable.grey_back));
         }
 
     }

@@ -5,89 +5,74 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/rectangle"
-
+        android:layout_height="180dp"
+        android:background="@drawable/header_bg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ImageView
+            android:id="@+id/userPictureHeader"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:layout_gravity="center_vertical"
+
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
             android:background="@drawable/profile_back"
+            android:backgroundTint="@color/white"
+            android:scaleType="fitXY"
+            android:src="@drawable/messi"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            >
-            <ImageView
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="20dp"
-                android:src="@drawable/messi"
-                android:scaleType="fitXY"
-     android:backgroundTint="@color/white"
-                android:background="@drawable/profile_back"
-
-                />
-
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/usernameheader"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginStart="20dp"
             android:layout_gravity="center_vertical"
-            >
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              >
-              <TextView
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:layout_gravity="center_vertical"
-                  android:text="Basit Murad"
-                  android:textSize="16sp"
-                  android:fontFamily="@font/poppins_light"
-                  android:textColor="@color/white"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/poppins_light"
 
-                  android:layout_weight="1"
-                  />
-              <ImageView
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:src="@drawable/update"
-                  android:layout_marginEnd="20dp"
-                  android:layout_gravity="center_vertical"
-                  android:background="@drawable/circle"
-                  android:padding="5dp"
+            android:text="Basit Murad"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@+id/useremailHeader"
+            app:layout_constraintStart_toEndOf="@+id/userPictureHeader"
+            app:layout_constraintTop_toTopOf="@+id/userPictureHeader" />
 
-                  />
+        <TextView
+            android:id="@+id/useremailHeader"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_light"
+            android:text="abcdef2344@gmail.com"
+            android:textColor="@color/white"
 
 
-          </LinearLayout>
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@+id/userPictureHeader"
+            app:layout_constraintStart_toStartOf="@+id/usernameheader"
+            app:layout_constraintTop_toBottomOf="@+id/usernameheader" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="abcdef2344@gmail.com"
-                android:textColor="@color/white"
-                android:fontFamily="@font/poppins_light"
-                android:textSize="12sp"
+        <ImageView
+            android:id="@+id/editbtnHeader"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="16dp"
 
-
-                />
-
-
-        </LinearLayout>
-
-    </LinearLayout>
-
+            android:background="@drawable/circle"
+            android:padding="5dp"
+            android:src="@drawable/update"
+            app:layout_constraintBottom_toBottomOf="@+id/usernameheader"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/usernameheader" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

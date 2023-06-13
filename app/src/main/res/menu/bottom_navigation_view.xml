@@ -3,31 +3,28 @@
 
     <item
         android:id="@+id/bottom_home"
-        android:title="Home"
-        android:icon="@drawable/home1"
-
+        android:icon="@drawable/f_home"
+        android:title="@string/home"
         />
 
     <item
         android:id="@+id/bottom_booking"
-        android:icon="@drawable/booking1"
-
-        android:title="Booking" />
-
-
-    <item
-        android:id="@+id/bottom_wallet"
-        android:title=" Wallet"
-        android:icon="@drawable/wallet1"/>
+        android:icon="@drawable/bottom_booking_icon"
+        android:title="@string/booking" />
 
     <item
         android:id="@+id/bottom_notification"
-        android:title="Notifications"
-        android:icon="@drawable/notification1"
+        android:icon="@drawable/notification"
+        android:title="@string/notifications"
         />
+    <item
+        android:id="@+id/bottom_wallet"
+        android:icon="@drawable/wallet_f"
+        android:title="@string/wallet" />
+
 
     <item
         android:id="@+id/bottom_account"
-        android:title="Account"
-        android:icon="@drawable/account1"/>
+        android:icon="@drawable/user"
+        android:title="Account" />
 </menu>

@@ -158,6 +158,8 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
         Mapbox.getInstance(this, getResources().getString(R.string.mapbox_access_token));
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+
         sharedPref = new SharedPref(this);
         permissions.add(ACCESS_FINE_LOCATION);
         permissions.add(ACCESS_COARSE_LOCATION);
@@ -175,68 +177,65 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
             if (permissionsToRequest.size() > 0)
                 requestPermissions((String[]) permissionsToRequest.toArray(new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
         }
-        binding.mapView.getMapAsync(new com.mapbox.mapboxsdk.maps.OnMapReadyCallback() {
-            @Override
-            public void onMapReady(@NonNull com.mapbox.mapboxsdk.maps.MapboxMap mapboxMap) {
-                MapsActivity.this.mapboxMap = mapboxMap;
-                mapboxMap.setStyle(Style.OUTDOORS, new Style.OnStyleLoaded() {
-                    @Override
-                    public void onStyleLoaded(@NonNull Style style) {
-                        mapboxMap.getUiSettings().setAttributionEnabled(false);
-                        //     enableLocationComponent(style);
+        binding.mapView.getMapAsync(mapboxMap -> {
+            MapsActivity.this.mapboxMap = mapboxMap;
+            mapboxMap.setStyle(Style.OUTDOORS, new Style.OnStyleLoaded() {
+                @Override
+                public void onStyleLoaded(@NonNull Style style) {
+                    mapboxMap.getUiSettings().setAttributionEnabled(false);
+                    //     enableLocationComponent(style);
 
 
-                        enableLocations();
+                    enableLocations();
 
 
-                        showBoundsArea(style);
-                        MapsActivity.this.mapboxMap.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
-                            @Override
-                            public boolean onMapClick(@NonNull LatLng latLng) {
-                                destination = Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude());
+                    showBoundsArea(style);
+                    MapsActivity.this.mapboxMap.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
+                        @Override
+                        public boolean onMapClick(@NonNull LatLng latLng) {
+                            destination = Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude());
 
 
-                                if (!RESTRICTED_BOUNDS_AREA.contains(latLng)) {
-                                    Toast.makeText(MapsActivity.this, "No service area", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    getRoute(mapboxMap, origin, destination);
-                                }
-
-
-                                return true;
+                            if (!RESTRICTED_BOUNDS_AREA.contains(latLng)) {
+                                Toast.makeText(MapsActivity.this, "No service area", Toast.LENGTH_SHORT).show();
+                            } else {
+                                getRoute(mapboxMap, origin, destination);
                             }
 
 
-                        });
-
-                        style.addImage("red-pin-icon-id", BitmapUtils.getBitmapFromDrawable(ContextCompat.getDrawable(MapsActivity.this, R.drawable.ic_baseline_place_24)));
-                        style.addLayer(new SymbolLayer("icon-layer-id", "icon-source-id").withProperties(
-                                iconImage("red-pin-icon-id"),
-                                iconIgnorePlacement(true),
-                                iconAllowOverlap(true),
-                                iconOffset(new Float[]{0f, -0f})
-                        ));
-                        style.addSource(new GeoJsonSource("route-source-id"));
-                        LineLayer routeLayer = new LineLayer("route-layer-id", "route-source-id");
-
-                        routeLayer.setProperties(
-                                lineCap(Property.LINE_CAP_ROUND),
-                                lineJoin(Property.LINE_JOIN_ROUND),
-                                lineWidth(3f),
-                                lineColor(Color.parseColor("#14CA15"))
-                        );
-                        style.addLayer(routeLayer);
-
-                        mapboxMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(origin.latitude(), origin.longitude()), 11.7f));
-                        Point userDest = Point.fromLngLat(107.6848254, -6.9218571);
-                        Point userPoint = Point.fromLngLat(105.6848254, -9.9218571);
-                        getRoute(mapboxMap, userPoint, userDest);
+                            return true;
+                        }
 
 
+                    });
 
-                    }
-                });
-            }
+                    style.addImage("red-pin-icon-id", BitmapUtils.getBitmapFromDrawable(ContextCompat.getDrawable(MapsActivity.this, R.drawable.ic_baseline_place_24)));
+                    style.addLayer(new SymbolLayer("icon-layer-id", "icon-source-id").withProperties(
+                            iconImage("red-pin-icon-id"),
+                            iconIgnorePlacement(true),
+                            iconAllowOverlap(true),
+                            iconOffset(new Float[]{0f, -0f})
+                    ));
+                    style.addSource(new GeoJsonSource("route-source-id"));
+                    LineLayer routeLayer = new LineLayer("route-layer-id", "route-source-id");
+
+                    routeLayer.setProperties(
+                            lineCap(Property.LINE_CAP_ROUND),
+                            lineJoin(Property.LINE_JOIN_ROUND),
+                            lineWidth(3f),
+                            lineColor(Color.parseColor("#14CA15"))
+                    );
+                    style.addLayer(routeLayer);
+
+                    mapboxMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(origin.latitude(), origin.longitude()), 11.7f));
+                    Point userDest = Point.fromLngLat(107.6848254, -6.9218571);
+                    Point userPoint = Point.fromLngLat(105.6848254, -9.9218571);
+                    getRoute(mapboxMap, userPoint, userDest);
+
+
+
+                }
+            });
         });
 
         binding.etSearchLocation.setOnClickListener(v -> {
