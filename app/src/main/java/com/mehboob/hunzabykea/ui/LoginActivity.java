@@ -119,7 +119,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onCodeSent(@NonNull String s, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
 
 
-                        progressDialog.dismiss();
+                        //progressDialog.dismiss();
 
                         Intent intent = new Intent(LoginActivity.this, OtpActivity.class);
                         intent.putExtra("verificationID", s);

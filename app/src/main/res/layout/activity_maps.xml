@@ -13,15 +13,13 @@
 <!--    android:layout_height="match_parent"/>-->
 
 
-
-
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="52dp"
         app:cardCornerRadius="8dp"
 
         app:layout_constraintEnd_toEndOf="parent"
@@ -43,16 +41,16 @@
                 android:src="@drawable/ic_baseline_search_24" />
 
             <TextView
+                android:id="@+id/etSearchLocation"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/etSearchLocation"
+                android:layout_marginStart="8dp"
                 android:layout_toEndOf="@+id/serch_img"
                 android:background="@null"
-                android:textSize="12sp"
-                android:layout_marginStart="8dp"
-                android:gravity="center_vertical"
                 android:fontFamily="@font/poppins_light"
-                android:hint="Search where you go" />
+                android:gravity="center_vertical"
+                android:hint="Search where you go"
+                android:textSize="12sp" />
 
 
         </RelativeLayout>

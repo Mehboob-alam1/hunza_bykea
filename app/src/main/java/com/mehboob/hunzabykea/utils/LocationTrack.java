@@ -17,6 +17,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 
+import com.mehboob.hunzabykea.MapsActivity;
+
 public class LocationTrack extends Service implements LocationListener {
 
     private final Context mContext;
@@ -202,7 +204,8 @@ public class LocationTrack extends Service implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-
+this.latitude =location.getLatitude();
+this.longitude=location.getLongitude();
     }
 
     @Override
@@ -212,11 +215,12 @@ public class LocationTrack extends Service implements LocationListener {
 
     @Override
     public void onProviderEnabled(String s) {
-
+        Toast.makeText(mContext, "Location Enabled", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onProviderDisabled(String s) {
-
+        Toast.makeText(mContext, "Gps provider disabled", Toast.LENGTH_SHORT).show();
+        MapsActivity.getInstance().DialogShow();
     }
 }
