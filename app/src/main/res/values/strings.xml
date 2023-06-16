@@ -47,6 +47,12 @@ Let’s make your day great with Hunza Bikeya!</string>
     <string name="booking">Booking</string>
     <string name="wallet">Wallet</string>
     <string name="notifications">Notifications</string>
+    <string name="active_now">Active Now</string>
+    <string name="completed">Completed</string>
+    <string name="cancelled">Cancelled</string>
+    <string name="my_bookings">My Bookings</string>
+    <string name="tab2">Tab2</string>
+    <string name="date_amp_time"><![CDATA[Date & Time]]></string>
 
 
 </resources>

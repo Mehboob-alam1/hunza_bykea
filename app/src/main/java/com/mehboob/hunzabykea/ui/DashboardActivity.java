@@ -131,7 +131,7 @@ public class DashboardActivity extends AppCompatActivity {
                         callFragment(new HomeFragment());
                         break;
                     case R.id.bottom_booking:
-                        binding.appBar.appbar.setVisibility(View.VISIBLE);
+                        binding.appBar.appbar.setVisibility(View.GONE);
                         callFragment(new BookingFragment());
                         break;
                     case R.id.bottom_wallet:
