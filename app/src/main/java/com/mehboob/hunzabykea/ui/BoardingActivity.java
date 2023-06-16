@@ -36,10 +36,11 @@ public class BoardingActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
 
         if (auth.getCurrentUser() != null) {
-            binding.imageview.setVisibility(View.VISIBLE);
-            binding.textView2.setVisibility(View.VISIBLE);
             binding.btnStart.setVisibility(View.GONE);
             binding.btnNext.setVisibility(View.GONE);
+            binding.imageview.setVisibility(View.VISIBLE);
+            binding.textView2.setVisibility(View.VISIBLE);
+
             binding.dotsIndicator.setVisibility(View.GONE);
             startActivity(new Intent(BoardingActivity.this, DashboardActivity.class));
             finish();

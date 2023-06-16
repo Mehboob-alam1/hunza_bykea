@@ -31,7 +31,7 @@ import in.aabhasjindal.otptextview.OTPListener;
 public class OtpActivity extends AppCompatActivity {
     private ActivityOtpBinding binding;
     private String number, verificatonID;
-
+//
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
