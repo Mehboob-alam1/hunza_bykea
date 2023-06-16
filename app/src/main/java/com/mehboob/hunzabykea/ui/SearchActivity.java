@@ -13,6 +13,7 @@ import com.mehboob.hunzabykea.databinding.ActivitySearchBinding;
 import com.mehboob.hunzabykea.ui.adapters.PredefinedLocationsAdapter;
 import com.mehboob.hunzabykea.ui.models.ExistingLocations;
 import com.mehboob.hunzabykea.ui.models.LocationModel;
+import com.mehboob.hunzabykea.utils.SharedPref;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,11 +23,12 @@ public class SearchActivity extends AppCompatActivity{
     private PredefinedLocationsAdapter adapter;
     private ArrayList<ExistingLocations> list;
     private ArrayList<ExistingLocations> filterList1;
+    private SharedPref sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+   sharedPref=new SharedPref(this);
         binding = ActivitySearchBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -103,7 +105,9 @@ public class SearchActivity extends AppCompatActivity{
         adapter.setOnItemClickListener(new PredefinedLocationsAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                Toast.makeText(SearchActivity.this, "Clicked successfully", Toast.LENGTH_SHORT).show();
+
+
+                finish();
             }
         });
 

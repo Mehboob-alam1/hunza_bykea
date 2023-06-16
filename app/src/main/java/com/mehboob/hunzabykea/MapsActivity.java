@@ -14,38 +14,55 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineCap;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineJoin;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth;
+import static com.mehboob.hunzabykea.R.drawable.location;
+import static com.mehboob.hunzabykea.R.drawable.my_location_marker;
 
 
 import androidx.annotation.NonNull;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.annotation.SuppressLint;
 
 import android.annotation.TargetApi;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Icon;
 import android.icu.number.Precision;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 
+import com.akexorcist.googledirection.model.Line;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 
 import com.google.android.gms.maps.OnMapReadyCallback;
 
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mapbox.android.core.permissions.PermissionsListener;
@@ -64,6 +81,7 @@ import com.mapbox.geojson.Polygon;
 import com.mapbox.mapboxsdk.Mapbox;
 
 
+import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
@@ -77,6 +95,7 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
 
+
 import com.mapbox.mapboxsdk.style.layers.FillLayer;
 import com.mapbox.mapboxsdk.style.layers.LineLayer;
 import com.mapbox.mapboxsdk.style.layers.Property;
@@ -85,8 +104,10 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.mapboxsdk.utils.BitmapUtils;
 
 import com.mehboob.hunzabykea.databinding.ActivityMapsBinding;
+import com.mehboob.hunzabykea.ui.MainActivity;
 import com.mehboob.hunzabykea.ui.SearchActivity;
 import com.mehboob.hunzabykea.ui.models.LocationModel;
+import com.mehboob.hunzabykea.utils.LocationService;
 import com.mehboob.hunzabykea.utils.LocationTrack;
 import com.mehboob.hunzabykea.utils.SharedPref;
 
@@ -112,12 +133,14 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
     protected LocationManager locationManager;
 
     private String searchedLocation;
-
+    boolean gps_enabled = false;
+    boolean network_enabled = false;
     //
-
+    private BottomSheetDialog dialog;
     List<Polygon> serviceAreaPolygons = new ArrayList<>();
 
-
+    private LocationRequest locationRequest;
+    FusedLocationProviderClient fusedLocationProviderClient;
     boolean isWithinServiceArea;
 
     private static final String TAG = "MapsActivity";
@@ -131,9 +154,21 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
 
     private final static int ALL_PERMISSIONS_RESULT = 101;
     LocationTrack locationTrack;
-    String uerSearchedLoc;
+
     private Point origin, destination;
     MarkerOptions markerOptions;
+
+    static MapsActivity instance;
+// User location
+
+    LocationModel mLocation;
+
+    double latitude,longitude;
+
+    public static MapsActivity getInstance() {
+        return instance;
+    }
+
     private static final LatLngBounds RESTRICTED_BOUNDS_AREA = new LatLngBounds.Builder()
             .include(Constants.BOUND_CORNER_NW)
             .include(Constants.BOUND_CORNER_NW1)
@@ -149,8 +184,7 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
 
     private final List<List<Point>> points = new ArrayList<>();
     private final List<Point> outerPoints = new ArrayList<>();
-    Gson gson;
-    LocationModel locationModel;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,17 +192,38 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
         Mapbox.getInstance(this, getResources().getString(R.string.mapbox_access_token));
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-
         sharedPref = new SharedPref(this);
         permissions.add(ACCESS_FINE_LOCATION);
         permissions.add(ACCESS_COARSE_LOCATION);
 
 
+
+//        mapView.onCreate(savedInstanceState);
         permissionsToRequest = findUnAskedPermissions(permissions);
 
         binding.btnMyLocation.setOnClickListener(v -> {
-            enableLocations();
+
+            if (isLocationEnabled()) {
+
+
+               enableLocations();
+            } else {
+                new AlertDialog.Builder(this)
+                        .setTitle("Please activate location")
+                        .setMessage("Click ok to goto settings else exit.")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                startActivity(intent);
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                System.exit(0);
+                            }
+                        })
+                        .show();
+            }
 
         });
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -177,69 +232,75 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
             if (permissionsToRequest.size() > 0)
                 requestPermissions((String[]) permissionsToRequest.toArray(new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
         }
-        binding.mapView.getMapAsync(mapboxMap -> {
-            MapsActivity.this.mapboxMap = mapboxMap;
-            mapboxMap.setStyle(Style.OUTDOORS, new Style.OnStyleLoaded() {
+        if (isLocationEnabled()) {
+            binding.mapView.getMapAsync(new com.mapbox.mapboxsdk.maps.OnMapReadyCallback() {
                 @Override
-                public void onStyleLoaded(@NonNull Style style) {
-                    mapboxMap.getUiSettings().setAttributionEnabled(false);
-                    //     enableLocationComponent(style);
-
-
-                    enableLocations();
-
-
-                    showBoundsArea(style);
-                    MapsActivity.this.mapboxMap.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
+                public void onMapReady(@NonNull com.mapbox.mapboxsdk.maps.MapboxMap mapboxMap) {
+                    MapsActivity.this.mapboxMap = mapboxMap;
+                    mapboxMap.setStyle(Style.OUTDOORS, new Style.OnStyleLoaded() {
                         @Override
-                        public boolean onMapClick(@NonNull LatLng latLng) {
-                            destination = Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude());
+                        public void onStyleLoaded(@NonNull Style style) {
+//                        mapboxMap.getUiSettings().setAttributionEnabled(false);
+                            //     enableLocationComponent(style);
 
 
-                            if (!RESTRICTED_BOUNDS_AREA.contains(latLng)) {
-                                Toast.makeText(MapsActivity.this, "No service area", Toast.LENGTH_SHORT).show();
-                            } else {
-                                getRoute(mapboxMap, origin, destination);
-                            }
+                            enableLocations();
+//updateLocation();
+
+                            showBoundsArea(style);
+                            MapsActivity.this.mapboxMap.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
+                                @Override
+                                public boolean onMapClick(@NonNull LatLng latLng) {
+                                    destination = Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude());
 
 
-                            return true;
+                                    if (!RESTRICTED_BOUNDS_AREA.contains(latLng)) {
+                                        Toast.makeText(MapsActivity.this, "No service area", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        getRoute(mapboxMap, origin, destination);
+                                    }
+
+
+                                    return true;
+                                }
+
+
+                            });
+
+                            style.addImage("red-pin-icon-id", BitmapUtils.getBitmapFromDrawable(ContextCompat.getDrawable(MapsActivity.this, R.drawable.ic_baseline_place_24)));
+                            style.addLayer(new SymbolLayer("icon-layer-id", "icon-source-id").withProperties(
+                                    iconImage("red-pin-icon-id"),
+                                    iconIgnorePlacement(true),
+                                    iconAllowOverlap(true),
+                                    iconOffset(new Float[]{0f, -0f})
+                            ));
+                            style.addSource(new GeoJsonSource("route-source-id"));
+                            LineLayer routeLayer = new LineLayer("route-layer-id", "route-source-id");
+
+                            routeLayer.setProperties(
+                                    lineCap(Property.LINE_CAP_ROUND),
+                                    lineJoin(Property.LINE_JOIN_ROUND),
+                                    lineWidth(3f),
+                                    lineColor(Color.parseColor("#14CA15"))
+                            );
+                            style.addLayer(routeLayer);
+
+                            mapboxMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(origin.latitude(), origin.longitude()), 11.7f));
+                            Point userDest = Point.fromLngLat(107.6848254, -6.9218571);
+                            Point userPoint = Point.fromLngLat(105.6848254, -9.9218571);
+                            getRoute(mapboxMap, userPoint, userDest);
+
+
                         }
-
-
                     });
-
-                    style.addImage("red-pin-icon-id", BitmapUtils.getBitmapFromDrawable(ContextCompat.getDrawable(MapsActivity.this, R.drawable.ic_baseline_place_24)));
-                    style.addLayer(new SymbolLayer("icon-layer-id", "icon-source-id").withProperties(
-                            iconImage("red-pin-icon-id"),
-                            iconIgnorePlacement(true),
-                            iconAllowOverlap(true),
-                            iconOffset(new Float[]{0f, -0f})
-                    ));
-                    style.addSource(new GeoJsonSource("route-source-id"));
-                    LineLayer routeLayer = new LineLayer("route-layer-id", "route-source-id");
-
-                    routeLayer.setProperties(
-                            lineCap(Property.LINE_CAP_ROUND),
-                            lineJoin(Property.LINE_JOIN_ROUND),
-                            lineWidth(3f),
-                            lineColor(Color.parseColor("#14CA15"))
-                    );
-                    style.addLayer(routeLayer);
-
-                    mapboxMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(origin.latitude(), origin.longitude()), 11.7f));
-                    Point userDest = Point.fromLngLat(107.6848254, -6.9218571);
-                    Point userPoint = Point.fromLngLat(105.6848254, -9.9218571);
-                    getRoute(mapboxMap, userPoint, userDest);
-
-
-
                 }
             });
-        });
+        }else{
+           enableLocations();
+        }
 
         binding.etSearchLocation.setOnClickListener(v -> {
-            startActivity(new Intent(MapsActivity.this,SearchActivity.class));
+            startActivity(new Intent(MapsActivity.this, SearchActivity.class));
         });
 
 
@@ -259,38 +320,31 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
         if (locationTrack.canGetLocation()) {
 
 
-            double longitude = locationTrack.getLongitude();
-            double latitude = locationTrack.getLatitude();
-            markerOptions = new MarkerOptions();
+       longitude = locationTrack.getLongitude();
+             latitude = locationTrack.getLatitude();
+
+            origin = Point.fromLngLat(longitude, latitude);
+            markerOptions = new MarkerOptions().setIcon(IconFactory.getInstance(this).defaultMarker());
             markerOptions.title("My location");
+
             markerOptions.position(new LatLng(latitude, longitude));
 
 
             mapboxMap.addMarker(markerOptions);
 
-            origin = Point.fromLngLat(longitude, latitude);
+
+
             sharedPref.saveLatitude(String.valueOf(latitude));
 
             sharedPref.saveLongitude(String.valueOf(longitude));
 
 
-//            CameraPosition position = new CameraPosition.Builder()
-//                    .target(new LatLng(latitude, longitude))
-//                    .zoom(23)
-//
-//                    .build();
-
             mapboxMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 23f));
 
-            //    mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000);
 
-
-            //
-            //
-            // Toast.makeText(getApplicationContext(), "Longitude:" + Double.toString(longitude) + "\nLatitude:" + Double.toString(latitude), Toast.LENGTH_SHORT).show();
         } else {
-
-            locationTrack.showSettingsAlert();
+MapsActivity.this.DialogShow();
+          //  locationTrack.showSettingsAlert();
         }
     }
 
@@ -350,11 +404,10 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
     }
 
 
-
     @Override
     protected void onResume() {
         super.onResume();
-      //  binding.etSearchLocation.setHint("Search where you go");
+        //  binding.etSearchLocation.setHint("Search where you go");
         if (sharedPref.fetchSearchedLocation() != null) {
             searchedLocation = sharedPref.fetchSearchedLocation();
 
@@ -369,6 +422,7 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
             // getRoute(map
 
         }
+
     }
 
     @Override
@@ -388,6 +442,7 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
 
 // Get an instance of the component
             LocationComponent locationComponent = mapboxMap.getLocationComponent();
+// Activate with options
 
 // Activate with options
             locationComponent.activateLocationComponent(
@@ -411,7 +466,7 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
                 locationComponent.setCameraMode(CameraMode.TRACKING);
 
 // Set the component's render mode
-                locationComponent.setRenderMode(RenderMode.COMPASS);
+                locationComponent.setRenderMode(RenderMode.GPS);
 
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION}, 100);
@@ -584,4 +639,140 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
         });
     }
 
+    protected boolean isLocationEnabled() {
+//        String le = Context.LOCATION_SERVICE;
+//        locationManager = (LocationManager) getSystemService(le);
+//        if(!locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
+//            return false;
+//        } else {
+//            return true;
+//        }
+
+        LocationManager lm = (LocationManager)
+                getSystemService(Context.LOCATION_SERVICE);
+
+        try {
+            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (!gps_enabled && !network_enabled) {
+
+//            new AlertDialog.Builder(MapsActivity. this )
+//                    .setMessage( "GPS Enable" )
+//                    .setPositiveButton( "Settings" , new
+//                            DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick (DialogInterface paramDialogInterface , int paramInt) {
+//                                    startActivity( new Intent(Settings. ACTION_LOCATION_SOURCE_SETTINGS )) ;
+//                                }
+//                            })
+//                    .setNegativeButton( "Cancel" , null )
+//                    .show() ;
+
+            DialogShow();
+            return false;
+        } else
+            return true;
+    }
+
+    public void DialogShow() {
+
+        dialog = new BottomSheetDialog(MapsActivity.this, R.style.AppBottomSheetDialogTheme);
+
+        View bottomsheetView = LayoutInflater.from(getApplicationContext()).
+                inflate(R.layout.permission_dialog, (LinearLayout) findViewById(R.id.permissionDialog));
+        dialog.setContentView(bottomsheetView);
+        dialog.show();
+        dialog.setCancelable(false);
+
+        //
+
+
+// Step 4: Set additional properties or listeners
+// For example, you can set a button click listener
+        AppCompatButton btnYes = bottomsheetView.findViewById(R.id.btnEnableLocation);
+        AppCompatButton btnNot = bottomsheetView.findViewById(R.id.btnNotNow);
+
+        btnYes.setOnClickListener(v -> {
+            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+        });
+        btnNot.setOnClickListener(v -> {
+            dialog.dismiss();
+            finish();
+        });
+
+        dialog.show();
+    }
+
+    private PendingIntent pendingIntent() {
+        Intent intent = new Intent(this, LocationService.class);
+        intent.setAction(LocationService.ACTION_UPDATE_PROCESS);
+
+
+        return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_MUTABLE);
+
+    }
+
+    private void updateLocation() {
+
+        buildLocationRequest();
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,  android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            return;
+        }
+
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, pendingIntent());
+
+
+
+        markerOptions = new MarkerOptions().setIcon(IconFactory.getInstance(this).defaultMarker());
+        markerOptions.title("My location");
+
+        markerOptions.position(new LatLng(Double.parseDouble(mLocation.getLatitude()), Double.parseDouble(mLocation.getLongitude())));
+
+
+        mapboxMap.addMarker(markerOptions);
+
+
+        origin = Point.fromLngLat(Double.parseDouble(mLocation.getLatitude()), Double.parseDouble(mLocation.getLongitude()));
+//        sharedPref.saveLatitude(String.valueOf(latitude));
+//
+//        sharedPref.saveLongitude(String.valueOf(longitude));
+
+
+        mapboxMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.parseDouble(mLocation.getLatitude()), Double.parseDouble(mLocation.getLongitude())), 23f));
+
+    }
+
+    public void buildLocationRequest() {
+
+        locationRequest = new LocationRequest();
+//    locationRequest = new com.google.android.gms.location.LocationRequest();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(5000);
+        locationRequest.setFastestInterval(3000);
+        locationRequest.setSmallestDisplacement(10f);
+
+    }
+
+    public void updateLocationObject(Location locationObj) {
+        MapsActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+               mLocation= new LocationModel(String.valueOf(locationObj.getLatitude()),String.valueOf(locationObj.getLongitude()));
+              //  mLocation = locationObj;
+
+                Toast.makeText(MapsActivity.this, ""+mLocation.getLongitude()+""+mLocation.getLatitude(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }

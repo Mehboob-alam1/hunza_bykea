@@ -75,19 +75,7 @@ public class PredefinedLocationsAdapter extends RecyclerView.Adapter<PredefinedL
             }
         });
 
-//      holder.itemView.setOnClickListener(v -> {
-//          Gson gson= new Gson();
-//        String locationStr=  gson.toJson(locations.get(position).getLocation());
-//          sharedPref.saveSearchedLocation(locations.get(position).getLocation());
-////          Intent i = new Intent(context, MapsActivity.class);
-////          i.putExtra("loc",locationStr);
-////          context.startActivity(i);
-//         SearchLocationActivity.finish();
-//
-//
-//
-//
-//      });
+
 
     }
 
@@ -105,42 +93,12 @@ public class PredefinedLocationsAdapter extends RecyclerView.Adapter<PredefinedL
         // as change in recycler view data.
         notifyDataSetChanged();
     }
-//    @Override
-//    public Filter getFilter() {
-//        return new Filter() {
-//            @Override
-//            protected FilterResults performFiltering(CharSequence constraint) {
-//                mDataListFiltered.clear();
-//                String query = constraint.toString();
-//
-//                if (query.isEmpty()) {
-//                    mDataListFiltered.addAll(locations);
-//                } else {
-//                    for (ExistingLocations data : locations) {
-//       if (data.getLocationTitle().toLowerCase().contains(query)){
-//           mDataListFiltered.add(data)
-//       }
-//
-//
-//                    }
-//                }
-//                FilterResults filterResults = new FilterResults();
-//                filterResults.values = filteredList;
-//                return filterResults;
-//            }
-//
-//            @Override
-//            protected void publishResults(CharSequence constraint, FilterResults results) {
-//                mDataListFiltered.clear();
-//                mDataListFiltered.addAll((ArrayList<String>) results.values);
-//                notifyDataSetChanged();
-//            }
-//        };
-//    }
 
-    public class LocationHolder extends RecyclerView.ViewHolder{
+
+    public class LocationHolder extends RecyclerView.ViewHolder {
 
 private TextView txtLocationTitle,txtLocationCordinates;
+
         public LocationHolder(@NonNull View itemView) {
             super(itemView);
 
