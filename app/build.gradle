@@ -73,7 +73,7 @@ dependencies {
 
 
     //places
-
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
 
 ///maps utilities
 
