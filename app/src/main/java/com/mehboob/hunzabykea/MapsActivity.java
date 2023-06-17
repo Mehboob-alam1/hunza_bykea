@@ -41,6 +41,7 @@ import android.graphics.drawable.Icon;
 import android.icu.number.Precision;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -100,6 +101,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
 
 
+import com.mapbox.mapboxsdk.offline.OfflineTilePyramidRegionDefinition;
 import com.mapbox.mapboxsdk.style.layers.FillLayer;
 import com.mapbox.mapboxsdk.style.layers.LineLayer;
 import com.mapbox.mapboxsdk.style.layers.Property;
@@ -151,6 +153,7 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
 
     private SharedPref sharedPref;
     //  Location
+    private String distanceTotal;
 
     private ArrayList permissionsToRequest;
     private ArrayList permissionsRejected = new ArrayList();
@@ -168,7 +171,8 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
     LocationModel mLocation;
 
     double latitude, longitude;
-
+    String firstResultPoint;
+    DirectionsRoute drivingRoute;
     public static MapsActivity getInstance() {
         return instance;
     }
@@ -189,6 +193,7 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
     private final List<List<Point>> points = new ArrayList<>();
     private final List<Point> outerPoints = new ArrayList<>();
 
+    CarmenFeature feature;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -308,12 +313,32 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
 
 
         binding.btnSearchLocation.setOnClickListener(v -> {
-            getRoute(mapboxMap, origin, destination);
+
+
+            if (sharedPref.fetchSearchedLocation() != null) {
+                searchedLocation = sharedPref.fetchSearchedLocation();
+
+                Gson gson = new Gson();
+                Type type = new TypeToken<LocationModel>() {
+                }.getType();
+                LocationModel model = gson.fromJson(searchedLocation, type);
+                destination = Point.fromLngLat(Double.parseDouble(model.getLongitude()), Double.parseDouble(model.getLatitude()));
+
+                if (!RESTRICTED_BOUNDS_AREA.contains(new LatLng(destination.latitude(),destination.longitude()))) {
+                    Toast.makeText(MapsActivity.this, "No service area", Toast.LENGTH_SHORT).show();
+                } else {
+                    getRoute(mapboxMap, origin, destination);
+                }
+            }
+
+
+
         });
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
     }
+
 
     private void enableLocations() {
 
@@ -336,7 +361,7 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
             mapboxMap.addMarker(markerOptions);
 
 
-            reverseGeocode(Point.fromLngLat(longitude, latitude), 0);
+            binding.txtOrigin.setText("latlng://" +latitude + " , " +longitude +"\n"+reverseGeocode(Point.fromLngLat(longitude, latitude)));
 // The result of this reverse geocode will give you "Pennsylvania Ave NW"
 
             origin = Point.fromLngLat(longitude, latitude);
@@ -423,8 +448,8 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
             LocationModel model = gson.fromJson(searchedLocation, type);
             destination = Point.fromLngLat(Double.parseDouble(model.getLongitude()), Double.parseDouble(model.getLatitude()));
 
-            binding.etSearchLocation.setText(model.getLatitude() + "," + model.getLongitude());
-
+            binding.txtOrigin.setText("latlng://" +latitude + " , " +longitude +"\n"+reverseGeocode(Point.fromLngLat(longitude, latitude)));
+binding.etSearchLocation.setText("latlng://"+destination.latitude() + " , " +destination.longitude());
             // getRoute(map
 
         }
@@ -472,7 +497,7 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
                 locationComponent.setCameraMode(CameraMode.TRACKING);
 
 // Set the component's render mode
-                locationComponent.setRenderMode(RenderMode.GPS);
+                locationComponent.setRenderMode(RenderMode.COMPASS);
 
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION}, 100);
@@ -602,14 +627,28 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
                 if (response == null) {
                     Log.d(TAG, "No routes found make sure you have correct access token");
                     return;
-                } else if (response.body().routes().size() < 1) {
-                    Log.d(TAG, "No routes found");
-                    return;
+                }
+
+                else {
+                    assert response.body() != null;
+                    if (response.body().routes().size() < 1) {
+                        Log.d(TAG, "No routes found");
+                        return;
+                    }
                 }
 
 
                 if (response.body() != null) {
-                    DirectionsRoute drivingRoute = response.body().routes().get(0);
+                    try {
+                       drivingRoute = response.body().routes().get(0);
+                    }catch (IndexOutOfBoundsException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                    double distance = drivingRoute.distance() / 1000;
+                    distanceTotal = String.format("%2f KM", distance);
+                    Toast.makeText(MapsActivity.this, "" + distanceTotal, Toast.LENGTH_SHORT).show();
                     if (mapboxMap != null) {
                         mapboxMap.getStyle(new Style.OnStyleLoaded() {
                             @Override
@@ -621,7 +660,7 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
                                     routeLineSource.setGeoJson(LineString.fromPolyline(drivingRoute.geometry(), PRECISION_6));
 
                                     if (iconGeoJsonSource == null) {
-                                        iconGeoJsonSource = new GeoJsonSource("icon-source-id", Feature.fromGeometry(Point.fromLngLat(destination.longitude(), destination.latitude())));
+                                      iconGeoJsonSource = new GeoJsonSource("icon-source-id", Feature.fromGeometry(Point.fromLngLat(destination.longitude(), destination.latitude())));
 
                                         style.addSource(iconGeoJsonSource);
 
@@ -633,8 +672,7 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
                                         mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(destination.latitude(), destination.longitude()), 14.7f));
                                     }
 
-
-                                    reverseGeocode(Point.fromLngLat(destination.longitude(), destination.latitude()), 1);
+                                    binding.txtDestination.setText("latlng://" +destination.latitude() + " , " +destination.longitude() +"\n"+reverseGeocode(Point.fromLngLat(destination.longitude(), destination.latitude())));
 
 
                                 }
@@ -763,12 +801,14 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
     }
 
 
-    private void reverseGeocode(final Point point, int code) {
+    private String reverseGeocode(final Point point) {
+
+        //run code on background thread
         try {
             MapboxGeocoding client = MapboxGeocoding.builder()
                     .accessToken(getResources().getString(R.string.mapbox_access_token))
                     .query(Point.fromLngLat(point.longitude(), point.latitude()))
-                    .geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
+
                     .build();
 
             client.enqueueCall(new Callback<GeocodingResponse>() {
@@ -782,19 +822,13 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
                         if (results.size() > 0) {
 
 
-                            CarmenFeature feature;
-                            Point firstResultPoint = results.get(0).center();
+                            firstResultPoint = results.get(0).text();
                             feature = results.get(0);
-                            if (code == 0)
-                                markerOptions.getMarker().setTitle(feature.placeName());
+                            Log.d("place", firstResultPoint);
 
-                            if (code==1){
-
-                            }
-                                Toast.makeText(MapsActivity.this, "" + feature.placeName(), Toast.LENGTH_SHORT).show();
 
                         } else {
-                            Toast.makeText(MapsActivity.this, "No resuslts", Toast.LENGTH_SHORT).show();
+
                         }
                     }
                 }
@@ -809,5 +843,10 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
 
             servicesException.printStackTrace();
         }
+
+
+        return firstResultPoint;
     }
+
+
 }
