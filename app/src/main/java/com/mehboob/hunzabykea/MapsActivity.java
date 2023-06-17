@@ -14,8 +14,6 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineCap;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineJoin;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth;
-import static com.mehboob.hunzabykea.R.drawable.location;
-import static com.mehboob.hunzabykea.R.drawable.my_location_marker;
 
 
 import androidx.annotation.NonNull;
@@ -31,6 +29,7 @@ import android.annotation.SuppressLint;
 
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
+import android.app.appsearch.SearchResult;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -74,6 +73,11 @@ import com.mapbox.api.directions.v5.MapboxDirections;
 
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
+import com.mapbox.api.geocoding.v5.GeocodingCriteria;
+import com.mapbox.api.geocoding.v5.MapboxGeocoding;
+import com.mapbox.api.geocoding.v5.models.CarmenFeature;
+import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
+import com.mapbox.core.exceptions.ServicesException;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
@@ -163,7 +167,7 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
 
     LocationModel mLocation;
 
-    double latitude,longitude;
+    double latitude, longitude;
 
     public static MapsActivity getInstance() {
         return instance;
@@ -197,7 +201,6 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
         permissions.add(ACCESS_COARSE_LOCATION);
 
 
-
 //        mapView.onCreate(savedInstanceState);
         permissionsToRequest = findUnAskedPermissions(permissions);
 
@@ -206,7 +209,7 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
             if (isLocationEnabled()) {
 
 
-               enableLocations();
+                enableLocations();
             } else {
                 new AlertDialog.Builder(this)
                         .setTitle("Please activate location")
@@ -295,8 +298,8 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
                     });
                 }
             });
-        }else{
-           enableLocations();
+        } else {
+            enableLocations();
         }
 
         binding.etSearchLocation.setOnClickListener(v -> {
@@ -320,10 +323,10 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
         if (locationTrack.canGetLocation()) {
 
 
-       longitude = locationTrack.getLongitude();
-             latitude = locationTrack.getLatitude();
+            longitude = locationTrack.getLongitude();
+            latitude = locationTrack.getLatitude();
 
-            origin = Point.fromLngLat(longitude, latitude);
+
             markerOptions = new MarkerOptions().setIcon(IconFactory.getInstance(this).defaultMarker());
             markerOptions.title("My location");
 
@@ -333,7 +336,10 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
             mapboxMap.addMarker(markerOptions);
 
 
+            reverseGeocode(Point.fromLngLat(longitude, latitude), 0);
+// The result of this reverse geocode will give you "Pennsylvania Ave NW"
 
+            origin = Point.fromLngLat(longitude, latitude);
             sharedPref.saveLatitude(String.valueOf(latitude));
 
             sharedPref.saveLongitude(String.valueOf(longitude));
@@ -343,8 +349,8 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
 
 
         } else {
-MapsActivity.this.DialogShow();
-          //  locationTrack.showSettingsAlert();
+            MapsActivity.this.DialogShow();
+            //  locationTrack.showSettingsAlert();
         }
     }
 
@@ -601,35 +607,41 @@ MapsActivity.this.DialogShow();
                     return;
                 }
 
-                assert response.body() != null;
-                DirectionsRoute drivingRoute = response.body().routes().get(0);
-                if (mapboxMap != null) {
-                    mapboxMap.getStyle(new Style.OnStyleLoaded() {
-                        @Override
-                        public void onStyleLoaded(@NonNull Style style) {
-                            GeoJsonSource routeLineSource = style.getSourceAs("route-source-id");
-                            GeoJsonSource iconGeoJsonSource = style.getSourceAs("icon-source-id");
 
-                            if (routeLineSource != null) {
-                                routeLineSource.setGeoJson(LineString.fromPolyline(drivingRoute.geometry(), PRECISION_6));
+                if (response.body() != null) {
+                    DirectionsRoute drivingRoute = response.body().routes().get(0);
+                    if (mapboxMap != null) {
+                        mapboxMap.getStyle(new Style.OnStyleLoaded() {
+                            @Override
+                            public void onStyleLoaded(@NonNull Style style) {
+                                GeoJsonSource routeLineSource = style.getSourceAs("route-source-id");
+                                GeoJsonSource iconGeoJsonSource = style.getSourceAs("icon-source-id");
 
-                                if (iconGeoJsonSource == null) {
-                                    iconGeoJsonSource = new GeoJsonSource("icon-source-id", Feature.fromGeometry(Point.fromLngLat(destination.longitude(), destination.latitude())));
+                                if (routeLineSource != null) {
+                                    routeLineSource.setGeoJson(LineString.fromPolyline(drivingRoute.geometry(), PRECISION_6));
 
-                                    style.addSource(iconGeoJsonSource);
+                                    if (iconGeoJsonSource == null) {
+                                        iconGeoJsonSource = new GeoJsonSource("icon-source-id", Feature.fromGeometry(Point.fromLngLat(destination.longitude(), destination.latitude())));
 
-                                    mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(destination.latitude(), destination.longitude()), 14.7f));
+                                        style.addSource(iconGeoJsonSource);
 
-                                } else {
-                                    iconGeoJsonSource.setGeoJson(Feature.fromGeometry(Point.fromLngLat(destination.longitude(), destination.latitude())));
+                                        mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(destination.latitude(), destination.longitude()), 14.7f));
 
-                                    mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(destination.latitude(), destination.longitude()), 14.7f));
+                                    } else {
+                                        iconGeoJsonSource.setGeoJson(Feature.fromGeometry(Point.fromLngLat(destination.longitude(), destination.latitude())));
+
+                                        mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(destination.latitude(), destination.longitude()), 14.7f));
+                                    }
+
+
+                                    reverseGeocode(Point.fromLngLat(destination.longitude(), destination.latitude()), 1);
+
+
                                 }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
-
             }
 
             @Override
@@ -640,13 +652,6 @@ MapsActivity.this.DialogShow();
     }
 
     protected boolean isLocationEnabled() {
-//        String le = Context.LOCATION_SERVICE;
-//        locationManager = (LocationManager) getSystemService(le);
-//        if(!locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
-//            return false;
-//        } else {
-//            return true;
-//        }
 
         LocationManager lm = (LocationManager)
                 getSystemService(Context.LOCATION_SERVICE);
@@ -664,17 +669,6 @@ MapsActivity.this.DialogShow();
 
         if (!gps_enabled && !network_enabled) {
 
-//            new AlertDialog.Builder(MapsActivity. this )
-//                    .setMessage( "GPS Enable" )
-//                    .setPositiveButton( "Settings" , new
-//                            DialogInterface.OnClickListener() {
-//                                @Override
-//                                public void onClick (DialogInterface paramDialogInterface , int paramInt) {
-//                                    startActivity( new Intent(Settings. ACTION_LOCATION_SOURCE_SETTINGS )) ;
-//                                }
-//                            })
-//                    .setNegativeButton( "Cancel" , null )
-//                    .show() ;
 
             DialogShow();
             return false;
@@ -692,11 +686,7 @@ MapsActivity.this.DialogShow();
         dialog.show();
         dialog.setCancelable(false);
 
-        //
 
-
-// Step 4: Set additional properties or listeners
-// For example, you can set a button click listener
         AppCompatButton btnYes = bottomsheetView.findViewById(R.id.btnEnableLocation);
         AppCompatButton btnNot = bottomsheetView.findViewById(R.id.btnNotNow);
 
@@ -725,13 +715,12 @@ MapsActivity.this.DialogShow();
         buildLocationRequest();
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,  android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             return;
         }
 
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, pendingIntent());
-
 
 
         markerOptions = new MarkerOptions().setIcon(IconFactory.getInstance(this).defaultMarker());
@@ -744,9 +733,6 @@ MapsActivity.this.DialogShow();
 
 
         origin = Point.fromLngLat(Double.parseDouble(mLocation.getLatitude()), Double.parseDouble(mLocation.getLongitude()));
-//        sharedPref.saveLatitude(String.valueOf(latitude));
-//
-//        sharedPref.saveLongitude(String.valueOf(longitude));
 
 
         mapboxMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.parseDouble(mLocation.getLatitude()), Double.parseDouble(mLocation.getLongitude())), 23f));
@@ -756,7 +742,7 @@ MapsActivity.this.DialogShow();
     public void buildLocationRequest() {
 
         locationRequest = new LocationRequest();
-//    locationRequest = new com.google.android.gms.location.LocationRequest();
+
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(5000);
         locationRequest.setFastestInterval(3000);
@@ -768,11 +754,60 @@ MapsActivity.this.DialogShow();
         MapsActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-               mLocation= new LocationModel(String.valueOf(locationObj.getLatitude()),String.valueOf(locationObj.getLongitude()));
-              //  mLocation = locationObj;
+                mLocation = new LocationModel(String.valueOf(locationObj.getLatitude()), String.valueOf(locationObj.getLongitude()));
+                //  mLocation = locationObj;
 
-                Toast.makeText(MapsActivity.this, ""+mLocation.getLongitude()+""+mLocation.getLatitude(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MapsActivity.this, "" + mLocation.getLongitude() + "" + mLocation.getLatitude(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+
+    private void reverseGeocode(final Point point, int code) {
+        try {
+            MapboxGeocoding client = MapboxGeocoding.builder()
+                    .accessToken(getResources().getString(R.string.mapbox_access_token))
+                    .query(Point.fromLngLat(point.longitude(), point.latitude()))
+                    .geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
+                    .build();
+
+            client.enqueueCall(new Callback<GeocodingResponse>() {
+                @Override
+                public void onResponse(Call<GeocodingResponse> call, Response<GeocodingResponse> response) {
+
+                    if (response.body() != null) {
+                        List<CarmenFeature> results = response.body().features();
+
+
+                        if (results.size() > 0) {
+
+
+                            CarmenFeature feature;
+                            Point firstResultPoint = results.get(0).center();
+                            feature = results.get(0);
+                            if (code == 0)
+                                markerOptions.getMarker().setTitle(feature.placeName());
+
+                            if (code==1){
+
+                            }
+                                Toast.makeText(MapsActivity.this, "" + feature.placeName(), Toast.LENGTH_SHORT).show();
+
+                        } else {
+                            Toast.makeText(MapsActivity.this, "No resuslts", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<GeocodingResponse> call, Throwable throwable) {
+                    //  Timber.e("Geocoding Failure: %s", throwable.getMessage());
+                    Toast.makeText(MapsActivity.this, "" + throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        } catch (ServicesException servicesException) {
+
+            servicesException.printStackTrace();
+        }
     }
 }
