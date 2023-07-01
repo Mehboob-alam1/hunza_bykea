@@ -39,6 +39,8 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.icu.number.Precision;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
@@ -50,6 +52,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -79,6 +82,7 @@ import com.mapbox.api.geocoding.v5.MapboxGeocoding;
 import com.mapbox.api.geocoding.v5.models.CarmenFeature;
 import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
 import com.mapbox.core.exceptions.ServicesException;
+import com.mapbox.geocoder.MapboxGeocoder;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
@@ -112,15 +116,18 @@ import com.mapbox.mapboxsdk.utils.BitmapUtils;
 import com.mehboob.hunzabykea.databinding.ActivityMapsBinding;
 import com.mehboob.hunzabykea.ui.MainActivity;
 import com.mehboob.hunzabykea.ui.SearchActivity;
+import com.mehboob.hunzabykea.ui.SelectVehicleActivity;
 import com.mehboob.hunzabykea.ui.models.LocationModel;
 import com.mehboob.hunzabykea.utils.LocationService;
 import com.mehboob.hunzabykea.utils.LocationTrack;
 import com.mehboob.hunzabykea.utils.SharedPref;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -148,6 +155,7 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
     private LocationRequest locationRequest;
     FusedLocationProviderClient fusedLocationProviderClient;
     boolean isWithinServiceArea;
+    private static float ZOOM_LEVEL = 16f;
 
     private static final String TAG = "MapsActivity";
 
@@ -173,6 +181,7 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
     double latitude, longitude;
     String firstResultPoint;
     DirectionsRoute drivingRoute;
+
     public static MapsActivity getInstance() {
         return instance;
     }
@@ -293,7 +302,7 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
                             );
                             style.addLayer(routeLayer);
 
-                            mapboxMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(origin.latitude(), origin.longitude()), 11.7f));
+                            mapboxMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(origin.latitude(), origin.longitude()), ZOOM_LEVEL));
                             Point userDest = Point.fromLngLat(107.6848254, -6.9218571);
                             Point userPoint = Point.fromLngLat(105.6848254, -9.9218571);
                             getRoute(mapboxMap, userPoint, userDest);
@@ -307,35 +316,6 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
             enableLocations();
         }
 
-        binding.etSearchLocation.setOnClickListener(v -> {
-            startActivity(new Intent(MapsActivity.this, SearchActivity.class));
-        });
-
-
-        binding.btnSearchLocation.setOnClickListener(v -> {
-
-
-            if (sharedPref.fetchSearchedLocation() != null) {
-                searchedLocation = sharedPref.fetchSearchedLocation();
-
-                Gson gson = new Gson();
-                Type type = new TypeToken<LocationModel>() {
-                }.getType();
-                LocationModel model = gson.fromJson(searchedLocation, type);
-                destination = Point.fromLngLat(Double.parseDouble(model.getLongitude()), Double.parseDouble(model.getLatitude()));
-
-                if (!RESTRICTED_BOUNDS_AREA.contains(new LatLng(destination.latitude(),destination.longitude()))) {
-                    Toast.makeText(MapsActivity.this, "No service area", Toast.LENGTH_SHORT).show();
-                } else {
-                    getRoute(mapboxMap, origin, destination);
-                }
-            }
-
-
-
-        });
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
     }
 
@@ -361,7 +341,7 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
             mapboxMap.addMarker(markerOptions);
 
 
-            binding.txtOrigin.setText("latlng://" +latitude + " , " +longitude +"\n"+reverseGeocode(Point.fromLngLat(longitude, latitude)));
+            binding.txtOrigin.setText("latlng://" + latitude + " , " + longitude + "\n" + reverseGeocode(Point.fromLngLat(longitude, latitude)));
 // The result of this reverse geocode will give you "Pennsylvania Ave NW"
 
             origin = Point.fromLngLat(longitude, latitude);
@@ -370,7 +350,7 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
             sharedPref.saveLongitude(String.valueOf(longitude));
 
 
-            mapboxMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 23f));
+            mapboxMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), ZOOM_LEVEL));
 
 
         } else {
@@ -409,7 +389,7 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
     protected void onStart() {
         super.onStart();
         binding.mapView.onStart();
-        binding.etSearchLocation.setHint("Search where you go");
+
     }
 
     @SuppressLint("Lifecycle")
@@ -448,8 +428,8 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
             LocationModel model = gson.fromJson(searchedLocation, type);
             destination = Point.fromLngLat(Double.parseDouble(model.getLongitude()), Double.parseDouble(model.getLatitude()));
 
-            binding.txtOrigin.setText("latlng://" +latitude + " , " +longitude +"\n"+reverseGeocode(Point.fromLngLat(longitude, latitude)));
-binding.etSearchLocation.setText("latlng://"+destination.latitude() + " , " +destination.longitude());
+            binding.txtOrigin.setText("latlng://" + latitude + " , " + longitude + "\n" + reverseGeocode(Point.fromLngLat(longitude, latitude)));
+
             // getRoute(map
 
         }
@@ -627,9 +607,7 @@ binding.etSearchLocation.setText("latlng://"+destination.latitude() + " , " +des
                 if (response == null) {
                     Log.d(TAG, "No routes found make sure you have correct access token");
                     return;
-                }
-
-                else {
+                } else {
                     assert response.body() != null;
                     if (response.body().routes().size() < 1) {
                         Log.d(TAG, "No routes found");
@@ -640,9 +618,8 @@ binding.etSearchLocation.setText("latlng://"+destination.latitude() + " , " +des
 
                 if (response.body() != null) {
                     try {
-                       drivingRoute = response.body().routes().get(0);
-                    }catch (IndexOutOfBoundsException e)
-                    {
+                        drivingRoute = response.body().routes().get(0);
+                    } catch (IndexOutOfBoundsException e) {
                         e.printStackTrace();
                     }
 
@@ -660,21 +637,21 @@ binding.etSearchLocation.setText("latlng://"+destination.latitude() + " , " +des
                                     routeLineSource.setGeoJson(LineString.fromPolyline(drivingRoute.geometry(), PRECISION_6));
 
                                     if (iconGeoJsonSource == null) {
-                                      iconGeoJsonSource = new GeoJsonSource("icon-source-id", Feature.fromGeometry(Point.fromLngLat(destination.longitude(), destination.latitude())));
+                                        iconGeoJsonSource = new GeoJsonSource("icon-source-id", Feature.fromGeometry(Point.fromLngLat(destination.longitude(), destination.latitude())));
 
                                         style.addSource(iconGeoJsonSource);
 
-                                        mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(destination.latitude(), destination.longitude()), 14.7f));
+                                        mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(destination.latitude(), destination.longitude()), ZOOM_LEVEL));
 
                                     } else {
                                         iconGeoJsonSource.setGeoJson(Feature.fromGeometry(Point.fromLngLat(destination.longitude(), destination.latitude())));
 
-                                        mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(destination.latitude(), destination.longitude()), 14.7f));
+                                        mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(destination.latitude(), destination.longitude()), ZOOM_LEVEL));
                                     }
 
-                                    binding.txtDestination.setText("latlng://" +destination.latitude() + " , " +destination.longitude() +"\n"+reverseGeocode(Point.fromLngLat(destination.longitude(), destination.latitude())));
+                                    binding.txtDestination.setText("latlng://" + destination.latitude() + " , " + destination.longitude() + "\n" + reverseGeocode(Point.fromLngLat(destination.longitude(), destination.latitude())));
 
-
+                                             continueOrder("Latlng:// "+ origin.latitude() + " , " +origin.longitude() + "\n" +reverseGeocode(Point.fromLngLat(longitude,latitude)),"Latlng:// "+ destination.latitude() + " , " +destination.longitude() + "\n" +reverseGeocode(Point.fromLngLat(destination.longitude(),destination.latitude())),distanceTotal);
                                 }
                             }
                         });
@@ -687,6 +664,57 @@ binding.etSearchLocation.setText("latlng://"+destination.latitude() + " , " +des
 
             }
         });
+    }
+
+    private void bottomDialog(String pick, String drop) {
+        BottomSheetDialog dialog = new BottomSheetDialog(MapsActivity.this, R.style.AppBottomSheetDialogTheme);
+        View bottomsheetView = LayoutInflater.from(getApplicationContext()).
+                inflate(R.layout.bottom_select_address, (CardView) findViewById(R.id.bottom_sheet_container));
+        dialog.setContentView(bottomsheetView);
+
+        TextView textViewPick = bottomsheetView.findViewById(R.id.txtPick);
+        TextView textViewDrop = bottomsheetView.findViewById(R.id.txtDrop);
+
+        textViewPick.setText(pick);
+        textViewDrop.setText(drop);
+
+        dialog.show();
+    }
+
+    @SuppressLint("MissingInflatedId")
+
+    private void continueOrder(String pick, String drop, String distance) {
+        BottomSheetDialog dialog = new BottomSheetDialog(MapsActivity.this, R.style.AppBottomSheetDialogTheme);
+        View bottomsheetView = LayoutInflater.from(getApplicationContext()).
+                inflate(R.layout.bottom_continue_order, (CardView) findViewById(R.id.bottom_continue_order));
+        dialog.setContentView(bottomsheetView);
+
+
+        TextView txtDistance = bottomsheetView.findViewById(R.id.txtDistance);
+        TextView txtCurrentLocation = bottomsheetView.findViewById(R.id.txtCurrentLocation);
+        TextView txtDropLocation = bottomsheetView.findViewById(R.id.txtDropLocation);
+
+        CardView btnContinueOrder = bottomsheetView.findViewById(R.id.btnContinueOrder);
+
+        txtDistance.setText(distance);
+        txtCurrentLocation.setText(pick);
+        txtDropLocation.setText(drop);
+
+        dialog.show();
+
+
+
+        btnContinueOrder.setOnClickListener(v -> {
+            if (txtCurrentLocation.getText().toString().isEmpty()  || txtDropLocation.getText().toString().isEmpty())
+                Toast.makeText(this, "Select the desired location then try again !!", Toast.LENGTH_SHORT).show();
+            else{
+                dialog.dismiss();
+                startActivity(new Intent(MapsActivity.this, SelectVehicleActivity.class));
+            }
+        });
+
+
+
     }
 
     protected boolean isLocationEnabled() {
@@ -805,11 +833,14 @@ binding.etSearchLocation.setText("latlng://"+destination.latitude() + " , " +des
 
         //run code on background thread
         try {
+
+
             MapboxGeocoding client = MapboxGeocoding.builder()
                     .accessToken(getResources().getString(R.string.mapbox_access_token))
                     .query(Point.fromLngLat(point.longitude(), point.latitude()))
 
                     .build();
+
 
             client.enqueueCall(new Callback<GeocodingResponse>() {
                 @Override
@@ -842,11 +873,13 @@ binding.etSearchLocation.setText("latlng://"+destination.latitude() + " , " +des
         } catch (ServicesException servicesException) {
 
             servicesException.printStackTrace();
+
+
         }
-
-
         return firstResultPoint;
     }
 
-
 }
+
+
+

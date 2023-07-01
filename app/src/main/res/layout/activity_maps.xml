@@ -7,71 +7,21 @@
     android:layout_height="match_parent">
 
 
-    <!--<com.mapbox.maps.MapView-->
-    <!--    android:layout_width="match_parent"-->
-    <!--    android:id="@+id/mapView"-->
-    <!--    android:layout_height="match_parent"/>-->
-
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="36dp"
-        android:layout_marginEnd="52dp"
-        app:cardCornerRadius="8dp"
-
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="40dp">
-
-
-            <ImageView
-                android:id="@+id/serch_img"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="8dp"
-                android:padding="5dp"
-                android:src="@drawable/ic_baseline_search_24" />
-
-            <TextView
-                android:id="@+id/etSearchLocation"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="8dp"
-                android:layout_toEndOf="@+id/serch_img"
-                android:background="@null"
-                android:fontFamily="@font/poppins_light"
-                android:gravity="center_vertical"
-                android:hint="Search where you go"
-                android:textSize="12sp" />
-
-
-        </RelativeLayout>
-    </androidx.cardview.widget.CardView>
-
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="52dp"
         app:cardCornerRadius="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardView2">
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="70dp"
             android:orientation="vertical">
 
             <TextView
@@ -83,14 +33,16 @@
                 android:textStyle="bold" />
 
             <TextView
-android:id="@+id/txtOrigin"
+                android:id="@+id/txtOrigin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:layout_marginBottom="3dp"
                 android:background="@null"
                 android:fontFamily="@font/poppins_light"
                 android:gravity="center_vertical"
                 android:hint="latlng://"
+                android:padding="4dp"
                 android:textSize="12sp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
@@ -109,7 +61,7 @@ android:id="@+id/txtOrigin"
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="70dp"
             android:orientation="vertical">
 
             <TextView
@@ -121,14 +73,16 @@ android:id="@+id/txtOrigin"
                 android:textStyle="bold" />
 
             <TextView
-android:id="@+id/txtDestination"
+                android:id="@+id/txtDestination"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:layout_marginBottom="3dp"
                 android:background="@null"
                 android:fontFamily="@font/poppins_light"
                 android:gravity="center_vertical"
                 android:hint="latlng://"
+                android:padding="4dp"
                 android:textSize="12sp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
@@ -156,20 +110,5 @@ android:id="@+id/txtDestination"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnSearchLocation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/btn_background"
-        android:text="Search"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
