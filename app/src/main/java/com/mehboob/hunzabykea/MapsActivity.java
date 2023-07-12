@@ -66,6 +66,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mapbox.android.core.permissions.PermissionsListener;
@@ -138,7 +140,7 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
 
 
     private ActivityMapsBinding binding;
-    private MapView mapView;
+
     private MapboxMap mapboxMap;
     private static final String SOURCE_ID = "source-id";
     private static final String LAYER_ID = "layer-id";
@@ -651,7 +653,7 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
 
                                     binding.txtDestination.setText("latlng://" + destination.latitude() + " , " + destination.longitude() + "\n" + reverseGeocode(Point.fromLngLat(destination.longitude(), destination.latitude())));
 
-                                             continueOrder("Latlng:// "+ origin.latitude() + " , " +origin.longitude() + "\n" +reverseGeocode(Point.fromLngLat(longitude,latitude)),"Latlng:// "+ destination.latitude() + " , " +destination.longitude() + "\n" +reverseGeocode(Point.fromLngLat(destination.longitude(),destination.latitude())),distanceTotal);
+                                    continueOrder("Latlng:// " + origin.latitude() + " , " + origin.longitude() + "\n" + reverseGeocode(Point.fromLngLat(longitude, latitude)), "Latlng:// " + destination.latitude() + " , " + destination.longitude() + "\n" + reverseGeocode(Point.fromLngLat(destination.longitude(), destination.latitude())), distanceTotal);
                                 }
                             }
                         });
@@ -703,16 +705,19 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
         dialog.show();
 
 
-
         btnContinueOrder.setOnClickListener(v -> {
-            if (txtCurrentLocation.getText().toString().isEmpty()  || txtDropLocation.getText().toString().isEmpty())
+            if (txtCurrentLocation.getText().toString().isEmpty() || txtDropLocation.getText().toString().isEmpty())
                 Toast.makeText(this, "Select the desired location then try again !!", Toast.LENGTH_SHORT).show();
-            else{
+            else {
                 dialog.dismiss();
-                startActivity(new Intent(MapsActivity.this, SelectVehicleActivity.class));
+
+                sharedPref.saveLocation(new LocationModel(String.valueOf(latitude), String.valueOf(longitude)));
+                Intent i = new Intent(MapsActivity.this, SelectVehicleActivity.class);
+
+                startActivity(i);
+
             }
         });
-
 
 
     }

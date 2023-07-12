@@ -1,33 +1,62 @@
 {
   "project_info": {
-    "project_number": "642396485573",
-    "project_id": "hunza-bykea",
-    "storage_bucket": "hunza-bykea.appspot.com"
+    "project_number": "114764797676",
+    "project_id": "hunza-bykea-c0ca9",
+    "storage_bucket": "hunza-bykea-c0ca9.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:642396485573:android:4f4794436bb929c00d7dac",
+        "mobilesdk_app_id": "1:114764797676:android:39028369a50691f30ef7c9",
         "android_client_info": {
           "package_name": "com.mehboob.hunzabykea"
         }
       },
       "oauth_client": [
         {
-          "client_id": "642396485573-8alg8n85sgfv7a3oo22smu537ogjt5lm.apps.googleusercontent.com",
+          "client_id": "114764797676-iimanrcrapt7a5shji55ki7hhh9ahgl2.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDAAlnXUMrbQJ5efaXew-M6jrFKySiZYbg"
+          "current_key": "AIzaSyAS1I-4GxM9yY_oEQXmL_iVtmmdpADH9O8"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "642396485573-8alg8n85sgfv7a3oo22smu537ogjt5lm.apps.googleusercontent.com",
+              "client_id": "114764797676-iimanrcrapt7a5shji55ki7hhh9ahgl2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:114764797676:android:b57c2bfdf74f75b20ef7c9",
+        "android_client_info": {
+          "package_name": "com.mehboob.hunzarider"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "114764797676-iimanrcrapt7a5shji55ki7hhh9ahgl2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAS1I-4GxM9yY_oEQXmL_iVtmmdpADH9O8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "114764797676-iimanrcrapt7a5shji55ki7hhh9ahgl2.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

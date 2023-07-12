@@ -100,9 +100,10 @@
                     android:textSize="16sp" />
 
                 <TextView
+                    android:id="@+id/txtBikeNear"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="7 nearbies" />
+                    android:text="0 nearbies" />
             </LinearLayout>
 
             <TextView
@@ -175,9 +176,10 @@
                     android:textSize="16sp" />
 
                 <TextView
+                    android:id="@+id/txtBikeCar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="7 nearbies" />
+                    android:text="0 nearbies" />
             </LinearLayout>
 
             <TextView
@@ -185,7 +187,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
-                android:text="RS 250"
+                android:text="RS 550"
                 android:textColor="@color/black"
                 app:layout_constraintBottom_toBottomOf="@+id/line2"
                 app:layout_constraintEnd_toStartOf="@+id/radioButtonCar"
@@ -251,9 +253,10 @@
                     android:textSize="16sp" />
 
                 <TextView
+                    android:id="@+id/txtBikeAcCar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="7 nearbies" />
+                    android:text="0 nearbies" />
             </LinearLayout>
 
             <TextView
@@ -261,7 +264,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
-                android:text="RS 250"
+                android:text="RS 700"
                 android:textColor="@color/black"
                 app:layout_constraintBottom_toBottomOf="@+id/line3"
                 app:layout_constraintEnd_toStartOf="@+id/radioButtonAcCar"
@@ -293,7 +296,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+        >
 
         <TextView
             android:id="@+id/textView8"
