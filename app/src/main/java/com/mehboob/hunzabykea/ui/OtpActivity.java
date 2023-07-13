@@ -23,6 +23,7 @@ import com.google.firebase.auth.PhoneAuthProvider;
 
 import com.mehboob.hunzabykea.ProfileActivity;
 import com.mehboob.hunzabykea.databinding.ActivityOtpBinding;
+import com.mehboob.hunzabykea.utils.SharedPref;
 
 import java.util.concurrent.TimeUnit;
 
@@ -32,13 +33,14 @@ public class OtpActivity extends AppCompatActivity {
     private ActivityOtpBinding binding;
     private String number, verificatonID;
 //
+    private SharedPref sharedPref;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityOtpBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-
+        sharedPref= new SharedPref(this);
         number = (getIntent().getStringExtra("number"));
         verificatonID = getIntent().getStringExtra("verificationID");
 
@@ -93,7 +95,7 @@ public class OtpActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-
+                                sharedPref.saveUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
                                 Intent proIntent = new Intent(OtpActivity.this,ProfileActivity.class);
                                 proIntent.putExtra("pronumber",number);
                                 startActivity(proIntent);

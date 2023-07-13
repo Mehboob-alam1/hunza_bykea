@@ -19,7 +19,7 @@ import java.util.UUID;
 public class PaymentMethodActivity extends AppCompatActivity {
 private ActivityPaymentMethodBinding binding;
 private SharedPref sharedPref;
-private String pushId;
+ String pushId;
 private DatabaseReference mRef;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,25 +28,26 @@ private DatabaseReference mRef;
         binding=ActivityPaymentMethodBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         sharedPref= new SharedPref(this);
-      mRef=FirebaseDatabase.getInstance().getReference(Constants.USERS);
-pushId= UUID.randomUUID().toString();
+      mRef=FirebaseDatabase.getInstance().getReference();
+
         binding.btnContinue.setOnClickListener(v -> {
             if (!binding.radioCashMoney.isChecked())
                 Toast.makeText(this, "Choose the payment method", Toast.LENGTH_SHORT).show();
             else {
+                pushId= UUID.randomUUID().toString();
                 sharedPref.savePaymentMethod("Cash");
-                uploadToCloud();
+                uploadToCloud(pushId,String.valueOf(System.currentTimeMillis()));
             }
         });
     }
 
-    private void uploadToCloud() {
+    private void uploadToCloud(String pushId,String time) {
 
 
-        OrderPlace orderPlace = new OrderPlace(FirebaseAuth.getInstance().getCurrentUser().getUid(),sharedPref.fetchLocation().getLatitude(),
+        OrderPlace orderPlace = new OrderPlace(sharedPref.fetchUserId(),sharedPref.fetchLocation().getLatitude(),
                 sharedPref.fetchLocation().getLongitude(),sharedPref.fetchSelectedVehicle().getVehicle(),sharedPref.fetchSelectedVehicle().getFare(),
-                sharedPref.fetchSelectedVehicle().getNearBy(),sharedPref.fetchPaymentMethod(),pushId,String.valueOf(System.currentTimeMillis()));
-        mRef.child(Constants.ORDERS).child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child(pushId).setValue(orderPlace).
+                sharedPref.fetchSelectedVehicle().getNearBy(),sharedPref.fetchPaymentMethod(),pushId,time);
+        mRef.child(Constants.HUNZA_BYKEA).child(Constants.ORDERS).child(sharedPref.fetchUserId()).child(pushId).setValue(orderPlace).
                 addOnCompleteListener(task -> {
                     if (task.isSuccessful()){
                         Toast.makeText(this, "Order placed successfully", Toast.LENGTH_SHORT).show();

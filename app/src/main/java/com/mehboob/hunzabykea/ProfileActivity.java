@@ -32,7 +32,7 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         dialog = new ProgressDialog(this);
 
-        userInfo = FirebaseDatabase.getInstance().getReference("HunzaBykea");
+        userInfo = FirebaseDatabase.getInstance().getReference(Constants.HUNZA_BYKEA);
         currentUser = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
 
         dialog.setTitle("Uploading");

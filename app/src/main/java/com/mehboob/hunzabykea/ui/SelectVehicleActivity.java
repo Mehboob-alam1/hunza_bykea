@@ -61,20 +61,20 @@ private SharedPref sharedPref;
         binding.btnContinueOrder.setOnClickListener(v -> {
 
             if (binding.radioButtonAcCar.isChecked()){
-                vehicleSelected= binding.radioButtonAcCar.getText().toString();
+                vehicleSelected= binding.txtAcCar.getText().toString();
                 fare=binding.txtPriceAcCar.getText().toString();
-                nearbies=binding.txtPriceAcCar.getText().toString();
+                nearbies=binding.txtAcCarNear.getText().toString();
             }
             if (binding.radioButtonBike.isChecked()){
-                vehicleSelected=binding.radioButtonBike.getText().toString();
+                vehicleSelected=binding.txtBike.getText().toString();
                fare=binding.txtPriceBike.getText().toString();
-               nearbies=binding.txtPriceBike.getText().toString();
+               nearbies=binding.txtBikeNear.getText().toString();
             }
 
             if (binding.radioButtonCar.isChecked()){
-                vehicleSelected=binding.radioButtonCar.getText().toString();
+                vehicleSelected=binding.txtCar.getText().toString();
                 fare=binding.txtPriceCar.getText().toString();
-                nearbies=binding.txtPriceCar.getText().toString();
+                nearbies=binding.txtCarNear.getText().toString();
             }
 
             FareModel fareModel= new FareModel(vehicleSelected,fare,nearbies);

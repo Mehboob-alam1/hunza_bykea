@@ -17,8 +17,10 @@ import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.mehboob.hunzabykea.MapsActivity;
 import com.mehboob.hunzabykea.R;
 import com.mehboob.hunzabykea.databinding.ActivityLoginBinding;
+import com.mehboob.hunzabykea.utils.SharedPref;
 
 import java.util.concurrent.TimeUnit;
 
@@ -28,6 +30,7 @@ public class LoginActivity extends AppCompatActivity {
     private int state = 1;
     private ProgressDialog progressDialog;
     FirebaseAuth auth;
+    private SharedPref sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
 
         auth = FirebaseAuth.getInstance();
-
+        sharedPref = new SharedPref(this);
 //        if (auth.getCurrentUser() !=null){
 //            startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
 //        }
@@ -105,14 +108,14 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
 
-
+                        progressDialog.dismiss();
                     }
 
                     @Override
                     public void onVerificationFailed(@NonNull FirebaseException e) {
 
                         Log.d("Exception", e.getMessage());
-                        progressDialog.dismiss();
+
                     }
 
                     @Override
@@ -120,6 +123,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
                         //progressDialog.dismiss();
+//                        sharedPref.saveUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
                         Intent intent = new Intent(LoginActivity.this, OtpActivity.class);
                         intent.putExtra("verificationID", s);
@@ -128,6 +132,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
                     }
+
                 });
     }
 
@@ -144,5 +149,18 @@ public class LoginActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         changeButtonState(1);
+
+        if (auth.getCurrentUser() != null) {
+            startActivity(new Intent(LoginActivity.this, MapsActivity.class));
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if ((progressDialog != null) && progressDialog.isShowing())
+            progressDialog.dismiss();
+        progressDialog = null;
     }
 }

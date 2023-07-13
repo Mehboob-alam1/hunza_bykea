@@ -20,6 +20,7 @@ public class SharedPref {
     private static final String LOCATION = "location";
     private static final String VEHICLE = "vehicle";
     private static final String PAYMENT_METHOD="payment";
+    private static final String USER_ID="uid";
 
 
     public SharedPref(Context context) {
@@ -51,7 +52,16 @@ public class SharedPref {
         editor.putString(LATITUDE, latitude);
         editor.apply();
     }
+    public void saveUserId(String userId) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(USER_ID, userId);
+        editor.apply();
+    }
 
+    public String fetchUserId() {
+        return sharedPreferences.getString(USER_ID, "");
+
+    }
     public String fetchLatitude() {
         return sharedPreferences.getString(LATITUDE, Constants.DEFAULT_LATITUDE);
 
