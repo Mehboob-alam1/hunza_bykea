@@ -2,6 +2,7 @@ package com.mehboob.hunzabykea.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -50,7 +51,11 @@ private DatabaseReference mRef;
         mRef.child(Constants.HUNZA_BYKEA).child(Constants.ORDERS).child(sharedPref.fetchUserId()).child(pushId).setValue(orderPlace).
                 addOnCompleteListener(task -> {
                     if (task.isSuccessful()){
-                        Toast.makeText(this, "Order placed successfully", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(this, "Order placed successfully", Toast.LENGTH_SHORT).show();
+                        Intent i = new Intent(PaymentMethodActivity.this,SearchingForDriverActivity.class);
+                        i.putExtra("pushId",pushId);
+                        startActivity(i);
+                       // startActivity(new Intent(PaymentMethodActivity.this,SearchingForDriverActivity.class));
                     }else{
                         Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
                     }

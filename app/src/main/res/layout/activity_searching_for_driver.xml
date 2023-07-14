@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:mapbox="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.SelectVehicleActivity">
+    tools:context=".ui.SearchingForDriverActivity">
 
 
     <androidx.cardview.widget.CardView
@@ -42,263 +43,76 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/cardView" />
 
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView2"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
-        android:padding="16dp"
-        app:cardElevation="0dp"
+        android:layout_marginTop="100dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView27">
+        app:layout_constraintTop_toTopOf="parent">
 
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="4dp">
+            android:fontFamily="@font/poppins"
 
-            <ImageView
-                android:id="@+id/imgBike"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/bike"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            android:text="Searching Rider..."
+            android:textColor="@color/black" />
 
-            <LinearLayout
-                android:id="@+id/line1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="@+id/imgBike"
-                app:layout_constraintStart_toEndOf="@+id/imgBike"
-                app:layout_constraintTop_toTopOf="@+id/imgBike">
-
-                <TextView
-                    android:id="@+id/txtBike"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:text="Bike"
-                    android:textColor="@color/black"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/txtBikeNear"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0 nearbies" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/txtPriceBike"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:text="RS 250"
-                android:textColor="@color/black"
-                app:layout_constraintBottom_toBottomOf="@+id/line1"
-                app:layout_constraintEnd_toStartOf="@+id/radioButtonBike"
-                app:layout_constraintTop_toTopOf="@+id/line1" />
-
-            <CheckBox
-                android:id="@+id/radioButtonBike"
-                style="@style/CustomCheckbox02"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginEnd="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_light"
+            android:text="This may take a few second..." />
+    </LinearLayout>
 
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView6"
+    <com.mapbox.mapboxsdk.maps.MapView
+        android:id="@+id/mapView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
-        android:padding="16dp"
-        app:cardElevation="0dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardView2">
-
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="4dp">
-
-            <ImageView
-                android:id="@+id/imgCar"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/car"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <LinearLayout
-                android:id="@+id/line2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="@+id/imgCar"
-                app:layout_constraintStart_toEndOf="@+id/imgCar"
-                app:layout_constraintTop_toTopOf="@+id/imgCar">
-
-                <TextView
-                    android:id="@+id/txtCar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:text="Car"
-                    android:textColor="@color/black"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/txtCarNear"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0 nearbies" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/txtPriceCar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:text="RS 550"
-                android:textColor="@color/black"
-                app:layout_constraintBottom_toBottomOf="@+id/line2"
-                app:layout_constraintEnd_toStartOf="@+id/radioButtonCar"
-                app:layout_constraintTop_toTopOf="@+id/line2" />
-
-            <CheckBox
-                android:id="@+id/radioButtonCar"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginEnd="16dp"
-                style="@style/CustomCheckbox02"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
-
-
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
-        android:padding="16dp"
-        app:cardElevation="0dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardView6">
-
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="4dp">
-
-            <ImageView
-                android:id="@+id/imgAcCar"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/ac_car"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <LinearLayout
-                android:id="@+id/line3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="@+id/imgAcCar"
-                app:layout_constraintStart_toEndOf="@+id/imgAcCar"
-                app:layout_constraintTop_toTopOf="@+id/imgAcCar">
-
-                <TextView
-                    android:id="@+id/txtAcCar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:text="AC Car"
-                    android:textColor="@color/black"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/txtAcCarNear"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0 nearbies" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/txtPriceAcCar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:text="RS 700"
-                android:textColor="@color/black"
-                app:layout_constraintBottom_toBottomOf="@+id/line3"
-                app:layout_constraintEnd_toStartOf="@+id/radioButtonAcCar"
-                app:layout_constraintTop_toTopOf="@+id/line3" />
-
-            <CheckBox
-                android:id="@+id/radioButtonAcCar"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginEnd="16dp"
-                style="@style/CustomCheckbox02"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
-    <androidx.cardview.widget.CardView
-        android:id="@+id/btnContinueOrder"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="8dp"
-        app:cardBackgroundColor="@color/primarycolor_primary_1st"
-        app:cardCornerRadius="10dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        >
+        app:layout_constraintTop_toBottomOf="@+id/textView27"
+        mapbox:mapbox_cameraTargetLat="37.1792"
+        mapbox:mapbox_cameraTargetLng="-3.5953"
+        mapbox:mapbox_cameraZoom="14">
 
-        <TextView
-            android:id="@+id/textView8"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:fontFamily="@font/poppins"
-            android:padding="15dp"
-            android:text="Continue to order"
-            android:textColor="@color/white"
-            android:textSize="18sp" />
-    </androidx.cardview.widget.CardView>
+
+    </com.mapbox.mapboxsdk.maps.MapView>
+
+    <com.chinalwb.slidetoconfirmlib.SlideToConfirm
+        android:id="@+id/slide_to_confirm"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="20dp"
+
+        app:border_radius="30dp"
+        app:border_width="2dp"
+        app:completed_text="Canceled"
+        app:completed_text_color="@android:color/black"
+        app:completed_text_size="17sp"
+        app:engage_text="Slide to cancel"
+        app:engage_text_color="@android:color/black"
+        app:engage_text_size="17sp"
+        app:engaged_text_font="@font/poppins"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:slider_background_color="@color/white"
+        app:slider_color="@color/white"
+        app:slider_image="@drawable/cancel"
+        app:slider_lottie="lottie_x.json"
+        app:slider_reset_duration="1000"
+        app:slider_threshold="1dp"
+        app:slider_vibration_duration="50"
+
+        app:slider_width="100dp"
+        tools:context=".MainActivity"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="20dp"></com.chinalwb.slidetoconfirmlib.SlideToConfirm>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

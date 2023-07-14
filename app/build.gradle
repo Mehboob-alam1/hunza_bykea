@@ -108,7 +108,7 @@ dependencies {
 
 
     implementation 'de.hdodenhof:circleimageview:3.1.0'
-
+    implementation 'com.github.chinalwb:slidetoconfirm:1.0.2'
     implementation ('com.mapbox.mapboxsdk:mapbox-android-geocoder:1.0.0@aar'){
         transitive=true
     }
