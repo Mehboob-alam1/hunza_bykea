@@ -26,9 +26,18 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.chinalwb.slidetoconfirmlib.ISlideListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.mapbox.geojson.Point;
 import com.mapbox.geojson.Polygon;
+import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
@@ -46,16 +55,19 @@ import com.mehboob.hunzabykea.Constants;
 import com.mehboob.hunzabykea.MapsActivity;
 import com.mehboob.hunzabykea.R;
 import com.mehboob.hunzabykea.databinding.ActivitySearchingForDriverBinding;
+import com.mehboob.hunzabykea.ui.models.Available;
 import com.mehboob.hunzabykea.utils.LocationTrack;
+import com.mehboob.hunzabykea.utils.SharedPref;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SearchingForDriverActivity extends AppCompatActivity {
-private ActivitySearchingForDriverBinding binding;
-private MapboxMap mapboxMap;
+    private ActivitySearchingForDriverBinding binding;
+    private MapboxMap mapboxMap;
     LocationTrack locationTrack;
     private static float ZOOM_LEVEL = 16f;
+    private SharedPref sharedPref;
     double latitude, longitude;
     private BottomSheetDialog dialog;
     private static final LatLngBounds RESTRICTED_BOUNDS_AREA = new LatLngBounds.Builder()
@@ -74,57 +86,55 @@ private MapboxMap mapboxMap;
     private final List<List<Point>> points = new ArrayList<>();
     private final List<Point> outerPoints = new ArrayList<>();
     private String pushId;
+    private DatabaseReference mRef;
+    ArrayList<Available> availables = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding=ActivitySearchingForDriverBinding.inflate(getLayoutInflater());
+        Mapbox.getInstance(this, getResources().getString(R.string.mapbox_access_token));
+        binding = ActivitySearchingForDriverBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        sharedPref = new SharedPref(this);
+        pushId = getIntent().getStringExtra("pushId");
+        mRef = FirebaseDatabase.getInstance().getReference();
 
-        pushId=getIntent().getStringExtra("pushId");
 
-        binding.mapView.getMapAsync(new com.mapbox.mapboxsdk.maps.OnMapReadyCallback() {
-            @Override
-            public void onMapReady(@NonNull com.mapbox.mapboxsdk.maps.MapboxMap mapboxMap) {
-                SearchingForDriverActivity.this.mapboxMap = mapboxMap;
-                mapboxMap.setStyle(Style.OUTDOORS, new Style.OnStyleLoaded() {
-                    @Override
-                    public void onStyleLoaded(@NonNull Style style) {
+        checkForAvailableDrivers();
+        binding.mapView.getMapAsync(mapboxMap -> {
+            SearchingForDriverActivity.this.mapboxMap = mapboxMap;
+            mapboxMap.setStyle(Style.OUTDOORS, style -> {
 //                        mapboxMap.getUiSettings().setAttributionEnabled(false);
-                        //     enableLocationComponent(style);
+                //     enableLocationComponent(style);
 
-                        enableLocations();
+                enableLocations();
 
 //updateLocation();
 
-                        showBoundsArea(style);
+                showBoundsArea(style);
 
 
-                        style.addImage("red-pin-icon-id", BitmapUtils.getBitmapFromDrawable(ContextCompat.getDrawable(SearchingForDriverActivity.this, R.drawable.ic_baseline_place_24)));
-                        style.addLayer(new SymbolLayer("icon-layer-id", "icon-source-id").withProperties(
-                                iconImage("red-pin-icon-id"),
-                                iconIgnorePlacement(true),
-                                iconAllowOverlap(true),
-                                iconOffset(new Float[]{0f, -0f})
-                        ));
-                        style.addSource(new GeoJsonSource("route-source-id"));
-                        LineLayer routeLayer = new LineLayer("route-layer-id", "route-source-id");
+                style.addImage("red-pin-icon-id", BitmapUtils.getBitmapFromDrawable(ContextCompat.getDrawable(SearchingForDriverActivity.this, R.drawable.ic_baseline_place_24)));
+                style.addLayer(new SymbolLayer("icon-layer-id", "icon-source-id").withProperties(
+                        iconImage("red-pin-icon-id"),
+                        iconIgnorePlacement(true),
+                        iconAllowOverlap(true),
+                        iconOffset(new Float[]{0f, -0f})
+                ));
+                style.addSource(new GeoJsonSource("route-source-id"));
+                LineLayer routeLayer = new LineLayer("route-layer-id", "route-source-id");
 
-                        routeLayer.setProperties(
-                                lineCap(Property.LINE_CAP_ROUND),
-                                lineJoin(Property.LINE_JOIN_ROUND),
-                                lineWidth(3f),
-                                lineColor(Color.parseColor("#14CA15"))
-                        );
-                        style.addLayer(routeLayer);
-
-
+                routeLayer.setProperties(
+                        lineCap(Property.LINE_CAP_ROUND),
+                        lineJoin(Property.LINE_JOIN_ROUND),
+                        lineWidth(3f),
+                        lineColor(Color.parseColor("#14CA15"))
+                );
+                style.addLayer(routeLayer);
 
 
-                    }
-                });
-            }
+            });
         });
-
 
         binding.slideToConfirm.setSlideListener(new ISlideListener() {
             @Override
@@ -133,6 +143,7 @@ private MapboxMap mapboxMap;
             }
 
             @Override
+
             public void onSlideMove(float percent) {
 
             }
@@ -144,14 +155,93 @@ private MapboxMap mapboxMap;
 
             @Override
             public void onSlideDone() {
-                
+                Toast.makeText(SearchingForDriverActivity.this, "juuu", Toast.LENGTH_SHORT).show();
                 deleteOrder(pushId);
-                 finish();
             }
         });
     }
 
+    private void checkForAvailableDrivers() {
+
+        mRef.child(Constants.HUNZA_RIDER).child("available").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot snap : snapshot.getChildren()) {
+                    Available available = snap.getValue(Available.class);
+                    if (available.isAvailable()) {
+
+                        availables.add(available);
+
+                        checkAvailableDriverVehicles(availables);
+                        Toast.makeText(SearchingForDriverActivity.this, "" + available.getUserId() + " is " + available.isAvailable(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(SearchingForDriverActivity.this, " no " + available.getUserId() + " is " + available.isAvailable(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+//        Query query = mRef.orderByChild("available").equalTo(true);
+//
+//        query.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//
+//                if (snapshot.exists()) {
+//                    for (DataSnapshot snap : snapshot.getChildren()) {
+//
+//                        Available available = snap.getValue(Available.class);
+//
+//                        Toast.makeText(SearchingForDriverActivity.this, "" + available.getUserId(), Toast.LENGTH_SHORT).show();
+//                    }
+//                }else {
+//                    Toast.makeText(SearchingForDriverActivity.this, "No data exists", Toast.LENGTH_SHORT).show();
+//
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//                Toast.makeText(SearchingForDriverActivity.this, ""+ error.getMessage(), Toast.LENGTH_SHORT).show();
+//            }
+//        });
+    }
+
+    private void checkAvailableDriverVehicles(ArrayList<Available> list) {
+
+        for (Available available : list){
+
+        }
+    }
+
     private void deleteOrder(String pushId) {
+
+
+        mRef.child(Constants.HUNZA_BYKEA).child(Constants.ORDERS).child(sharedPref.fetchUserId()).child(pushId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.child("active").exists()) {
+                    mRef.child(Constants.HUNZA_BYKEA).child(Constants.ORDERS).child(sharedPref.fetchUserId()).child(pushId).child("active").setValue(false).addOnCompleteListener(task -> {
+                        if (task.isSuccessful())
+                            Toast.makeText(SearchingForDriverActivity.this, "Order cancelled", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }).addOnFailureListener(e -> {
+                        Toast.makeText(SearchingForDriverActivity.this, "Cancellation not completed", Toast.LENGTH_SHORT).show();
+                    });
+                } else {
+                    Toast.makeText(SearchingForDriverActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(SearchingForDriverActivity.this, "" + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void showBoundsArea(@NonNull Style loadedMapStyle) {
@@ -168,15 +258,13 @@ private MapboxMap mapboxMap;
         points.add(outerPoints);
 
 
-        // serviceAreaPolygons.add(Polygon.fromLngLats(Collections.singletonList(points)));
-
-
         loadedMapStyle.addSource(new GeoJsonSource("source-id",
                 Polygon.fromLngLats(points)));
 
         loadedMapStyle.addLayer(new FillLayer("layer-id", "source-id").withProperties(fillOpacity(.24f),
                 fillColor(Color.TRANSPARENT)));
     }
+
     private void enableLocations() {
 
         locationTrack = new LocationTrack(SearchingForDriverActivity.this);
@@ -189,11 +277,6 @@ private MapboxMap mapboxMap;
             latitude = locationTrack.getLatitude();
 
 
-
-
-
-
-
             mapboxMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), ZOOM_LEVEL));
 
 
@@ -202,6 +285,7 @@ private MapboxMap mapboxMap;
             //  locationTrack.showSettingsAlert();
         }
     }
+
     public void DialogShow() {
 
         dialog = new BottomSheetDialog(SearchingForDriverActivity.this, R.style.AppBottomSheetDialogTheme);

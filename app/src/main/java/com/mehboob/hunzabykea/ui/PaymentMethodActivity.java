@@ -47,7 +47,7 @@ private DatabaseReference mRef;
 
         OrderPlace orderPlace = new OrderPlace(sharedPref.fetchUserId(),sharedPref.fetchLocation().getLatitude(),
                 sharedPref.fetchLocation().getLongitude(),sharedPref.fetchSelectedVehicle().getVehicle(),sharedPref.fetchSelectedVehicle().getFare(),
-                sharedPref.fetchSelectedVehicle().getNearBy(),sharedPref.fetchPaymentMethod(),pushId,time);
+                sharedPref.fetchSelectedVehicle().getNearBy(),sharedPref.fetchPaymentMethod(),pushId,time,true);
         mRef.child(Constants.HUNZA_BYKEA).child(Constants.ORDERS).child(sharedPref.fetchUserId()).child(pushId).setValue(orderPlace).
                 addOnCompleteListener(task -> {
                     if (task.isSuccessful()){

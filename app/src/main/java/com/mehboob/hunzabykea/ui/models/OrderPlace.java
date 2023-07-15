@@ -11,8 +11,9 @@ public class OrderPlace {
     private String paymentMethod;
     private String pushId;
     private String time;
+    private boolean active;
 
-    public OrderPlace(String userId, String latitude, String longitude, String vehicle, String fare, String nearBy, String paymentMethod, String pushId, String time) {
+    public OrderPlace(String userId, String latitude, String longitude, String vehicle, String fare, String nearBy, String paymentMethod, String pushId, String time, boolean active) {
         this.userId = userId;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -22,11 +23,20 @@ public class OrderPlace {
         this.paymentMethod = paymentMethod;
         this.pushId = pushId;
         this.time = time;
+        this.active = active;
     }
 
     public OrderPlace() {
     }
 
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 
     public String getUserId() {
         return userId;
