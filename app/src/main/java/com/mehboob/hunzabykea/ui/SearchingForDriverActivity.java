@@ -1,5 +1,6 @@
 package com.mehboob.hunzabykea.ui;
 
+import static com.mapbox.core.constants.Constants.PRECISION_6;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillOpacity;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
@@ -20,6 +21,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -35,6 +37,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.mapbox.api.directions.v5.DirectionsCriteria;
+import com.mapbox.api.directions.v5.MapboxDirections;
+import com.mapbox.api.directions.v5.models.DirectionsResponse;
+import com.mapbox.api.directions.v5.models.DirectionsRoute;
+import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
 import com.mapbox.geojson.Polygon;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -56,11 +64,16 @@ import com.mehboob.hunzabykea.MapsActivity;
 import com.mehboob.hunzabykea.R;
 import com.mehboob.hunzabykea.databinding.ActivitySearchingForDriverBinding;
 import com.mehboob.hunzabykea.ui.models.Available;
+import com.mehboob.hunzabykea.ui.models.VehicleDetailsClass;
 import com.mehboob.hunzabykea.utils.LocationTrack;
 import com.mehboob.hunzabykea.utils.SharedPref;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SearchingForDriverActivity extends AppCompatActivity {
     private ActivitySearchingForDriverBinding binding;
@@ -69,6 +82,11 @@ public class SearchingForDriverActivity extends AppCompatActivity {
     private static float ZOOM_LEVEL = 16f;
     private SharedPref sharedPref;
     double latitude, longitude;
+    DirectionsRoute drivingRoute;
+    LatLng nearestDriverLocation;
+    MarkerOptions markerOptions;
+    private String distanceTotal;
+    private static final String TAG = "SearchDriver";
     private BottomSheetDialog dialog;
     private static final LatLngBounds RESTRICTED_BOUNDS_AREA = new LatLngBounds.Builder()
             .include(Constants.BOUND_CORNER_NW)
@@ -88,6 +106,9 @@ public class SearchingForDriverActivity extends AppCompatActivity {
     private String pushId;
     private DatabaseReference mRef;
     ArrayList<Available> availables = new ArrayList<>();
+    ArrayList<VehicleDetailsClass> availableDriversWithVehicleSelected = new ArrayList<>();
+    ArrayList<LatLng> nearest = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +124,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
         checkForAvailableDrivers();
         binding.mapView.getMapAsync(mapboxMap -> {
             SearchingForDriverActivity.this.mapboxMap = mapboxMap;
+            AddMarkerToMyLocation(new LatLng(Double.parseDouble(sharedPref.fetchLatitude()),Double.parseDouble(sharedPref.fetchLongitude())));
             mapboxMap.setStyle(Style.OUTDOORS, style -> {
 //                        mapboxMap.getUiSettings().setAttributionEnabled(false);
                 //     enableLocationComponent(style);
@@ -136,6 +158,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
             });
         });
 
+
         binding.slideToConfirm.setSlideListener(new ISlideListener() {
             @Override
             public void onSlideStart() {
@@ -155,10 +178,13 @@ public class SearchingForDriverActivity extends AppCompatActivity {
 
             @Override
             public void onSlideDone() {
-                Toast.makeText(SearchingForDriverActivity.this, "juuu", Toast.LENGTH_SHORT).show();
+                //   Toast.makeText(SearchingForDriverActivity.this, "juuu", Toast.LENGTH_SHORT).show();
                 deleteOrder(pushId);
             }
         });
+
+
+
     }
 
     private void checkForAvailableDrivers() {
@@ -173,7 +199,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                         availables.add(available);
 
                         checkAvailableDriverVehicles(availables);
-                        Toast.makeText(SearchingForDriverActivity.this, "" + available.getUserId() + " is " + available.isAvailable(), Toast.LENGTH_SHORT).show();
+                        //  Toast.makeText(SearchingForDriverActivity.this, "" + available.getUserId() + " is " + available.isAvailable(), Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(SearchingForDriverActivity.this, " no " + available.getUserId() + " is " + available.isAvailable(), Toast.LENGTH_SHORT).show();
                     }
@@ -185,37 +211,199 @@ public class SearchingForDriverActivity extends AppCompatActivity {
 
             }
         });
-//        Query query = mRef.orderByChild("available").equalTo(true);
-//
-//        query.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//
-//                if (snapshot.exists()) {
-//                    for (DataSnapshot snap : snapshot.getChildren()) {
-//
-//                        Available available = snap.getValue(Available.class);
-//
-//                        Toast.makeText(SearchingForDriverActivity.this, "" + available.getUserId(), Toast.LENGTH_SHORT).show();
-//                    }
-//                }else {
-//                    Toast.makeText(SearchingForDriverActivity.this, "No data exists", Toast.LENGTH_SHORT).show();
-//
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                Toast.makeText(SearchingForDriverActivity.this, ""+ error.getMessage(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
+
     }
 
     private void checkAvailableDriverVehicles(ArrayList<Available> list) {
 
-        for (Available available : list){
+        for (Available available : list) {
 
+            mRef.child(Constants.HUNZA_RIDER).child("Vehicles").child(available.getUserId()).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                    if (snapshot.child("vehicleType").getValue(String.class).toLowerCase().equals(sharedPref.fetchSelectedVehicle().getVehicle().toLowerCase())) {
+
+                        VehicleDetailsClass detailsClass = snapshot.getValue(VehicleDetailsClass.class);
+
+                        availableDriversWithVehicleSelected.add(detailsClass);
+
+                        getNearestOne(availableDriversWithVehicleSelected);
+
+                    } else {
+                        Toast.makeText(SearchingForDriverActivity.this, "Not juuuuuuuuuuuuuuuuuuu", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
         }
+    }
+
+    private void getNearestOne(ArrayList<VehicleDetailsClass> availableDriversWithVehicleSelected) {
+
+
+        for (VehicleDetailsClass detailsClass : availableDriversWithVehicleSelected) {
+            mRef.child(Constants.HUNZA_RIDER).child("location").child(detailsClass.getUserId()).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+
+                        String latitude = snapshot.child("latitude").getValue(String.class);
+                        String longitude = snapshot.child("longitude").getValue(String.class);
+
+
+                        nearest.add(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
+
+                        nearestDriverLocation = findNearestLocation(nearest, Double.parseDouble(sharedPref.fetchLocation().getLatitude()), Double.parseDouble(sharedPref.fetchLocation().getLongitude()));
+                        Log.d("near : Locations", latitude + " " + longitude);
+
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+
+
+        //  Toast.makeText(this, ""+nearestDriverLocation.getLatitude() +" " + nearestDriverLocation.getLongitude(), Toast.LENGTH_SHORT).show();
+    }
+
+    private void AddMarkerToMyLocation(LatLng position) {
+
+        markerOptions = new MarkerOptions().setIcon(IconFactory.getInstance(this).defaultMarker());
+        markerOptions.title("My location");
+
+        markerOptions.position(position);
+
+
+        mapboxMap.addMarker(markerOptions);
+
+    }
+
+
+    public void getRoute(MapboxMap mapboxMap, Point origin, Point destination) {
+
+
+        MapboxDirections client = MapboxDirections.builder()
+
+                .origin(origin)
+                .destination(destination)
+                .overview(DirectionsCriteria.OVERVIEW_FULL)
+                .profile(DirectionsCriteria.ANNOTATION_DISTANCE)
+                .accessToken(getString(R.string.mapbox_access_token))
+                .build();
+
+        Log.d(TAG,"current Location ::" +origin);
+        Log.d(TAG,"driver Location ::" +destination);
+
+        client.enqueueCall(new Callback<DirectionsResponse>() {
+            @Override
+            public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+                if (response == null) {
+                    Log.d(TAG, "No routes found make sure you have correct access token");
+                    return;
+                } else {
+
+                    //TODO
+            assert response.body() != null;
+                    if (response.body().routes().size() < 1) {
+                        Log.d(TAG, "No routes found");
+                        return;
+                    }
+                }
+
+
+                if (response.body() != null) {
+                    try {
+                        drivingRoute = response.body().routes().get(0);
+                    } catch (IndexOutOfBoundsException e) {
+                        e.printStackTrace();
+                    }
+
+                    double distance = drivingRoute.distance() / 1000;
+                    distanceTotal = String.format("%2f KM", distance);
+                    Toast.makeText(SearchingForDriverActivity.this, "" + distanceTotal, Toast.LENGTH_SHORT).show();
+                    if (mapboxMap != null) {
+                        mapboxMap.getStyle(new Style.OnStyleLoaded() {
+                            @Override
+                            public void onStyleLoaded(@NonNull Style style) {
+                                GeoJsonSource routeLineSource = style.getSourceAs("route-source-id");
+                                GeoJsonSource iconGeoJsonSource = style.getSourceAs("icon-source-id");
+
+                                if (routeLineSource != null) {
+                                    routeLineSource.setGeoJson(LineString.fromPolyline(drivingRoute.geometry(), PRECISION_6));
+
+                                    if (iconGeoJsonSource == null) {
+                                        iconGeoJsonSource = new GeoJsonSource("icon-source-id", Feature.fromGeometry(Point.fromLngLat(destination.longitude(), destination.latitude())));
+
+                                        style.addSource(iconGeoJsonSource);
+
+                                        mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(destination.latitude(), destination.longitude()), ZOOM_LEVEL));
+
+                                    } else {
+                                        iconGeoJsonSource.setGeoJson(Feature.fromGeometry(Point.fromLngLat(destination.longitude(), destination.latitude())));
+
+                                        mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(destination.latitude(), destination.longitude()), ZOOM_LEVEL));
+                                    }
+
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DirectionsResponse> call, Throwable t) {
+
+            }
+        });
+    }
+
+    public LatLng findNearestLocation(ArrayList<LatLng> locations, double myLatitude, double myLongitude) {
+
+        LatLng nearestLocation = null;
+        double shortestDistance = Double.MAX_VALUE;
+
+        for (LatLng location : locations) {
+            double distance = calculateDistance(myLatitude, myLongitude, location.getLatitude(), location.getLatitude());
+
+            if (distance < shortestDistance) {
+                shortestDistance = distance;
+                nearestLocation = location;
+
+                        AddMarkerToMyLocation(nearestLocation);
+                getRoute(mapboxMap, Point.fromLngLat(Double.parseDouble(sharedPref.fetchLocation().getLatitude()), Double.parseDouble(sharedPref.fetchLocation().getLongitude())), Point.fromLngLat(nearestLocation.getLatitude(), nearestLocation.getLongitude()));
+
+            }
+            Log.d("near : Location ", "The nearest location is " + nearestLocation);
+        }
+        return nearestLocation;
+    }
+
+    public static double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        final int EARTH_RADIUS = 6371;// in kilometers
+
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return EARTH_RADIUS * c;
+
     }
 
     private void deleteOrder(String pushId) {
