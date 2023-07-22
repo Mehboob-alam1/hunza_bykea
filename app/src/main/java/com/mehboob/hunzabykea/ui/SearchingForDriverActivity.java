@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -86,6 +87,8 @@ public class SearchingForDriverActivity extends AppCompatActivity {
     LatLng nearestDriverLocation;
     MarkerOptions markerOptions;
     private String distanceTotal;
+    String details;
+    ProgressDialog mDialog;
     private static final String TAG = "SearchDriver";
     private BottomSheetDialog dialog;
     private static final LatLngBounds RESTRICTED_BOUNDS_AREA = new LatLngBounds.Builder()
@@ -119,6 +122,9 @@ public class SearchingForDriverActivity extends AppCompatActivity {
         sharedPref = new SharedPref(this);
         pushId = getIntent().getStringExtra("pushId");
         mRef = FirebaseDatabase.getInstance().getReference();
+        mDialog= new ProgressDialog(this);
+        mDialog.setMessage("Finding nearest driver.....");
+        mDialog.setCancelable(false);
 
 
         checkForAvailableDrivers();
@@ -188,7 +194,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
     }
 
     private void checkForAvailableDrivers() {
-
+mDialog.show();
         mRef.child(Constants.HUNZA_RIDER).child("available").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -201,14 +207,15 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                         checkAvailableDriverVehicles(availables);
                         //  Toast.makeText(SearchingForDriverActivity.this, "" + available.getUserId() + " is " + available.isAvailable(), Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(SearchingForDriverActivity.this, " no " + available.getUserId() + " is " + available.isAvailable(), Toast.LENGTH_SHORT).show();
+                        mDialog.dismiss();
+                     //   Toast.makeText(SearchingForDriverActivity.this, " no " + available.getUserId() + " is " + available.isAvailable(), Toast.LENGTH_SHORT).show();
                     }
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                mDialog.dismiss();
             }
         });
 
@@ -231,14 +238,15 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                         getNearestOne(availableDriversWithVehicleSelected);
 
                     } else {
-                        Toast.makeText(SearchingForDriverActivity.this, "Not juuuuuuuuuuuuuuuuuuu", Toast.LENGTH_SHORT).show();
+                        mDialog.dismiss();
+                       // Toast.makeText(SearchingForDriverActivity.this, "Not juuuuuuuuuuuuuuuuuuu", Toast.LENGTH_SHORT).show();
                     }
 
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-
+                    mDialog.dismiss();
                 }
             });
         }
@@ -259,7 +267,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
 
                         nearest.add(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
 
-                        nearestDriverLocation = findNearestLocation(nearest, Double.parseDouble(sharedPref.fetchLocation().getLatitude()), Double.parseDouble(sharedPref.fetchLocation().getLongitude()));
+                        nearestDriverLocation = findNearestLocation(nearest, Double.parseDouble(sharedPref.fetchLocation().getLatitude()), Double.parseDouble(sharedPref.fetchLocation().getLongitude()),detailsClass.getUserId());
                         Log.d("near : Locations", latitude + " " + longitude);
 
 
@@ -268,6 +276,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
+                    mDialog.dismiss();
 
                 }
             });
@@ -286,6 +295,50 @@ public class SearchingForDriverActivity extends AppCompatActivity {
 
 
         mapboxMap.addMarker(markerOptions);
+
+    }
+
+    private void AddMarkerToDriver(LatLng position,String userId) {
+
+
+getUserDetails(userId,position);
+
+
+    }
+
+    private void getUserDetails(String userId,LatLng position) {
+
+
+        DatabaseReference userRef= FirebaseDatabase.getInstance().getReference();
+
+        userRef.child(Constants.HUNZA_RIDER).child("Profiles").child(userId)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()){
+                         String name=   snapshot.child("userName").getValue(String.class);
+                          String address=  snapshot.child("userAddress").getValue(String.class);
+                          String phoneNumber=  snapshot.child("userPhoneNumber").getValue(String.class);
+
+                          details=name +"\n"+address+"\n"+phoneNumber;
+                            markerOptions = new MarkerOptions().setIcon(IconFactory.getInstance(SearchingForDriverActivity.this).defaultMarker());
+                            markerOptions.title(details);
+
+                            markerOptions.position(position);
+
+
+                            mapboxMap.addMarker(markerOptions);
+                            mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(position.getLatitude(), position.getLongitude()), ZOOM_LEVEL));
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
 
     }
 
@@ -308,20 +361,22 @@ public class SearchingForDriverActivity extends AppCompatActivity {
         client.enqueueCall(new Callback<DirectionsResponse>() {
             @Override
             public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+
+
                 if (response == null) {
                     Log.d(TAG, "No routes found make sure you have correct access token");
                     return;
-                } else {
-
-                    //TODO
-            assert response.body() != null;
-                    if (response.body().routes().size() < 1) {
-                        Log.d(TAG, "No routes found");
-                        return;
-                    }
                 }
-
-
+//                else {
+//
+//                    //TODO
+////            assert response.body() != null;
+//
+//                    if (response.body().routes().size() < 1) {
+//                        Log.d(TAG, "No routes found");
+//                        return;
+//                    }
+//                }
                 if (response.body() != null) {
                     try {
                         drivingRoute = response.body().routes().get(0);
@@ -369,7 +424,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
         });
     }
 
-    public LatLng findNearestLocation(ArrayList<LatLng> locations, double myLatitude, double myLongitude) {
+    public LatLng findNearestLocation(ArrayList<LatLng> locations, double myLatitude, double myLongitude,String userId) {
 
         LatLng nearestLocation = null;
         double shortestDistance = Double.MAX_VALUE;
@@ -381,7 +436,9 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                 shortestDistance = distance;
                 nearestLocation = location;
 
-                        AddMarkerToMyLocation(nearestLocation);
+//                        AddMarkerToMyLocation(nearestLocation);
+                mDialog.dismiss();
+                AddMarkerToDriver(nearestLocation,userId);
                 getRoute(mapboxMap, Point.fromLngLat(Double.parseDouble(sharedPref.fetchLocation().getLatitude()), Double.parseDouble(sharedPref.fetchLocation().getLongitude())), Point.fromLngLat(nearestLocation.getLatitude(), nearestLocation.getLongitude()));
 
             }
