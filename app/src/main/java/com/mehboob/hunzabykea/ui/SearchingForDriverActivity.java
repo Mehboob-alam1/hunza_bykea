@@ -32,6 +32,7 @@ import com.chinalwb.slidetoconfirmlib.ISlideListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -64,7 +65,9 @@ import com.mehboob.hunzabykea.Constants;
 import com.mehboob.hunzabykea.MapsActivity;
 import com.mehboob.hunzabykea.R;
 import com.mehboob.hunzabykea.databinding.ActivitySearchingForDriverBinding;
+import com.mehboob.hunzabykea.ui.models.ActiveOrders;
 import com.mehboob.hunzabykea.ui.models.Available;
+import com.mehboob.hunzabykea.ui.models.UserProfileInfo;
 import com.mehboob.hunzabykea.ui.models.VehicleDetailsClass;
 import com.mehboob.hunzabykea.utils.LocationTrack;
 import com.mehboob.hunzabykea.utils.SharedPref;
@@ -88,7 +91,9 @@ public class SearchingForDriverActivity extends AppCompatActivity {
     MarkerOptions markerOptions;
     private String distanceTotal;
     String details;
+    UserProfileInfo userInfo;
     ProgressDialog mDialog;
+    ActiveOrders orders;
     private static final String TAG = "SearchDriver";
     private BottomSheetDialog dialog;
     private static final LatLngBounds RESTRICTED_BOUNDS_AREA = new LatLngBounds.Builder()
@@ -122,7 +127,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
         sharedPref = new SharedPref(this);
         pushId = getIntent().getStringExtra("pushId");
         mRef = FirebaseDatabase.getInstance().getReference();
-        mDialog= new ProgressDialog(this);
+        mDialog = new ProgressDialog(this);
         mDialog.setMessage("Finding nearest driver.....");
         mDialog.setCancelable(false);
 
@@ -130,7 +135,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
         checkForAvailableDrivers();
         binding.mapView.getMapAsync(mapboxMap -> {
             SearchingForDriverActivity.this.mapboxMap = mapboxMap;
-            AddMarkerToMyLocation(new LatLng(Double.parseDouble(sharedPref.fetchLatitude()),Double.parseDouble(sharedPref.fetchLongitude())));
+            AddMarkerToMyLocation(new LatLng(Double.parseDouble(sharedPref.fetchLatitude()), Double.parseDouble(sharedPref.fetchLongitude())));
             mapboxMap.setStyle(Style.OUTDOORS, style -> {
 //                        mapboxMap.getUiSettings().setAttributionEnabled(false);
                 //     enableLocationComponent(style);
@@ -185,16 +190,15 @@ public class SearchingForDriverActivity extends AppCompatActivity {
             @Override
             public void onSlideDone() {
                 //   Toast.makeText(SearchingForDriverActivity.this, "juuu", Toast.LENGTH_SHORT).show();
-                deleteOrder(pushId);
+                deactivateOrder(pushId);
             }
         });
-
 
 
     }
 
     private void checkForAvailableDrivers() {
-mDialog.show();
+        mDialog.show();
         mRef.child(Constants.HUNZA_RIDER).child("available").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -208,7 +212,7 @@ mDialog.show();
                         //  Toast.makeText(SearchingForDriverActivity.this, "" + available.getUserId() + " is " + available.isAvailable(), Toast.LENGTH_SHORT).show();
                     } else {
                         mDialog.dismiss();
-                     //   Toast.makeText(SearchingForDriverActivity.this, " no " + available.getUserId() + " is " + available.isAvailable(), Toast.LENGTH_SHORT).show();
+                        //   Toast.makeText(SearchingForDriverActivity.this, " no " + available.getUserId() + " is " + available.isAvailable(), Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -239,7 +243,7 @@ mDialog.show();
 
                     } else {
                         mDialog.dismiss();
-                       // Toast.makeText(SearchingForDriverActivity.this, "Not juuuuuuuuuuuuuuuuuuu", Toast.LENGTH_SHORT).show();
+                        // Toast.makeText(SearchingForDriverActivity.this, "Not juuuuuuuuuuuuuuuuuuu", Toast.LENGTH_SHORT).show();
                     }
 
                 }
@@ -267,7 +271,7 @@ mDialog.show();
 
                         nearest.add(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
 
-                        nearestDriverLocation = findNearestLocation(nearest, Double.parseDouble(sharedPref.fetchLocation().getLatitude()), Double.parseDouble(sharedPref.fetchLocation().getLongitude()),detailsClass.getUserId());
+                        nearestDriverLocation = findNearestLocation(nearest, Double.parseDouble(sharedPref.fetchLocation().getLatitude()), Double.parseDouble(sharedPref.fetchLocation().getLongitude()), detailsClass.getUserId());
                         Log.d("near : Locations", latitude + " " + longitude);
 
 
@@ -298,29 +302,31 @@ mDialog.show();
 
     }
 
-    private void AddMarkerToDriver(LatLng position,String userId) {
+    private void AddMarkerToDriver(LatLng position, String userId) {
 
 
-getUserDetails(userId,position);
+        getUserDetails(userId, position);
 
 
     }
 
-    private void getUserDetails(String userId,LatLng position) {
+    private void getUserDetails(String userId, LatLng position) {
 
 
-        DatabaseReference userRef= FirebaseDatabase.getInstance().getReference();
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference();
 
         userRef.child(Constants.HUNZA_RIDER).child("Profiles").child(userId)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()){
-                         String name=   snapshot.child("userName").getValue(String.class);
-                          String address=  snapshot.child("userAddress").getValue(String.class);
-                          String phoneNumber=  snapshot.child("userPhoneNumber").getValue(String.class);
+                        if (snapshot.exists()) {
 
-                          details=name +"\n"+address+"\n"+phoneNumber;
+                            String name = snapshot.child("userName").getValue(String.class);
+                            String address = snapshot.child("userAddress").getValue(String.class);
+                            String phoneNumber = snapshot.child("userPhoneNumber").getValue(String.class);
+                            String driverUserId = snapshot.child("userId").getValue(String.class);
+
+                            details = name + "\n" + address + "\n" + phoneNumber;
                             markerOptions = new MarkerOptions().setIcon(IconFactory.getInstance(SearchingForDriverActivity.this).defaultMarker());
                             markerOptions.title(details);
 
@@ -330,16 +336,67 @@ getUserDetails(userId,position);
                             mapboxMap.addMarker(markerOptions);
                             mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(position.getLatitude(), position.getLongitude()), ZOOM_LEVEL));
 
+                            addActiveRidesToUser(FirebaseAuth.getInstance().getCurrentUser().getUid(), driverUserId, name, address, phoneNumber);
+
+                        } else {
+                            mDialog.dismiss();
                         }
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-
+                        mDialog.dismiss();
                     }
                 });
 
 
+    }
+
+    private void addActiveRidesToUser(String userId, String driverUserId, String driverName, String driverAddress, String driverPhoneNumber) {
+
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
+
+        databaseReference.child(Constants.HUNZA_BYKEA).child("UserInfo").child(userId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    userInfo = snapshot.getValue(UserProfileInfo.class);
+                    assert userInfo != null;
+                    orders = new ActiveOrders(userId, driverUserId, driverName, driverAddress, driverPhoneNumber, userInfo.getName(), userInfo.getEmail(), userInfo.getPhone(), true);
+
+                    databaseReference.child(Constants.USER_ACTIVE_RIDES).child(userId).setValue(orders)
+                            .addOnCompleteListener(task -> {
+                                if (task.isComplete() && task.isSuccessful()) {
+                                    addActiveRidesToDriver(orders);
+                                }
+                            }).addOnFailureListener(e -> {
+                                mDialog.dismiss();
+                            });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
+    }
+
+    private void addActiveRidesToDriver(ActiveOrders orders) {
+
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
+        databaseReference.child(Constants.RIDER_ACTIVE_RIDES).child(orders.getDriverUserId()).setValue(orders)
+                .addOnCompleteListener(task -> {
+                    if (task.isComplete() && task.isSuccessful()) {
+                        mDialog.dismiss();
+                    }
+                }).addOnFailureListener(e -> {
+
+                });
     }
 
 
@@ -355,8 +412,8 @@ getUserDetails(userId,position);
                 .accessToken(getString(R.string.mapbox_access_token))
                 .build();
 
-        Log.d(TAG,"current Location ::" +origin);
-        Log.d(TAG,"driver Location ::" +destination);
+        Log.d(TAG, "current Location ::" + origin);
+        Log.d(TAG, "driver Location ::" + destination);
 
         client.enqueueCall(new Callback<DirectionsResponse>() {
             @Override
@@ -424,7 +481,7 @@ getUserDetails(userId,position);
         });
     }
 
-    public LatLng findNearestLocation(ArrayList<LatLng> locations, double myLatitude, double myLongitude,String userId) {
+    public LatLng findNearestLocation(ArrayList<LatLng> locations, double myLatitude, double myLongitude, String userId) {
 
         LatLng nearestLocation = null;
         double shortestDistance = Double.MAX_VALUE;
@@ -437,8 +494,8 @@ getUserDetails(userId,position);
                 nearestLocation = location;
 
 //                        AddMarkerToMyLocation(nearestLocation);
-                mDialog.dismiss();
-                AddMarkerToDriver(nearestLocation,userId);
+
+                AddMarkerToDriver(nearestLocation, userId);
                 getRoute(mapboxMap, Point.fromLngLat(Double.parseDouble(sharedPref.fetchLocation().getLatitude()), Double.parseDouble(sharedPref.fetchLocation().getLongitude())), Point.fromLngLat(nearestLocation.getLatitude(), nearestLocation.getLongitude()));
 
             }
@@ -463,7 +520,7 @@ getUserDetails(userId,position);
 
     }
 
-    private void deleteOrder(String pushId) {
+    private void deactivateOrder(String pushId) {
 
 
         mRef.child(Constants.HUNZA_BYKEA).child(Constants.ORDERS).child(sharedPref.fetchUserId()).child(pushId).addValueEventListener(new ValueEventListener() {
@@ -472,8 +529,9 @@ getUserDetails(userId,position);
                 if (snapshot.child("active").exists()) {
                     mRef.child(Constants.HUNZA_BYKEA).child(Constants.ORDERS).child(sharedPref.fetchUserId()).child(pushId).child("active").setValue(false).addOnCompleteListener(task -> {
                         if (task.isSuccessful())
-                            Toast.makeText(SearchingForDriverActivity.this, "Order cancelled", Toast.LENGTH_SHORT).show();
-                        finish();
+
+                            deleteOrder(sharedPref.fetchUserId(), orders.getDriverUserId());
+
                     }).addOnFailureListener(e -> {
                         Toast.makeText(SearchingForDriverActivity.this, "Cancellation not completed", Toast.LENGTH_SHORT).show();
                     });
@@ -487,6 +545,31 @@ getUserDetails(userId,position);
                 Toast.makeText(SearchingForDriverActivity.this, "" + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void deleteOrder(String userId, String driverUserId) {
+
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference.child(Constants.USER_ACTIVE_RIDES).child(userId).removeValue().addOnCompleteListener(task -> {
+            if (task.isComplete() && task.isSuccessful()) {
+                databaseReference.child(Constants.RIDER_ACTIVE_RIDES).child(driverUserId).removeValue().addOnCompleteListener(task1 -> {
+                    if (task1.isComplete() && task1.isSuccessful()) {
+                        Toast.makeText(this, "Order cancelled", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(SearchingForDriverActivity.this,MapsActivity.class));
+                        finishAffinity();
+                    } else {
+
+                    }
+                }).addOnFailureListener(e -> {
+                    Toast.makeText(this, "" + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                });
+            } else {
+
+            }
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "" + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        });
+
     }
 
     private void showBoundsArea(@NonNull Style loadedMapStyle) {

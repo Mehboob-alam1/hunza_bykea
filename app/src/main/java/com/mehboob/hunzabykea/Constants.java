@@ -11,6 +11,8 @@ public class Constants {
     public static final String ORDERS="orders";
     public static final String HUNZA_BYKEA="HunzaBykea";
     public static final String HUNZA_RIDER="Riders";
+    public static final String USER_ACTIVE_RIDES="UserActiveRides";
+    public static final String RIDER_ACTIVE_RIDES="RiderActiveRides";
 
     // Baseen
     // 35.92508749263842, 74.24960570785369
