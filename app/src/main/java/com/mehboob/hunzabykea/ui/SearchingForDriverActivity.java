@@ -15,23 +15,34 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.provider.Telephony;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.chinalwb.slidetoconfirmlib.ISlideListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -39,6 +50,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 import com.mapbox.api.directions.v5.DirectionsCriteria;
 import com.mapbox.api.directions.v5.MapboxDirections;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
@@ -62,6 +74,7 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.mapboxsdk.utils.BitmapUtils;
 import com.mehboob.hunzabykea.Constants;
+import com.mehboob.hunzabykea.DriverDetailsActivity;
 import com.mehboob.hunzabykea.MapsActivity;
 import com.mehboob.hunzabykea.R;
 import com.mehboob.hunzabykea.databinding.ActivitySearchingForDriverBinding;
@@ -94,6 +107,8 @@ public class SearchingForDriverActivity extends AppCompatActivity {
     UserProfileInfo userInfo;
     ProgressDialog mDialog;
     ActiveOrders orders;
+    private String driverImage;
+    VehicleDetailsClass data;
     private static final String TAG = "SearchDriver";
     private BottomSheetDialog dialog;
     private static final LatLngBounds RESTRICTED_BOUNDS_AREA = new LatLngBounds.Builder()
@@ -335,7 +350,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
 
                             mapboxMap.addMarker(markerOptions);
                             mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(position.getLatitude(), position.getLongitude()), ZOOM_LEVEL));
-
+                            getImage(driverUserId);
                             addActiveRidesToUser(FirebaseAuth.getInstance().getCurrentUser().getUid(), driverUserId, name, address, phoneNumber);
 
                         } else {
@@ -369,16 +384,45 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                             .addOnCompleteListener(task -> {
                                 if (task.isComplete() && task.isSuccessful()) {
                                     addActiveRidesToDriver(orders);
+                                } else {
+                                    Snackbar snackbar = Snackbar.make(
+                                            findViewById(android.R.id.content),
+                                            "Failed to add ride",
+                                            Snackbar.LENGTH_SHORT
+                                    );
+                                    snackbar.show();
+                                    mDialog.dismiss();
                                 }
                             }).addOnFailureListener(e -> {
+                                Snackbar snackbar = Snackbar.make(
+                                        findViewById(android.R.id.content),
+                                        "" + e.getLocalizedMessage(),
+                                        Snackbar.LENGTH_SHORT
+                                );
+                                snackbar.show();
                                 mDialog.dismiss();
                             });
+                } else {
+
+                    mDialog.dismiss();
+                    Snackbar snackbar = Snackbar.make(
+                            findViewById(android.R.id.content),
+                            "Somthing went wrong",
+                            Snackbar.LENGTH_SHORT
+                    );
+                    snackbar.show();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                mDialog.dismiss();
+                Snackbar snackbar = Snackbar.make(
+                        findViewById(android.R.id.content),
+                        "" + error.getMessage(),
+                        Snackbar.LENGTH_SHORT
+                );
+                snackbar.show();
             }
         });
 
@@ -393,10 +437,146 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isComplete() && task.isSuccessful()) {
                         mDialog.dismiss();
+                        showDriverDialog(orders);
+                    } else {
+                        Snackbar snackbar = Snackbar.make(
+                                findViewById(android.R.id.content),
+                                "Failed to add ride",
+                                Snackbar.LENGTH_SHORT
+                        );
+                        snackbar.show();
                     }
                 }).addOnFailureListener(e -> {
-
+                    Snackbar snackbar = Snackbar.make(
+                            findViewById(android.R.id.content),
+                            "" + e.getLocalizedMessage(),
+                            Snackbar.LENGTH_SHORT
+                    );
+                    snackbar.show();
                 });
+    }
+
+    @SuppressLint("SuspiciousIndentation")
+    private void showDriverDialog(ActiveOrders order) {
+        getVehicle(order.getDriverUserId());
+        BottomSheetDialog dialog = new BottomSheetDialog(SearchingForDriverActivity.this, R.style.AppBottomSheetDialogTheme);
+        View bottomSheetView = LayoutInflater.from(getApplicationContext())
+                .inflate(R.layout.driver_arriving_bottom, (LinearLayout) findViewById(R.id.driverArriving));
+
+        dialog.setContentView(bottomSheetView);
+        dialog.show();
+        dialog.setCancelable(false);
+
+        TextView txtMinutesDriver = bottomSheetView.findViewById(R.id.txtHowMinutes);
+        TextView txtDriverName = bottomSheetView.findViewById(R.id.txtRiderName);
+        TextView txtVehicleType = bottomSheetView.findViewById(R.id.txtVehicleType);
+        TextView txtRating = bottomSheetView.findViewById(R.id.txtRating);
+        ImageView driverImageView = bottomSheetView.findViewById(R.id.imgRider);
+        ImageView btnMessage = bottomSheetView.findViewById(R.id.btnChat);
+        ImageView btnCall = bottomSheetView.findViewById(R.id.btnCall);
+        LinearLayout driverDetails = bottomSheetView.findViewById(R.id.lineDriver);
+
+
+        txtDriverName.setText(order.getDriverName());
+        if (data != null) {
+            txtVehicleType.setText(data.getVehicleColor() + " Color " + data.getVehicleType() + "\nModel " + data.getVehicleModel());
+        }
+        if (driverImage != null) {
+            Glide.with(this).load(Uri.parse(driverImage))
+                    .placeholder(R.drawable.user)
+                    .into(driverImageView);
+        }
+        btnCall.setOnClickListener(v -> {
+            onCallBtnClick(order.getDriverPhoneNumber());
+        });
+
+        btnMessage.setOnClickListener(v -> {
+            sendSMS(order.getDriverPhoneNumber());
+        });
+
+        driverDetails.setOnClickListener(v -> {
+            dialog.dismiss();
+
+            Gson gson = new Gson();
+
+            Intent i = new Intent(SearchingForDriverActivity.this, DriverDetailsActivity.class);
+            i.putExtra("driver", gson.toJson(order));
+            i.putExtra("img", driverImage);
+            i.putExtra("vehicle", gson.toJson(data));
+            startActivity(i);
+        });
+    }
+
+    private void getImage(String driverUserId) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(Constants.HUNZA_RIDER);
+
+        databaseReference.child("documents").child(driverUserId)
+
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            driverImage = snapshot.child("ImgLink0").getValue(String.class);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+
+
+    }
+
+
+    private void sendSMS(String phoneNumber) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) // At least KitKat
+        {
+            String defaultSmsPackageName = Telephony.Sms.getDefaultSmsPackage(this); // Need to change the build to API 19
+
+            Intent sendIntent = new Intent(Intent.ACTION_SEND);
+            sendIntent.setType("text/plain");
+            sendIntent.putExtra(Intent.EXTRA_TEXT, "text");
+
+            if (defaultSmsPackageName != null)// Can be null in case that there is no default, then the user would be able to choose
+            // any app that support this intent.
+            {
+                sendIntent.setPackage(defaultSmsPackageName);
+            }
+            startActivity(sendIntent);
+
+        } else // For early versions, do what worked for you before.
+        {
+            Intent smsIntent = new Intent(android.content.Intent.ACTION_VIEW);
+            smsIntent.setType("vnd.android-dir/mms-sms");
+            smsIntent.putExtra("address", phoneNumber);
+            smsIntent.putExtra("sms_body", "message");
+            startActivity(smsIntent);
+        }
+    }
+
+    private void getVehicle(String driverUserId) {
+
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference.child(Constants.HUNZA_RIDER).child("Vehicles").child(driverUserId)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            data = snapshot.getValue(VehicleDetailsClass.class);
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+        // return  data.getVehicleColor() +" Color "+ data.getVehicleType() + "\nModel " + data.getVehicleModel();
     }
 
 
@@ -555,7 +735,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                 databaseReference.child(Constants.RIDER_ACTIVE_RIDES).child(driverUserId).removeValue().addOnCompleteListener(task1 -> {
                     if (task1.isComplete() && task1.isSuccessful()) {
                         Toast.makeText(this, "Order cancelled", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(SearchingForDriverActivity.this,MapsActivity.class));
+                        startActivity(new Intent(SearchingForDriverActivity.this, MapsActivity.class));
                         finishAffinity();
                     } else {
 
@@ -637,5 +817,50 @@ public class SearchingForDriverActivity extends AppCompatActivity {
         });
 
         dialog.show();
+    }
+
+
+    private void onCallBtnClick(String phonenumber) {
+        if (Build.VERSION.SDK_INT < 23) {
+            phoneCall(phonenumber);
+        } else {
+
+            if (ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+
+                phoneCall(phonenumber);
+            } else {
+                final String[] PERMISSIONS_STORAGE = {Manifest.permission.CALL_PHONE};
+                //Asking request Permissions
+                ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, 9);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        boolean permissionGranted = false;
+        switch (requestCode) {
+            case 9:
+                permissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                break;
+        }
+        if (permissionGranted) {
+            phoneCall(orders.getDriverPhoneNumber());
+        } else {
+            Toast.makeText(this, "You don't assign permission.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void phoneCall(String phoneNumber) {
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+            Intent callIntent = new Intent(Intent.ACTION_CALL);
+            callIntent.setData(Uri.parse("tel:" + phoneNumber));
+            this.startActivity(callIntent);
+        } else {
+            Toast.makeText(this, "You don't assign permission.", Toast.LENGTH_SHORT).show();
+        }
     }
 }
