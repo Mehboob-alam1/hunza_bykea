@@ -45,17 +45,6 @@ public class ActiveNowFragment extends Fragment {
         sharedPref = new SharedPref(getContext());
 
         fetchActiveRide();
-//
-//        listRider.add(new ActiveRideModel("Khan1"));
-//        listRider.add(new ActiveRideModel("Khan2"));
-//        listRider.add(new ActiveRideModel("Khan3"));
-//        listRider.add(new ActiveRideModel("Khan4"));
-//
-//
-//
-//        adapter= new ActiveRideAdapter(listRider,getContext());
-//        binding.activeriderRec.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL,false));
-//        binding.activeriderRec.setAdapter(adapter);
 
 
         return binding.getRoot();
@@ -72,15 +61,18 @@ public class ActiveNowFragment extends Fragment {
                 if (snapshot.exists()) {
                     ActiveRides rides = snapshot.getValue(ActiveRides.class);
                     listRider.add(rides);
+                    binding.noData.getRoot().setVisibility(View.GONE);
                     adapter = new ActiveRideAdapter(listRider, getContext());
                     binding.activeriderRec.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
                     binding.activeriderRec.setAdapter(adapter);
+                } else {
+                    binding.noData.getRoot().setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                binding.noData.getRoot().setVisibility(View.VISIBLE);
             }
         });
 

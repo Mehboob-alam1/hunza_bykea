@@ -884,6 +884,10 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
         return firstResultPoint;
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }
 
 
