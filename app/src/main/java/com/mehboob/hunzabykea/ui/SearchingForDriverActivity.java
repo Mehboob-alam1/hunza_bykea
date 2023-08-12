@@ -79,13 +79,18 @@ import com.mehboob.hunzabykea.MapsActivity;
 import com.mehboob.hunzabykea.R;
 import com.mehboob.hunzabykea.databinding.ActivitySearchingForDriverBinding;
 import com.mehboob.hunzabykea.ui.models.ActiveOrders;
+import com.mehboob.hunzabykea.ui.models.ActiveRides;
 import com.mehboob.hunzabykea.ui.models.Available;
+import com.mehboob.hunzabykea.ui.models.FareModel;
+import com.mehboob.hunzabykea.ui.models.LocationModel;
+import com.mehboob.hunzabykea.ui.models.OrderPlace;
 import com.mehboob.hunzabykea.ui.models.UserProfileInfo;
 import com.mehboob.hunzabykea.ui.models.VehicleDetailsClass;
 import com.mehboob.hunzabykea.utils.LocationTrack;
 import com.mehboob.hunzabykea.utils.SharedPref;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -110,6 +115,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
     private String driverImage;
     VehicleDetailsClass data;
     private static final String TAG = "SearchDriver";
+    private ActiveRides activeRides;
     private BottomSheetDialog dialog;
     private static final LatLngBounds RESTRICTED_BOUNDS_AREA = new LatLngBounds.Builder()
             .include(Constants.BOUND_CORNER_NW)
@@ -317,15 +323,15 @@ public class SearchingForDriverActivity extends AppCompatActivity {
 
     }
 
-    private void AddMarkerToDriver(LatLng position, String userId) {
+    private void AddMarkerToDriver(LatLng position, String userId, double distance) {
 
 
-        getUserDetails(userId, position);
+        getUserDetails(userId, position, distance);
 
 
     }
 
-    private void getUserDetails(String userId, LatLng position) {
+    private void getUserDetails(String userId, LatLng position, double distance) {
 
 
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference();
@@ -351,7 +357,9 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                             mapboxMap.addMarker(markerOptions);
                             mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(position.getLatitude(), position.getLongitude()), ZOOM_LEVEL));
                             getImage(driverUserId);
-                            addActiveRidesToUser(FirebaseAuth.getInstance().getCurrentUser().getUid(), driverUserId, name, address, phoneNumber);
+
+                            addActiveRidesToUser(data, name, address, phoneNumber, driverUserId, sharedPref.fetchSelectedVehicle(), distanceTotal, String.valueOf(System.currentTimeMillis()), sharedPref.fetchPaymentMethod(), new LocationModel(sharedPref.fetchLatitude(), sharedPref.fetchLongitude()), new LocationModel(String.valueOf(position.getLatitude()), String.valueOf(position.getLongitude())));
+                            // addActiveRidesToUser(FirebaseAuth.getInstance().getCurrentUser().getUid(), driverUserId, name, address, phoneNumber);
 
                         } else {
                             mDialog.dismiss();
@@ -367,24 +375,32 @@ public class SearchingForDriverActivity extends AppCompatActivity {
 
     }
 
-    private void addActiveRidesToUser(String userId, String driverUserId, String driverName, String driverAddress, String driverPhoneNumber) {
+    private void addActiveRidesToUser(VehicleDetailsClass data, String driverName, String driverAddress, String driverPhone, String driverUserId, FareModel fareModel, String distanceTotal, String currentTime, String fetchPaymentMethod, LocationModel origin, LocationModel destination) {
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
-
-        databaseReference.child(Constants.HUNZA_BYKEA).child("UserInfo").child(userId).addValueEventListener(new ValueEventListener() {
+        databaseReference.child(Constants.HUNZA_BYKEA).child("UserInfo").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    userInfo = snapshot.getValue(UserProfileInfo.class);
-                    assert userInfo != null;
-                    orders = new ActiveOrders(userId, driverUserId, driverName, driverAddress, driverPhoneNumber, userInfo.getName(), userInfo.getEmail(), userInfo.getPhone(), true);
 
-                    databaseReference.child(Constants.USER_ACTIVE_RIDES).child(userId).setValue(orders)
+                if (snapshot.exists()) {
+
+                    userInfo = snapshot.getValue(UserProfileInfo.class);
+
+                    activeRides = new ActiveRides("", "", "", ""
+                            , driverUserId, driverName, driverAddress, driverPhone, userInfo.getName(), userInfo.getEmail(), userInfo.getPhone(),
+                            fareModel.getVehicle(), fareModel.getFare(), fareModel.getNearBy(),
+                            distanceTotal, currentTime, fetchPaymentMethod, origin.getLatitude(), origin.getLongitude(), destination.getLatitude(), destination.getLongitude(),
+                            FirebaseAuth.getInstance().getCurrentUser().getUid(), true, "");
+
+                    uploadToCloud(activeRides);
+                    databaseReference.child(Constants.USER_ACTIVE_RIDES).child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                            .setValue(activeRides)
                             .addOnCompleteListener(task -> {
                                 if (task.isComplete() && task.isSuccessful()) {
-                                    addActiveRidesToDriver(orders);
+                                    addActiveRidesToDriver(activeRides);
                                 } else {
+
                                     Snackbar snackbar = Snackbar.make(
                                             findViewById(android.R.id.content),
                                             "Failed to add ride",
@@ -392,6 +408,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                                     );
                                     snackbar.show();
                                     mDialog.dismiss();
+
                                 }
                             }).addOnFailureListener(e -> {
                                 Snackbar snackbar = Snackbar.make(
@@ -403,7 +420,6 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                                 mDialog.dismiss();
                             });
                 } else {
-
                     mDialog.dismiss();
                     Snackbar snackbar = Snackbar.make(
                             findViewById(android.R.id.content),
@@ -412,6 +428,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                     );
                     snackbar.show();
                 }
+
             }
 
             @Override
@@ -426,10 +443,10 @@ public class SearchingForDriverActivity extends AppCompatActivity {
             }
         });
 
-
     }
 
-    private void addActiveRidesToDriver(ActiveOrders orders) {
+
+    private void addActiveRidesToDriver(ActiveRides orders) {
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
@@ -456,8 +473,28 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                 });
     }
 
+    private void uploadToCloud(ActiveRides orderPlace) {
+
+
+//        OrderPlace orderPlace = new OrderPlace(sharedPref.fetchUserId(),sharedPref.fetchLocation().getLatitude(),
+//                sharedPref.fetchLocation().getLongitude(),sharedPref.fetchSelectedVehicle().getVehicle(),sharedPref.fetchSelectedVehicle().getFare(),
+//                sharedPref.fetchSelectedVehicle().getNearBy(),sharedPref.fetchPaymentMethod(),pushId,time,true);
+        mRef.child(Constants.HUNZA_BYKEA).child(Constants.ORDERS).child(sharedPref.fetchUserId()).child(pushId).setValue(orderPlace).
+                addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        //Toast.makeText(this, "Order placed successfully", Toast.LENGTH_SHORT).show();
+
+                        // startActivity(new Intent(PaymentMethodActivity.this,SearchingForDriverActivity.class));
+                    } else {
+                        Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(e -> {
+                    Toast.makeText(this, "" + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
     @SuppressLint("SuspiciousIndentation")
-    private void showDriverDialog(ActiveOrders order) {
+    private void showDriverDialog(ActiveRides order) {
         getVehicle(order.getDriverUserId());
         BottomSheetDialog dialog = new BottomSheetDialog(SearchingForDriverActivity.this, R.style.AppBottomSheetDialogTheme);
         View bottomSheetView = LayoutInflater.from(getApplicationContext())
@@ -465,7 +502,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
 
         dialog.setContentView(bottomSheetView);
         dialog.show();
-        dialog.setCancelable(false);
+
 
         TextView txtMinutesDriver = bottomSheetView.findViewById(R.id.txtHowMinutes);
         TextView txtDriverName = bottomSheetView.findViewById(R.id.txtRiderName);
@@ -504,6 +541,8 @@ public class SearchingForDriverActivity extends AppCompatActivity {
             i.putExtra("img", driverImage);
             i.putExtra("vehicle", gson.toJson(data));
             startActivity(i);
+
+            finish();
         });
     }
 
@@ -525,7 +564,6 @@ public class SearchingForDriverActivity extends AppCompatActivity {
 
                     }
                 });
-
 
 
     }
@@ -675,7 +713,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
 
 //                        AddMarkerToMyLocation(nearestLocation);
 
-                AddMarkerToDriver(nearestLocation, userId);
+                AddMarkerToDriver(nearestLocation, userId, distance);
                 getRoute(mapboxMap, Point.fromLngLat(Double.parseDouble(sharedPref.fetchLocation().getLatitude()), Double.parseDouble(sharedPref.fetchLocation().getLongitude())), Point.fromLngLat(nearestLocation.getLatitude(), nearestLocation.getLongitude()));
 
             }
@@ -706,11 +744,11 @@ public class SearchingForDriverActivity extends AppCompatActivity {
         mRef.child(Constants.HUNZA_BYKEA).child(Constants.ORDERS).child(sharedPref.fetchUserId()).child(pushId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.child("active").exists()) {
-                    mRef.child(Constants.HUNZA_BYKEA).child(Constants.ORDERS).child(sharedPref.fetchUserId()).child(pushId).child("active").setValue(false).addOnCompleteListener(task -> {
+                if (snapshot.child("status").exists()) {
+                    mRef.child(Constants.HUNZA_BYKEA).child(Constants.ORDERS).child(sharedPref.fetchUserId()).child(pushId).child("status").setValue(false).addOnCompleteListener(task -> {
                         if (task.isSuccessful())
 
-                            deleteOrder(sharedPref.fetchUserId(), orders.getDriverUserId());
+                            deleteOrder(sharedPref.fetchUserId(), activeRides.getDriverUserId());
 
                     }).addOnFailureListener(e -> {
                         Toast.makeText(SearchingForDriverActivity.this, "Cancellation not completed", Toast.LENGTH_SHORT).show();

@@ -18,49 +18,50 @@ import java.util.Random;
 import java.util.UUID;
 
 public class PaymentMethodActivity extends AppCompatActivity {
-private ActivityPaymentMethodBinding binding;
-private SharedPref sharedPref;
- String pushId;
-private DatabaseReference mRef;
+    private ActivityPaymentMethodBinding binding;
+    private SharedPref sharedPref;
+    private String pushId;
+    private DatabaseReference mRef;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding=ActivityPaymentMethodBinding.inflate(getLayoutInflater());
+        binding = ActivityPaymentMethodBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        sharedPref= new SharedPref(this);
-      mRef=FirebaseDatabase.getInstance().getReference();
+        sharedPref = new SharedPref(this);
+        mRef = FirebaseDatabase.getInstance().getReference();
 
         binding.btnContinue.setOnClickListener(v -> {
             if (!binding.radioCashMoney.isChecked())
                 Toast.makeText(this, "Choose the payment method", Toast.LENGTH_SHORT).show();
             else {
-                pushId= UUID.randomUUID().toString();
+                pushId = UUID.randomUUID().toString();
                 sharedPref.savePaymentMethod("Cash");
-                uploadToCloud(pushId,String.valueOf(System.currentTimeMillis()));
+                uploadToCloud(pushId, String.valueOf(System.currentTimeMillis()));
             }
         });
     }
 
-    private void uploadToCloud(String pushId,String time) {
+    private void uploadToCloud(String pushId, String time) {
 
-
-        OrderPlace orderPlace = new OrderPlace(sharedPref.fetchUserId(),sharedPref.fetchLocation().getLatitude(),
-                sharedPref.fetchLocation().getLongitude(),sharedPref.fetchSelectedVehicle().getVehicle(),sharedPref.fetchSelectedVehicle().getFare(),
-                sharedPref.fetchSelectedVehicle().getNearBy(),sharedPref.fetchPaymentMethod(),pushId,time,true);
+        OrderPlace orderPlace = new OrderPlace();
+//        OrderPlace orderPlace = new OrderPlace(sharedPref.fetchUserId(),sharedPref.fetchLocation().getLatitude(),
+//                sharedPref.fetchLocation().getLongitude(),sharedPref.fetchSelectedVehicle().getVehicle(),sharedPref.fetchSelectedVehicle().getFare(),
+//                sharedPref.fetchSelectedVehicle().getNearBy(),sharedPref.fetchPaymentMethod(),pushId,time,true);
         mRef.child(Constants.HUNZA_BYKEA).child(Constants.ORDERS).child(sharedPref.fetchUserId()).child(pushId).setValue(orderPlace).
                 addOnCompleteListener(task -> {
-                    if (task.isSuccessful()){
+                    if (task.isSuccessful()) {
                         //Toast.makeText(this, "Order placed successfully", Toast.LENGTH_SHORT).show();
-                        Intent i = new Intent(PaymentMethodActivity.this,SearchingForDriverActivity.class);
-                        i.putExtra("pushId",pushId);
+                        Intent i = new Intent(PaymentMethodActivity.this, SearchingForDriverActivity.class);
+                        i.putExtra("pushId", pushId);
                         startActivity(i);
-                       // startActivity(new Intent(PaymentMethodActivity.this,SearchingForDriverActivity.class));
-                    }else{
+                        // startActivity(new Intent(PaymentMethodActivity.this,SearchingForDriverActivity.class));
+                    } else {
                         Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
                     }
                 }).addOnFailureListener(e -> {
-                    Toast.makeText(this, ""+e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "" + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 }

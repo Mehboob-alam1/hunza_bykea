@@ -1,8 +1,6 @@
 package com.mehboob.hunzabykea.ui.models;
 
-public class OrderPlace {
-
-
+public class ActiveRides {
 
 
     private String vehicleType,vehicleBrand,vehicleModel,vehicleColor;
@@ -31,15 +29,10 @@ public class OrderPlace {
     private String driverImage;
 
 
-    private String pushId;
-    private String time;
-    private boolean active;
-
-
-    public OrderPlace() {
+    public ActiveRides() {
     }
 
-    public OrderPlace(String vehicleType, String vehicleBrand, String vehicleModel, String vehicleColor, String driverUserId, String driverName, String driverAddress, String driverPhoneNumber, String riderName, String riderEmail, String riderPhone, String riderVehicle, String fare, String nearBy, String totalDistance, String currentTime, String paymentMethod, String userOriginLatitude, String userOriginLongitude, String userDestLatitude, String userDestLongitude, String userId, boolean status, String driverImage, String pushId, String time, boolean active) {
+    public ActiveRides(String vehicleType, String vehicleBrand, String vehicleModel, String vehicleColor, String driverUserId, String driverName, String driverAddress, String driverPhoneNumber, String riderName, String riderEmail, String riderPhone, String riderVehicle, String fare, String nearBy, String totalDistance, String currentTime, String paymentMethod, String userOriginLatitude, String userOriginLongitude, String userDestLatitude, String userDestLongitude, String userId, boolean status, String driverImage) {
         this.vehicleType = vehicleType;
         this.vehicleBrand = vehicleBrand;
         this.vehicleModel = vehicleModel;
@@ -64,17 +57,24 @@ public class OrderPlace {
         this.userId = userId;
         this.status = status;
         this.driverImage = driverImage;
-        this.pushId = pushId;
-        this.time = time;
-        this.active = active;
     }
 
     public String getVehicleType() {
         return vehicleType;
     }
 
+
+
     public void setVehicleType(String vehicleType) {
         this.vehicleType = vehicleType;
+    }
+
+    public String getDriverImage() {
+        return driverImage;
+    }
+
+    public void setDriverImage(String driverImage) {
+        this.driverImage = driverImage;
     }
 
     public String getVehicleBrand() {
@@ -251,37 +251,5 @@ public class OrderPlace {
 
     public void setStatus(boolean status) {
         this.status = status;
-    }
-
-    public String getDriverImage() {
-        return driverImage;
-    }
-
-    public void setDriverImage(String driverImage) {
-        this.driverImage = driverImage;
-    }
-
-    public String getPushId() {
-        return pushId;
-    }
-
-    public void setPushId(String pushId) {
-        this.pushId = pushId;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
     }
 }

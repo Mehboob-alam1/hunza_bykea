@@ -178,4 +178,18 @@ public class DashboardActivity extends AppCompatActivity {
         else
             super.onBackPressed();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+
+        String val = getIntent().getStringExtra("back");
+        if (val != null) {
+            if (val.equals("1")) {
+                callFragment(new BookingFragment());
+            }
+
+        }
+    }
 }

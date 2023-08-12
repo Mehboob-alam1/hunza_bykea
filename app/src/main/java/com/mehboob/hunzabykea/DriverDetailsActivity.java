@@ -1,7 +1,11 @@
 package com.mehboob.hunzabykea;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.Manifest;
 import android.content.Intent;
@@ -13,9 +17,18 @@ import android.provider.Telephony;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mehboob.hunzabykea.databinding.ActivityDriverDetailsBinding;
+import com.mehboob.hunzabykea.ui.DashboardActivity;
+import com.mehboob.hunzabykea.ui.fragments.BookingFragment;
+import com.mehboob.hunzabykea.ui.fragments.HomeFragment;
+import com.mehboob.hunzabykea.ui.fragments.WalletFragment;
 import com.mehboob.hunzabykea.ui.models.ActiveOrders;
 import com.mehboob.hunzabykea.ui.models.VehicleDetailsClass;
 
@@ -70,7 +83,7 @@ vehicleDetailsClass=gson.fromJson(vehicleData,typeD);
        binding.btnChat.setOnClickListener(v -> {
             sendSMS(activeOrders.getDriverPhoneNumber());
         });
-
+setVehicleTypeUser();
     }
     private void onCallBtnClick(String phonenumber) {
         if (Build.VERSION.SDK_INT < 23) {
@@ -126,4 +139,69 @@ vehicleDetailsClass=gson.fromJson(vehicleData,typeD);
             startActivity(smsIntent);
         }
     }
+
+    @Override
+    public void onBackPressed() {
+       Intent i = new Intent(DriverDetailsActivity.this, DashboardActivity.class);
+       i.putExtra("back","1");
+       startActivity(i);
+       finish();
+    }
+
+
+
+private void setVehicleTypeUser(){
+
+
+    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
+
+    databaseReference.child(Constants.USER_ACTIVE_RIDES).child(activeOrders.getUserId())
+            .addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()){
+                        databaseReference.child(Constants.USER_ACTIVE_RIDES).child(activeOrders.getUserId()).child("vehicleBrand").setValue(vehicleDetailsClass.getVehicleBrand());
+                        databaseReference.child(Constants.USER_ACTIVE_RIDES).child(activeOrders.getUserId()).child("vehicleColor").setValue(vehicleDetailsClass.getVehicleColor());
+                        databaseReference.child(Constants.USER_ACTIVE_RIDES).child(activeOrders.getUserId()).child("vehicleModel").setValue(vehicleDetailsClass.getVehicleModel());
+                        databaseReference.child(Constants.USER_ACTIVE_RIDES).child(activeOrders.getUserId()).child("vehicleType").setValue(vehicleDetailsClass.getVehicleType());
+                        databaseReference.child(Constants.USER_ACTIVE_RIDES).child(activeOrders.getUserId()).child("driverImage").setValue(image);
+
+                        setVehicleTypeRider();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+}
+
+    private void setVehicleTypeRider() {
+
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
+
+        databaseReference.child(Constants.RIDER_ACTIVE_RIDES).child(activeOrders.getUserId())
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()){
+                            databaseReference.child(Constants.RIDER_ACTIVE_RIDES).child(activeOrders.getUserId()).child("vehicleBrand").setValue(vehicleDetailsClass.getVehicleBrand());
+                            databaseReference.child(Constants.RIDER_ACTIVE_RIDES).child(activeOrders.getUserId()).child("vehicleColor").setValue(vehicleDetailsClass.getVehicleColor());
+                            databaseReference.child(Constants.RIDER_ACTIVE_RIDES).child(activeOrders.getUserId()).child("vehicleModel").setValue(vehicleDetailsClass.getVehicleModel());
+                            databaseReference.child(Constants.RIDER_ACTIVE_RIDES).child(activeOrders.getUserId()).child("vehicleType").setValue(vehicleDetailsClass.getVehicleType());
+
+                            databaseReference.child(Constants.RIDER_ACTIVE_RIDES).child(activeOrders.getUserId()).child("driverImage").setValue(image);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+    }
+
 }
