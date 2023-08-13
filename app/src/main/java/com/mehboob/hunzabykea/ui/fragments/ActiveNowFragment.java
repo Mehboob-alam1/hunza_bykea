@@ -62,7 +62,7 @@ public class ActiveNowFragment extends Fragment {
                     ActiveRides rides = snapshot.getValue(ActiveRides.class);
                     listRider.add(rides);
                     binding.noData.getRoot().setVisibility(View.GONE);
-                    adapter = new ActiveRideAdapter(listRider, getContext());
+                    adapter = new ActiveRideAdapter(listRider, getContext(),"Active");
                     binding.activeriderRec.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
                     binding.activeriderRec.setAdapter(adapter);
                 } else {

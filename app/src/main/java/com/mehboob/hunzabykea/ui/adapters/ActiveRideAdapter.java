@@ -23,19 +23,21 @@ import java.util.Locale;
 
 public class ActiveRideAdapter extends RecyclerView.Adapter<ActiveRideAdapter.viewholder> {
 
-    ArrayList<ActiveRides> list;
-    Context context;
+  private   ArrayList<ActiveRides> list;
+  private   Context context;
+    private String status;
 
 
-    public ActiveRideAdapter(ArrayList<ActiveRides> list, Context context) {
+    public ActiveRideAdapter(ArrayList<ActiveRides> list, Context context,String status) {
         this.list = list;
         this.context = context;
+        this.status=status;
     }
 
     @NonNull
     @Override
     public viewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.activenow_sample_layout,parent,false);
+        View view = LayoutInflater.from(context).inflate(R.layout.activenow_sample_layout, parent, false);
 
         return new ActiveRideAdapter.viewholder(view);
     }
@@ -67,12 +69,23 @@ public class ActiveRideAdapter extends RecyclerView.Adapter<ActiveRideAdapter.vi
         holder.txtDistance.setText(rideModel.getTotalDistance());
         holder.txtTimeTake.setText("---");
         holder.txtFare.setText(rideModel.getFare());
+        try {
+            holder.txtTime.setText(convertMillisToDate(Long.parseLong(rideModel.getCurrentTime())));
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
 
-        holder.txtTime.setText(convertMillisToDate(Long.parseLong(rideModel.getCurrentTime())));
+        holder.txtCurrentLocation.setText(rideModel.getUserOriginLatitude() + " " + rideModel.getUserOriginLongitude());
+        holder.txtDestinationLocation.setText(rideModel.getUserDestLatitude() + " " + rideModel.getUserDestLongitude());
 
-        holder.txtCurrentLocation.setText(rideModel.getUserOriginLatitude()+" " +rideModel.getUserOriginLongitude());
-        holder.txtDestinationLocation.setText(rideModel.getUserDestLatitude()+" " +rideModel.getUserDestLongitude());
 
+        if (status.equals("Active")){
+            holder.txtStatus.setText("Active");
+        }else if (status.equals("Complete")){
+            holder.txtStatus.setText("Complete");
+        }else if (status.equals("Cancelled")){
+            holder.txtStatus.setText("Cancelled");
+        }
 
     }
 
@@ -83,9 +96,10 @@ public class ActiveRideAdapter extends RecyclerView.Adapter<ActiveRideAdapter.vi
 
 
     public class viewholder extends RecyclerView.ViewHolder {
-        ImageView down,up,riderProfileImage;
-        TextView textView,txtDistance,txtTimeTake,txtFare,txtTime,txtCurrentLocation,txtDestinationLocation;
+        ImageView down, up, riderProfileImage;
+        TextView textView, txtDistance, txtTimeTake, txtFare, txtTime, txtCurrentLocation, txtDestinationLocation,txtStatus;
         ConstraintLayout constraintLayout;
+
         public viewholder(@NonNull View itemView) {
             super(itemView);
             down = itemView.findViewById(R.id.detailsShowbtn);
@@ -99,6 +113,7 @@ public class ActiveRideAdapter extends RecyclerView.Adapter<ActiveRideAdapter.vi
             txtTime = itemView.findViewById(R.id.txtTime);
             txtCurrentLocation = itemView.findViewById(R.id.txtCurrentLocation);
             txtDestinationLocation = itemView.findViewById(R.id.txtDestinationLocation);
+            txtStatus = itemView.findViewById(R.id.txtStatus);
 
 
         }
