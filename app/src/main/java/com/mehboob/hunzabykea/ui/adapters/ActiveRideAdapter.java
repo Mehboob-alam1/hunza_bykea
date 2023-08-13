@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -74,17 +75,20 @@ public class ActiveRideAdapter extends RecyclerView.Adapter<ActiveRideAdapter.vi
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
-
+holder.txtRiderVechileDetail.setText(rideModel.getVehicleType() + " " + rideModel.getVehicleModel());
         holder.txtCurrentLocation.setText(rideModel.getUserOriginLatitude() + " " + rideModel.getUserOriginLongitude());
         holder.txtDestinationLocation.setText(rideModel.getUserDestLatitude() + " " + rideModel.getUserDestLongitude());
 
 
         if (status.equals("Active")){
             holder.txtStatus.setText("Active");
+            holder.btnOrderRider.setText("Mark Order as Complete");
         }else if (status.equals("Complete")){
             holder.txtStatus.setText("Complete");
+            holder.btnOrderRider.setVisibility(View.GONE);
         }else if (status.equals("Cancelled")){
             holder.txtStatus.setText("Cancelled");
+            holder.btnOrderRider.setVisibility(View.GONE);
         }
 
     }
@@ -96,10 +100,10 @@ public class ActiveRideAdapter extends RecyclerView.Adapter<ActiveRideAdapter.vi
 
 
     public class viewholder extends RecyclerView.ViewHolder {
-        ImageView down, up, riderProfileImage;
-        TextView textView, txtDistance, txtTimeTake, txtFare, txtTime, txtCurrentLocation, txtDestinationLocation,txtStatus;
-        ConstraintLayout constraintLayout;
-
+       private ImageView down, up, riderProfileImage;
+       private TextView textView, txtDistance, txtTimeTake, txtFare, txtTime, txtCurrentLocation, txtDestinationLocation,txtStatus,txtRiderVechileDetail;
+     private    ConstraintLayout constraintLayout;
+private AppCompatButton btnOrderRider;
         public viewholder(@NonNull View itemView) {
             super(itemView);
             down = itemView.findViewById(R.id.detailsShowbtn);
@@ -114,6 +118,8 @@ public class ActiveRideAdapter extends RecyclerView.Adapter<ActiveRideAdapter.vi
             txtCurrentLocation = itemView.findViewById(R.id.txtCurrentLocation);
             txtDestinationLocation = itemView.findViewById(R.id.txtDestinationLocation);
             txtStatus = itemView.findViewById(R.id.txtStatus);
+            btnOrderRider = itemView.findViewById(R.id.btnOrderRider);
+            txtRiderVechileDetail = itemView.findViewById(R.id.txtRiderVechileDetail);
 
 
         }

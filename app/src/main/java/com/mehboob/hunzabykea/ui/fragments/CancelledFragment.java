@@ -42,7 +42,7 @@ public class CancelledFragment extends Fragment {
 
         sharedPref = new SharedPref(getContext());
 
-listRider = new ArrayList<>();
+        listRider = new ArrayList<>();
         fetchCancelledRide();
 
 
@@ -51,50 +51,30 @@ listRider = new ArrayList<>();
 
 
     private void fetchCancelledRide() {
-
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
         databaseReference.child(Constants.HUNZA_BYKEA).child("orders").child(sharedPref.fetchUserId()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
-
-                    ActiveRides rides = dataSnapshot.getValue(ActiveRides.class);
-
-                     if (!Boolean.TRUE.equals(dataSnapshot.child("status").getValue(Boolean.class))){
-
-
-                         listRider.add(rides);
-                         Toast.makeText(getContext(), ""+rides.getDriverName(), Toast.LENGTH_SHORT).show();
-
-                     }else{
-                         binding.noData.getRoot().setVisibility(View.VISIBLE);
-                         Toast.makeText(getContext(), "No data", Toast.LENGTH_SHORT).show();
-                     }
+                if (snapshot.exists()) {
+                    listRider.clear();
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        ActiveRides rides = dataSnapshot.getValue(ActiveRides.class);
+                        if (!rides.isStatus()) { // Check if the status is false
+                            listRider.add(rides);
+                        }
+                    }
+                    if (listRider.isEmpty()) {
+                        binding.noData.getRoot().setVisibility(View.VISIBLE);
+                    } else {
+                        binding.noData.getRoot().setVisibility(View.GONE);
+                        adapter = new ActiveRideAdapter(listRider, getContext(), "Cancelled");
+                        binding.activeriderRec.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
+                        binding.activeriderRec.setAdapter(adapter);
+                    }
+                } else {
+                    binding.noData.getRoot().setVisibility(View.VISIBLE);
                 }
-                binding.noData.getRoot().setVisibility(View.GONE);
-                adapter = new ActiveRideAdapter(listRider, getContext(),"Cancelled");
-                binding.activeriderRec.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
-                binding.activeriderRec.setAdapter(adapter);
-
-//                if (snapshot.exists()) {
-//
-//
-//                    if (databaseReference.child(sharedPref.fetchUserId()).child("status").addValueEventListener(new ValueEventListener() {
-//                        @Override
-//                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                            if
-//                        }
-//
-//                        @Override
-//                        public void onCancelled(@NonNull DatabaseError error) {
-//
-//                        }
-//                    })
-//                } else {
-//                    binding.noData.getRoot().setVisibility(View.VISIBLE);
-//                }
             }
 
             @Override
@@ -102,6 +82,6 @@ listRider = new ArrayList<>();
                 binding.noData.getRoot().setVisibility(View.VISIBLE);
             }
         });
-
     }
+
 }
