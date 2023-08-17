@@ -142,21 +142,16 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
     private ActivityMapsBinding binding;
 
     private MapboxMap mapboxMap;
-    private static final String SOURCE_ID = "source-id";
-    private static final String LAYER_ID = "layer-id";
+
     private PermissionsManager permissionsManager;
-    protected LocationManager locationManager;
+
 
     private String searchedLocation;
     boolean gps_enabled = false;
     boolean network_enabled = false;
     //
     private BottomSheetDialog dialog;
-    List<Polygon> serviceAreaPolygons = new ArrayList<>();
 
-    private LocationRequest locationRequest;
-    FusedLocationProviderClient fusedLocationProviderClient;
-    boolean isWithinServiceArea;
     private static float ZOOM_LEVEL = 16f;
 
     private static final String TAG = "MapsActivity";
@@ -668,20 +663,7 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
         });
     }
 
-    private void bottomDialog(String pick, String drop) {
-        BottomSheetDialog dialog = new BottomSheetDialog(MapsActivity.this, R.style.AppBottomSheetDialogTheme);
-        View bottomsheetView = LayoutInflater.from(getApplicationContext()).
-                inflate(R.layout.bottom_select_address, (CardView) findViewById(R.id.bottom_sheet_container));
-        dialog.setContentView(bottomsheetView);
 
-        TextView textViewPick = bottomsheetView.findViewById(R.id.txtPick);
-        TextView textViewDrop = bottomsheetView.findViewById(R.id.txtDrop);
-
-        textViewPick.setText(pick);
-        textViewDrop.setText(drop);
-
-        dialog.show();
-    }
 
     @SuppressLint("MissingInflatedId")
 
@@ -772,54 +754,10 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
         dialog.show();
     }
 
-    private PendingIntent pendingIntent() {
-        Intent intent = new Intent(this, LocationService.class);
-        intent.setAction(LocationService.ACTION_UPDATE_PROCESS);
 
 
-        return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_MUTABLE);
-
-    }
-
-    private void updateLocation() {
-
-        buildLocationRequest();
-
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            return;
-        }
-
-        fusedLocationProviderClient.requestLocationUpdates(locationRequest, pendingIntent());
 
 
-        markerOptions = new MarkerOptions().setIcon(IconFactory.getInstance(this).defaultMarker());
-        markerOptions.title("My location");
-
-        markerOptions.position(new LatLng(Double.parseDouble(mLocation.getLatitude()), Double.parseDouble(mLocation.getLongitude())));
-
-
-        mapboxMap.addMarker(markerOptions);
-
-
-        origin = Point.fromLngLat(Double.parseDouble(mLocation.getLatitude()), Double.parseDouble(mLocation.getLongitude()));
-
-
-        mapboxMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.parseDouble(mLocation.getLatitude()), Double.parseDouble(mLocation.getLongitude())), 23f));
-
-    }
-
-    public void buildLocationRequest() {
-
-        locationRequest = new LocationRequest();
-
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(5000);
-        locationRequest.setFastestInterval(3000);
-        locationRequest.setSmallestDisplacement(10f);
-
-    }
 
     public void updateLocationObject(Location locationObj) {
         MapsActivity.this.runOnUiThread(new Runnable() {
