@@ -21,6 +21,12 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.mehboob.hunzabykea.Constants;
 import com.mehboob.hunzabykea.MapsActivity;
 import com.mehboob.hunzabykea.R;
 import com.mehboob.hunzabykea.databinding.FragmentHomeBinding;
@@ -51,7 +57,17 @@ public class HomeFragment extends Fragment {
         layout=view.findViewById(R.id.layout);
         setBanners();
 
+        FirebaseMessaging.getInstance().getToken().addOnSuccessListener(new OnSuccessListener<String>() {
+            @Override
+            public void onSuccess(String s) {
+                DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference(Constants.HUNZA_BYKEA);
+                databaseReference.child("UserInfo").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                        .child("token").setValue(s);
 
+
+
+            }
+        });
 
 
         return binding.getRoot();

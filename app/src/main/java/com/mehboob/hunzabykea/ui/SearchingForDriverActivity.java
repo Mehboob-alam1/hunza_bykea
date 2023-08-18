@@ -11,6 +11,7 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineCap;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineJoin;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth;
+import static com.mehboob.hunzabykea.Constants.TOPIC;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,9 +38,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.chinalwb.slidetoconfirmlib.ISlideListener;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.snackbar.Snackbar;
@@ -50,6 +57,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.mapbox.api.directions.v5.DirectionsCriteria;
 import com.mapbox.api.directions.v5.MapboxDirections;
@@ -89,9 +97,14 @@ import com.mehboob.hunzabykea.ui.models.VehicleDetailsClass;
 import com.mehboob.hunzabykea.utils.LocationTrack;
 import com.mehboob.hunzabykea.utils.SharedPref;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -152,8 +165,10 @@ public class SearchingForDriverActivity extends AppCompatActivity {
         mDialog.setMessage("Finding nearest driver.....");
         mDialog.setCancelable(false);
 
-
+        FirebaseMessaging.getInstance().subscribeToTopic(TOPIC);
         checkForAvailableDrivers();
+
+
         binding.mapView.getMapAsync(mapboxMap -> {
             SearchingForDriverActivity.this.mapboxMap = mapboxMap;
             AddMarkerToMyLocation(new LatLng(Double.parseDouble(sharedPref.fetchLatitude()), Double.parseDouble(sharedPref.fetchLongitude())));
@@ -572,7 +587,69 @@ public class SearchingForDriverActivity extends AppCompatActivity {
             finish();
         });
     }
+    private void onSendNotification(String name, String send_you_and_interest, String token) {
+        try {
 
+            RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+            String url = "https://fcm.googleapis.com/fcm/send";
+            JSONObject jsonObject = new JSONObject();
+
+            jsonObject.put("title",name);
+            jsonObject.put("body",send_you_and_interest);
+
+
+            JSONObject jsonObject1 = new JSONObject();
+            jsonObject1.put("notification",jsonObject);
+            jsonObject1.put("to",token);
+
+//        JsonObjectRequest jor = new JsonObjectRequest(url, jsonObject1, new Response.Listener<JSONObject>() {
+//            @Override
+//            public void onResponse(JSONObject response) {
+//                Toast.makeText(ChatActivity.this, ""+response.toString(), Toast.LENGTH_SHORT).show();
+//            }
+//
+//        }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                Toast.makeText(ChatActivity.this, ""+error.getMessage(), Toast.LENGTH_SHORT).show();
+//            }
+//        });
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, jsonObject1,
+                    new com.android.volley.Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Toast.makeText(SearchingForDriverActivity.this, "Interest sent", Toast.LENGTH_SHORT).show();
+                        }
+
+                    },new com.android.volley.Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    // Toast.makeText(context, "Interest not sent "+error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+
+
+                }
+
+            })
+            {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    HashMap<String,String> map = new HashMap<>();
+                    String key = "key=AAAAGriD1uw:APA91bHV7PTVFTXFaCXBlgRrT8Lr8-G79rMZWb1aVDBCpphUykRKNNV73JH0nK8jEfsMqpzKRJ0rlxyS5-nAPkKHJKmoJ8wiMMElQRRM34TLJN4rv3WzmRvAtFk_J2aOsbP4f1_JEATu";
+                    map.put("Content-type","application/json");
+                    map.put("Authorization",key);
+
+
+                    return map;
+                }
+            };
+            requestQueue.add(jsonObjectRequest);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+    }
     private void getImage(String driverUserId) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(Constants.HUNZA_RIDER);
 

@@ -13,6 +13,10 @@ public class Constants {
     public static final String HUNZA_RIDER="Riders";
     public static final String USER_ACTIVE_RIDES="UserActiveRides";
     public static final String RIDER_ACTIVE_RIDES="RiderActiveRides";
+    public static final String TOPIC="/topics/hunzabykea";
+    public static final String BASE_URL="https://fcm.googleapis.com";
+    public static final String SERVER_KEY="AAAAGriD1uw:APA91bHV7PTVFTXFaCXBlgRrT8Lr8-G79rMZWb1aVDBCpphUykRKNNV73JH0nK8jEfsMqpzKRJ0rlxyS5-nAPkKHJKmoJ8wiMMElQRRM34TLJN4rv3WzmRvAtFk_J2aOsbP4f1_JEATu";
+    public static final String CONTENT_TYPE="application/json";
 
     // Baseen
     // 35.92508749263842, 74.24960570785369
