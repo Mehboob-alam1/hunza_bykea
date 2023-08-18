@@ -233,6 +233,9 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                         //  Toast.makeText(SearchingForDriverActivity.this, "" + available.getUserId() + " is " + available.isAvailable(), Toast.LENGTH_SHORT).show();
                     } else {
                         mDialog.dismiss();
+                        Toast.makeText(SearchingForDriverActivity.this, "Try again", Toast.LENGTH_SHORT).show();
+                        updateUi();
+
                         //   Toast.makeText(SearchingForDriverActivity.this, " no " + available.getUserId() + " is " + available.isAvailable(), Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -240,10 +243,21 @@ public class SearchingForDriverActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+
                 mDialog.dismiss();
+                Toast.makeText(SearchingForDriverActivity.this, "Try again", Toast.LENGTH_SHORT).show();
+                updateUi();
+
             }
         });
 
+    }
+
+    private void updateUi() {
+
+        Intent i= new Intent(SearchingForDriverActivity.this,MapsActivity.class);
+        startActivity(i);
+        finishAffinity();
     }
 
     private void checkAvailableDriverVehicles(ArrayList<Available> list) {
@@ -264,7 +278,9 @@ public class SearchingForDriverActivity extends AppCompatActivity {
 
                     } else {
                         mDialog.dismiss();
-                        // Toast.makeText(SearchingForDriverActivity.this, "Not juuuuuuuuuuuuuuuuuuu", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SearchingForDriverActivity.this, "Try again", Toast.LENGTH_SHORT).show();
+                        updateUi();
+
                     }
 
                 }
@@ -272,6 +288,9 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
                     mDialog.dismiss();
+                    Toast.makeText(SearchingForDriverActivity.this, "Try again", Toast.LENGTH_SHORT).show();
+                    updateUi();
+
                 }
             });
         }
@@ -296,12 +315,20 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                         Log.d("near : Locations", latitude + " " + longitude);
 
 
+                    }else{
+                        mDialog.dismiss();
+                        Toast.makeText(SearchingForDriverActivity.this, "Try again", Toast.LENGTH_SHORT).show();
+                        updateUi();
+
                     }
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
                     mDialog.dismiss();
+                    Toast.makeText(SearchingForDriverActivity.this, "Try again", Toast.LENGTH_SHORT).show();
+                    updateUi();
+
 
                 }
             });
