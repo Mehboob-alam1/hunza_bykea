@@ -4,6 +4,7 @@ public class NotificationData {
     private String title;
     private String message;
 
+
     public NotificationData(String title, String message) {
         this.title = title;
         this.message = message;
