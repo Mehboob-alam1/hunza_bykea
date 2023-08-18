@@ -151,6 +151,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
     ArrayList<VehicleDetailsClass> availableDriversWithVehicleSelected = new ArrayList<>();
     ArrayList<LatLng> nearest = new ArrayList<>();
 
+    String DriverToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -270,7 +271,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
 
     private void updateUi() {
 
-        Intent i= new Intent(SearchingForDriverActivity.this,MapsActivity.class);
+        Intent i = new Intent(SearchingForDriverActivity.this, MapsActivity.class);
         startActivity(i);
         finishAffinity();
     }
@@ -330,7 +331,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                         Log.d("near : Locations", latitude + " " + longitude);
 
 
-                    }else{
+                    } else {
                         mDialog.dismiss();
                         Toast.makeText(SearchingForDriverActivity.this, "Try again", Toast.LENGTH_SHORT).show();
                         updateUi();
@@ -496,6 +497,10 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isComplete() && task.isSuccessful()) {
                         mDialog.dismiss();
+
+                        Toast.makeText(this, "The token us " + DriverToken, Toast.LENGTH_SHORT).show();
+                        getToken(orders);
+
                         showDriverDialog(orders);
                     } else {
                         Snackbar snackbar = Snackbar.make(
@@ -512,6 +517,28 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                             Snackbar.LENGTH_SHORT
                     );
                     snackbar.show();
+                });
+    }
+
+    private void getToken(ActiveRides order) {
+
+
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference.child(Constants.HUNZA_RIDER).child("Profiles").child(order.getDriverUserId())
+                .child("token").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            DriverToken = snapshot.getValue(String.class);
+
+                            onSendNotification(order.getRiderName(), "Booked your ride", DriverToken);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
                 });
     }
 
@@ -587,6 +614,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
             finish();
         });
     }
+
     private void onSendNotification(String name, String send_you_and_interest, String token) {
         try {
 
@@ -595,13 +623,13 @@ public class SearchingForDriverActivity extends AppCompatActivity {
             String url = "https://fcm.googleapis.com/fcm/send";
             JSONObject jsonObject = new JSONObject();
 
-            jsonObject.put("title",name);
-            jsonObject.put("body",send_you_and_interest);
+            jsonObject.put("title", name);
+            jsonObject.put("body", send_you_and_interest);
 
 
             JSONObject jsonObject1 = new JSONObject();
-            jsonObject1.put("notification",jsonObject);
-            jsonObject1.put("to",token);
+            jsonObject1.put("notification", jsonObject);
+            jsonObject1.put("to", token);
 
 //        JsonObjectRequest jor = new JsonObjectRequest(url, jsonObject1, new Response.Listener<JSONObject>() {
 //            @Override
@@ -620,24 +648,24 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(JSONObject response) {
                             Toast.makeText(SearchingForDriverActivity.this, "Interest sent", Toast.LENGTH_SHORT).show();
+                            Log.d("Notification", "sent notification");
                         }
 
-                    },new com.android.volley.Response.ErrorListener() {
+                    }, new com.android.volley.Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    // Toast.makeText(context, "Interest not sent "+error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SearchingForDriverActivity.this, "Interest not sent " + error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
 
-
+                    Log.d("Notification", "sent not notification");
                 }
 
-            })
-            {
+            }) {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
-                    HashMap<String,String> map = new HashMap<>();
+                    HashMap<String, String> map = new HashMap<>();
                     String key = "key=AAAAGriD1uw:APA91bHV7PTVFTXFaCXBlgRrT8Lr8-G79rMZWb1aVDBCpphUykRKNNV73JH0nK8jEfsMqpzKRJ0rlxyS5-nAPkKHJKmoJ8wiMMElQRRM34TLJN4rv3WzmRvAtFk_J2aOsbP4f1_JEATu";
-                    map.put("Content-type","application/json");
-                    map.put("Authorization",key);
+                    map.put("Content-type", "application/json");
+                    map.put("Authorization", key);
 
 
                     return map;
@@ -650,6 +678,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
 
 
     }
+
     private void getImage(String driverUserId) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(Constants.HUNZA_RIDER);
 
