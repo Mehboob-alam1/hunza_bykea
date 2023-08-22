@@ -44,11 +44,12 @@
         app:layout_constraintTop_toTopOf="@+id/cardView" />
 
     <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
-        android:gravity="center"
         android:background="@null"
+        android:gravity="center"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -85,6 +86,19 @@
 
 
     </com.mapbox.mapboxsdk.maps.MapView>
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:id="@+id/arrow"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone"
+        android:src="@drawable/ic_arrow_up"
+        app:layout_constraintBottom_toTopOf="@+id/slide_to_confirm"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="@color/green_700" />
+
 
     <com.chinalwb.slidetoconfirmlib.SlideToConfirm
         android:id="@+id/slide_to_confirm"

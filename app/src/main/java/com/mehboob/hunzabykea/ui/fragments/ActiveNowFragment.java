@@ -60,6 +60,7 @@ public class ActiveNowFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     ActiveRides rides = snapshot.getValue(ActiveRides.class);
+                    listRider.clear();
                     listRider.add(rides);
                     binding.noData.getRoot().setVisibility(View.GONE);
                     adapter = new ActiveRideAdapter(listRider, getContext(),"Active");

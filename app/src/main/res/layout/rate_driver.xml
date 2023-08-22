@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:id="@+id/rateDriverLayout"
+    app:cardElevation="3dp"
+    android:layout_height="wrap_content" >
+
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        app:cardCornerRadius="10dp"
+        android:layout_margin="5dp"
+        app:cardElevation="3dp"
+        android:layout_height="wrap_content"
+
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="match_parent">
+
+            <View
+                android:layout_width="30dp"
+                android:layout_height="2dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/grey"
+                android:layout_gravity="center_horizontal"/>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <TextView
+
+                    android:layout_width="wrap_content"
+android:id="@+id/rateDriver"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.2"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:text="Rate Driver"
+                    android:textColor="@color/black"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="3dp"
+                    android:id="@+id/view1"
+                    android:background="@color/blackclrHunza2"
+                    app:layout_constraintTop_toBottomOf="@id/rateDriver"
+                    />
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:id="@+id/lineDriver"
+                    app:layout_constraintTop_toBottomOf="@id/view1"
+                    android:orientation="horizontal">
+
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:id="@+id/imgRiderRate"
+                        android:layout_marginStart="16dp"/>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Daniyal Khan"
+                            android:id="@+id/txtRiderNameRate"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/poppins_semibold"
+                            android:textSize="18sp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Honda"
+                            android:id="@+id/txtVehicleTypeRate"
+                            android:textSize="18sp"
+                            />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:padding="4dp"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        >
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginEnd="3dp"
+                            android:src="@drawable/ic_baseline_star_24"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0.0"
+                            android:id="@+id/txtRatingRate"
+                            android:layout_marginEnd="8dp"
+                            android:textSize="18sp"/>
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="3dp"
+                    android:id="@+id/view2"
+                    android:background="@color/blackclrHunza2"
+                    app:layout_constraintTop_toBottomOf="@id/lineDriver"
+                    />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="24dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/view2" >
+                    <TextView
+
+                        android:layout_width="match_parent"
+
+                        android:layout_height="wrap_content"
+
+
+                        android:textAlignment="center"
+                        android:fontFamily="@font/poppins_semibold"
+                        android:text="How is your Driver?"
+                        android:textColor="@color/black"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Please rate your driver..."
+                        android:textAlignment="center"/>
+
+                    <RatingBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:numStars="5"
+                        android:id="@+id/rateBar"
+                        android:layout_marginTop="8dp"
+                        android:stepSize="0.5"
+                        android:layout_gravity="center_horizontal"/>
+
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/btn_background"
+                        android:text="Rate"
+                        android:textAllCaps="false"
+                        android:id="@+id/btnRateDriver"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginBottom="16dp"/>
+
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+
+
+        </LinearLayout>
+
+
+
+    </androidx.cardview.widget.CardView>
+</LinearLayout>

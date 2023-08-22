@@ -131,6 +131,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
     ActiveOrders orders;
     private String driverImage;
     VehicleDetailsClass data;
+    BottomSheetDialog bottomSheetDialog;
     private static final String TAG = "SearchDriver";
     private ActiveRides activeRides;
     private BottomSheetDialog dialog;
@@ -211,7 +212,9 @@ public class SearchingForDriverActivity extends AppCompatActivity {
             });
         });
 
-
+        binding.arrow.setOnClickListener(v -> {
+            
+        });
         binding.slideToConfirm.setSlideListener(new ISlideListener() {
             @Override
             public void onSlideStart() {
@@ -361,122 +364,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
     }
 
 
-//    private void checkForAvailableDrivers() {
-//        mDialog.show();
-//        mRef.child(Constants.HUNZA_RIDER).child("available").addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                for (DataSnapshot snap : snapshot.getChildren()) {
-//                    Available available = snap.getValue(Available.class);
-//                    if (available.isAvailable()) {
-//
-//                        availables.add(available);
-//
-//
-//                        //  Toast.makeText(SearchingForDriverActivity.this, "" + available.getUserId() + " is " + available.isAvailable(), Toast.LENGTH_SHORT).show();
-//                    } else {
-//                        mDialog.dismiss();
-//                        Toast.makeText(SearchingForDriverActivity.this, "no availeble vehicels", Toast.LENGTH_SHORT).show();
-//
-//
-//                        //   Toast.makeText(SearchingForDriverActivity.this, " no " + available.getUserId() + " is " + available.isAvailable(), Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//                checkAvailableDriverVehicles(availables);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//                mDialog.dismiss();
-//                Toast.makeText(SearchingForDriverActivity.this, "no availeble vehicels"+error.getMessage(), Toast.LENGTH_SHORT).show();
-//
-//
-//            }
-//        });
-//
-//    }
-//
-//
-//
-//    private void checkAvailableDriverVehicles(ArrayList<Available> list) {
-//
-//        for (Available available : list) {
-//
-//            mRef.child(Constants.HUNZA_RIDER).child("Vehicles").child(available.getUserId()).addValueEventListener(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot snapshot) {
-//
-//                    if (snapshot.child("vehicleType").getValue(String.class).toLowerCase().equals(sharedPref.fetchSelectedVehicle().getVehicle().toLowerCase())) {
-//
-//                        VehicleDetailsClass detailsClass = snapshot.getValue(VehicleDetailsClass.class);
-//
-//                        availableDriversWithVehicleSelected.add(detailsClass);
-//
-//
-//
-//                    } else {
-//                        mDialog.dismiss();
-//                        Toast.makeText(SearchingForDriverActivity.this, "no vehciles Try again", Toast.LENGTH_SHORT).show();
-//
-//                    }
-//
-//                }
-//
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError error) {
-//                    mDialog.dismiss();
-//                    Toast.makeText(SearchingForDriverActivity.this, "no vehicels " +error.getMessage(), Toast.LENGTH_SHORT).show();
-//
-//
-//                }
-//            });
-//        }
-//
-//        getNearestOne(availableDriversWithVehicleSelected);
-//    }
-//
-//    private void getNearestOne(ArrayList<VehicleDetailsClass> availableDriversWithVehicleSelected) {
-//
-//
-//        for (VehicleDetailsClass detailsClass : availableDriversWithVehicleSelected) {
-//            mRef.child(Constants.HUNZA_RIDER).child("location").child(detailsClass.getUserId()).addValueEventListener(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                    if (snapshot.exists()) {
-//
-//                        String latitude = snapshot.child("latitude").getValue(String.class);
-//                        String longitude = snapshot.child("longitude").getValue(String.class);
-//
-//
-//                        nearest.add(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
-//
-//
-//                        Log.d("near : Locations", latitude + " " + longitude);
-//                        findNearestLocation(nearest, Double.parseDouble(sharedPref.fetchLocation().getLatitude()), Double.parseDouble(sharedPref.fetchLocation().getLongitude()), detailsClass.getUserId());
-//
-//                    } else {
-//                        mDialog.dismiss();
-//
-//
-//                        Toast.makeText(SearchingForDriverActivity.this, "No near drivers", Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError error) {
-//                    mDialog.dismiss();
-//
-//                    Toast.makeText(SearchingForDriverActivity.this, "No near drivers"+error.getMessage(), Toast.LENGTH_SHORT).show();
-//
-//
-//                }
-//            });
-//        }
-//
-//
-//        //  Toast.makeText(this, ""+nearestDriverLocation.getLatitude() +" " + nearestDriverLocation.getLongitude(), Toast.LENGTH_SHORT).show();
-//    }
+
 
     private void AddMarkerToMyLocation(LatLng position) {
 
@@ -590,7 +478,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                     mDialog.dismiss();
                     Snackbar snackbar = Snackbar.make(
                             findViewById(android.R.id.content),
-                            "Somthing went wrong",
+                            "Something went wrong",
                             Snackbar.LENGTH_SHORT
                     );
                     snackbar.show();
@@ -622,7 +510,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                     if (task.isComplete() && task.isSuccessful()) {
                         mDialog.dismiss();
 
-
+binding.arrow.setVisibility(View.VISIBLE);
                         getToken(orders);
 
 
@@ -671,15 +559,10 @@ public class SearchingForDriverActivity extends AppCompatActivity {
     private void uploadToCloud(ActiveRides orderPlace) {
 
 
-//        OrderPlace orderPlace = new OrderPlace(sharedPref.fetchUserId(),sharedPref.fetchLocation().getLatitude(),
-//                sharedPref.fetchLocation().getLongitude(),sharedPref.fetchSelectedVehicle().getVehicle(),sharedPref.fetchSelectedVehicle().getFare(),
-//                sharedPref.fetchSelectedVehicle().getNearBy(),sharedPref.fetchPaymentMethod(),pushId,time,true);
         mRef.child(Constants.HUNZA_BYKEA).child(Constants.ORDERS).child(sharedPref.fetchUserId()).child(pushId).setValue(orderPlace).
                 addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        //Toast.makeText(this, "Order placed successfully", Toast.LENGTH_SHORT).show();
 
-                        // startActivity(new Intent(PaymentMethodActivity.this,SearchingForDriverActivity.class));
                     } else {
                         Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
                     }
@@ -691,14 +574,14 @@ public class SearchingForDriverActivity extends AppCompatActivity {
     @SuppressLint("SuspiciousIndentation")
     private void showDriverDialog(ActiveRides order) {
         getVehicle(order.getDriverUserId());
-        BottomSheetDialog dialog = new BottomSheetDialog(SearchingForDriverActivity.this, R.style.AppBottomSheetDialogTheme);
+         bottomSheetDialog = new BottomSheetDialog(SearchingForDriverActivity.this, R.style.AppBottomSheetDialogTheme);
         View bottomSheetView = LayoutInflater.from(getApplicationContext())
                 .inflate(R.layout.driver_arriving_bottom, (LinearLayout) findViewById(R.id.driverArriving));
 
 
-        dialog.setContentView(bottomSheetView);
+        bottomSheetDialog.setContentView(bottomSheetView);
         try {
-            dialog.show();
+            bottomSheetDialog.show();
         }
         catch (WindowManager.BadTokenException e) {
             //use a log message
@@ -734,7 +617,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
         });
 
         driverDetails.setOnClickListener(v -> {
-            dialog.dismiss();
+            bottomSheetDialog.dismiss();
 
             Gson gson = new Gson();
 
@@ -764,18 +647,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
             jsonObject1.put("notification", jsonObject);
             jsonObject1.put("to", token);
 
-//        JsonObjectRequest jor = new JsonObjectRequest(url, jsonObject1, new Response.Listener<JSONObject>() {
-//            @Override
-//            public void onResponse(JSONObject response) {
-//                Toast.makeText(ChatActivity.this, ""+response.toString(), Toast.LENGTH_SHORT).show();
-//            }
-//
-//        }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                Toast.makeText(ChatActivity.this, ""+error.getMessage(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
+
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, jsonObject1,
                     new com.android.volley.Response.Listener<JSONObject>() {
                         @Override
@@ -979,30 +851,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
         });
     }
 
-    public void findNearestLocation(ArrayList<LatLng> locations, double myLatitude, double myLongitude, String userId) {
 
-        LatLng nearestLocation = null;
-        double shortestDistance = Double.MAX_VALUE;
-
-        for (LatLng location : locations) {
-             distance = calculateDistance(myLatitude, myLongitude, location.getLatitude(), location.getLatitude());
-
-            if (distance < shortestDistance) {
-                shortestDistance = distance;
-                nearestLocation = location;
-
-//                        AddMarkerToMyLocation(nearestLocation);
-
-
-
-            }
-            Log.d("near : Location ", "The nearest location is " + nearestLocation);
-        }
-        if (nearestLocation !=null)
-             AddMarkerToDriver(nearestLocation, userId, distance);
-        getRoute(mapboxMap, Point.fromLngLat(Double.parseDouble(sharedPref.fetchLocation().getLatitude()), Double.parseDouble(sharedPref.fetchLocation().getLongitude())), Point.fromLngLat(nearestLocation.getLatitude(), nearestLocation.getLongitude()));
-
-    }
 
     public static double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         final int EARTH_RADIUS = 6371;// in kilometers

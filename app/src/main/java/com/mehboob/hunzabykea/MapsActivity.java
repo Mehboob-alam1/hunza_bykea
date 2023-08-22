@@ -29,6 +29,7 @@ import android.annotation.SuppressLint;
 
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.app.appsearch.SearchResult;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -46,6 +47,7 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -67,7 +69,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mapbox.android.core.permissions.PermissionsListener;
@@ -171,11 +177,12 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
     MarkerOptions markerOptions;
 
     static MapsActivity instance;
-// User location
+
 
     LocationModel mLocation;
 
     double latitude, longitude;
+
     String firstResultPoint;
     DirectionsRoute drivingRoute;
 
@@ -200,7 +207,8 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
     private final List<Point> outerPoints = new ArrayList<>();
 
     CarmenFeature feature;
-
+    boolean isActiveOrder=false;
+    boolean isShownDialog =false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -210,9 +218,20 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
         sharedPref = new SharedPref(this);
         permissions.add(ACCESS_FINE_LOCATION);
         permissions.add(ACCESS_COARSE_LOCATION);
+        if (!isShownDialog) {
+            ProgressDialog dialog = new ProgressDialog(MapsActivity.this);
+            dialog.setCancelable(false);
+            dialog.setMessage("Setting up..");
+            dialog.show();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    dialog.dismiss();
+                    isShownDialog=true;
+                }
+            }, 3000);
+        }
 
-
-//        mapView.onCreate(savedInstanceState);
         permissionsToRequest = findUnAskedPermissions(permissions);
 
         binding.btnMyLocation.setOnClickListener(v -> {
@@ -240,6 +259,9 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
             }
 
         });
+
+
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
 
@@ -267,10 +289,14 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
                                 public boolean onMapClick(@NonNull LatLng latLng) {
                                     destination = Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude());
 
+                                    checkOrders();
 
                                     if (!RESTRICTED_BOUNDS_AREA.contains(latLng)) {
                                         Toast.makeText(MapsActivity.this, "No service area", Toast.LENGTH_SHORT).show();
-                                    } else {
+                                    }else if (isActiveOrder){
+                                        Toast.makeText(MapsActivity.this, "Already have an order", Toast.LENGTH_SHORT).show();
+                                    }
+                                        else {
                                         getRoute(mapboxMap, origin, destination);
                                     }
 
@@ -315,7 +341,29 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
 
 
     }
+ private void checkOrders(){
 
+     DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference();
+
+     databaseReference.child(Constants.USER_ACTIVE_RIDES).child(sharedPref.fetchUserId())
+             .addValueEventListener(new ValueEventListener() {
+                 @Override
+                 public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                     if (Boolean.TRUE.equals(snapshot.child("status").getValue(Boolean.class))){
+
+                         isActiveOrder=true;
+                     }else{
+                         isActiveOrder=false;
+                     }
+                 }
+
+                 @Override
+                 public void onCancelled(@NonNull DatabaseError error) {
+
+                 }
+             });
+ }
 
     private void enableLocations() {
 
@@ -352,7 +400,7 @@ public class MapsActivity extends AppCompatActivity implements PermissionsListen
 
         } else {
             MapsActivity.this.DialogShow();
-            //  locationTrack.showSettingsAlert();
+
         }
     }
 
