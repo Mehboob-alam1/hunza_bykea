@@ -27,10 +27,9 @@ public class BookingFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = FragmentBookingBinding.inflate(inflater,container,false);
 
-        adapter = new BookingTabsAdapter(getActivity());
+        adapter = new BookingTabsAdapter(requireActivity());
 
         binding.tabViewpager.setAdapter(adapter);
-
         binding.bookingTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {

@@ -30,6 +30,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.mehboob.hunzabykea.Constants;
+import com.mehboob.hunzabykea.MapsActivity;
 import com.mehboob.hunzabykea.R;
 import com.mehboob.hunzabykea.ui.DashboardActivity;
 import com.mehboob.hunzabykea.ui.SearchingForDriverActivity;
@@ -107,22 +108,66 @@ public class ActiveRideAdapter extends RecyclerView.Adapter<ActiveRideAdapter.vi
         holder.btnOrderRider.setOnClickListener(v -> {
 
             setOrderComplete(rideModel);
+            list.remove(position); // Remove the item from the list
+            notifyDataSetChanged();
         });
 
 
         if (status.equals("Active")) {
             holder.txtStatus.setText("Active");
             holder.btnOrderRider.setText("Mark Order as Complete");
+
         } else if (status.equals("Complete")) {
             holder.txtStatus.setText("Complete");
             holder.btnOrderRider.setVisibility(View.GONE);
+            holder.imgCancelOrder.setVisibility(View.GONE);
         } else if (status.equals("Cancelled")) {
             holder.txtStatus.setText("Cancelled");
             holder.btnOrderRider.setVisibility(View.GONE);
+            holder.imgCancelOrder.setVisibility(View.GONE);
         }
 
-    }
 
+        holder.imgCancelOrder.setOnClickListener(v -> {
+            deactivateOrder(rideModel);
+            list.remove(position); // Remove the item from the list
+            notifyDataSetChanged(); //
+        });
+    }
+    private void deactivateOrder(ActiveRides rideModel) {
+
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        String pushId=UUID.randomUUID().toString();
+
+
+        CompletedRides completedRides = new CompletedRides(rideModel,pushId);
+
+        databaseReference.child(Constants.USER_CANCELLED_RIDES).child(rideModel.getUserId()).child(pushId)
+                .setValue(completedRides).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()){
+                        databaseReference.child(Constants.USER_ACTIVE_RIDES).child(rideModel.getUserId()).removeValue();
+
+                        databaseReference.child(Constants.RIDER_CANCELLED_RIDES).child(rideModel.getDriverUserId()).child(pushId)
+                                .setValue(completedRides)
+                                .addOnCompleteListener(task1 -> {
+                                    if (task1.isComplete() && task1.isSuccessful()){
+                                        databaseReference.child(Constants.RIDER_ACTIVE_RIDES).child(rideModel.getDriverUserId()).removeValue();
+
+//                                            showDialog(rideModel);
+
+
+                                    }
+                                }).addOnFailureListener(e -> {
+                                    Toast.makeText(context
+                                            , ""+e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                });
+                    }else{
+                        Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
+    }
     private void setOrderComplete(ActiveRides rideModel) {
 
 
@@ -229,7 +274,7 @@ String pushId=UUID.randomUUID().toString();
 
 
     public class viewholder extends RecyclerView.ViewHolder {
-        private ImageView down, up, riderProfileImage;
+        private ImageView down, up, riderProfileImage,imgCancelOrder;
         private TextView textView, txtDistance, txtTimeTake, txtFare, txtTime, txtCurrentLocation, txtDestinationLocation, txtStatus, txtRiderVechileDetail;
         private ConstraintLayout constraintLayout;
         private AppCompatButton btnOrderRider;
@@ -250,6 +295,7 @@ String pushId=UUID.randomUUID().toString();
             txtStatus = itemView.findViewById(R.id.txtStatus);
             btnOrderRider = itemView.findViewById(R.id.btnOrderRider);
             txtRiderVechileDetail = itemView.findViewById(R.id.txtRiderVechileDetail);
+            imgCancelOrder = itemView.findViewById(R.id.imgCancelOrder);
 
 
         }

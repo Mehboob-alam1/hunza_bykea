@@ -17,18 +17,9 @@
         android:layout_height="match_parent">
 
 
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:id="@+id/imgCancelOrder"
-            android:src="@drawable/ic_baseline_cancel_24"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/riderProfileImage"
+            android:id="@+id/riderProfileImageComp"
             android:layout_width="65dp"
             android:layout_height="65dp"
             android:layout_marginStart="8dp"
@@ -39,7 +30,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/riderName"
+            android:id="@+id/riderNameComp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -47,21 +38,21 @@
             android:text="@string/app_name"
             android:textColor="@color/black"
             android:textSize="18sp"
-            app:layout_constraintBottom_toTopOf="@+id/txtRiderVechileDetail"
-            app:layout_constraintStart_toEndOf="@+id/riderProfileImage"
-            app:layout_constraintTop_toTopOf="@+id/riderProfileImage" />
+            app:layout_constraintBottom_toTopOf="@+id/txtRiderVechileDetailComp"
+            app:layout_constraintStart_toEndOf="@+id/riderProfileImageComp"
+            app:layout_constraintTop_toTopOf="@+id/riderProfileImageComp" />
 
         <TextView
-            android:id="@+id/txtRiderVechileDetail"
+            android:id="@+id/txtRiderVechileDetailComp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppins"
             android:text="TextView"
             android:textColor="#757575"
             android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="@+id/riderProfileImage"
-            app:layout_constraintStart_toStartOf="@+id/riderName"
-            app:layout_constraintTop_toBottomOf="@+id/riderName" />
+            app:layout_constraintBottom_toBottomOf="@+id/riderProfileImageComp"
+            app:layout_constraintStart_toStartOf="@+id/riderNameComp"
+            app:layout_constraintTop_toBottomOf="@+id/riderNameComp" />
 
         <androidx.cardview.widget.CardView
             android:layout_width="wrap_content"
@@ -70,11 +61,12 @@
             app:cardBackgroundColor="@color/primarycolor_primary_1st"
             app:cardCornerRadius="5dp"
             app:cardElevation="4dp"
-            app:layout_constraintBottom_toBottomOf="@+id/txtRiderVechileDetail"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintBottom_toBottomOf="@+id/txtRiderVechileDetailComp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/riderNameComp">
 
             <TextView
-                android:id="@+id/txtStatus"
+                android:id="@+id/txtStatusComp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -85,7 +77,7 @@
                 android:paddingTop="2dp"
                 android:paddingEnd="5dp"
                 android:paddingBottom="2dp"
-                android:text="Active"
+                android:text="Completed"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="10sp" />
@@ -99,10 +91,10 @@
             android:background="#757575"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/riderProfileImage" />
+            app:layout_constraintTop_toBottomOf="@+id/riderProfileImageComp" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout3"
+            android:id="@+id/constraintLayoutComp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="visible"
@@ -143,12 +135,12 @@
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/txtCurrentLocation"
+                app:layout_constraintBottom_toTopOf="@+id/txtCurrentLocationComp"
                 app:layout_constraintStart_toEndOf="@+id/imageView11"
                 app:layout_constraintTop_toTopOf="@+id/imageView11" />
 
             <TextView
-                android:id="@+id/txtCurrentLocation"
+                android:id="@+id/txtCurrentLocationComp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="japan chok karimabad"
@@ -176,12 +168,12 @@
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/txtDestinationLocation"
+                app:layout_constraintBottom_toTopOf="@+id/txtDestinationLocationComp"
                 app:layout_constraintStart_toStartOf="@+id/textView19"
                 app:layout_constraintTop_toTopOf="@+id/imageView7" />
 
             <TextView
-                android:id="@+id/txtDestinationLocation"
+                android:id="@+id/txtDestinationLocationComp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="TextView"
@@ -189,23 +181,6 @@
                 app:layout_constraintStart_toStartOf="@+id/textView21"
                 app:layout_constraintTop_toBottomOf="@+id/textView21" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnOrderRider"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="32dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
-               android:background="@drawable/box_background"
-                app:layout_constraintBottom_toBottomOf="parent"
-
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txtDestinationLocation">
-
-
-            </androidx.appcompat.widget.AppCompatButton>
 
             <LinearLayout
                 android:id="@+id/locationlayout"
@@ -229,7 +204,7 @@
                     app:srcCompat="@drawable/location4sample" />
 
                 <TextView
-                    android:id="@+id/txtDistance"
+                    android:id="@+id/txtDistanceComp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -264,7 +239,7 @@
                     app:srcCompat="@drawable/clock4sample" />
 
                 <TextView
-                    android:id="@+id/txtTimeTake"
+                    android:id="@+id/txtTimeTakeComp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -299,7 +274,7 @@
                     app:srcCompat="@drawable/wallet4sample" />
 
                 <TextView
-                    android:id="@+id/txtFare"
+                    android:id="@+id/txtFareComp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -324,7 +299,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/locationlayout" />
 
             <TextView
-                android:id="@+id/txtTime"
+                android:id="@+id/txtTimeComp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
@@ -352,7 +327,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageView
-            android:id="@+id/detailsShowbtn"
+            android:id="@+id/detailsShowbtnComp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -364,11 +339,11 @@
             android:paddingBottom="5dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout3"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayoutComp"
             app:srcCompat="@drawable/ic_arrow_down" />
 
         <ImageView
-            android:id="@+id/detailsShowbtn2"
+            android:id="@+id/detailsShowbtn2Comp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -381,7 +356,7 @@
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout3"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayoutComp"
             app:srcCompat="@drawable/ic_arrow_up" />
 
 

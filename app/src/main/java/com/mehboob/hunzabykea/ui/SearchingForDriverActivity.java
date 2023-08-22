@@ -908,28 +908,6 @@ binding.arrow.setVisibility(View.VISIBLE);
                     });
 
 
-//        mRef.child(Constants.HUNZA_BYKEA).child(Constants.ORDERS).child(sharedPref.fetchUserId()).child(pushId).addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                if (snapshot.child("status").exists()) {
-//                    mRef.child(Constants.HUNZA_BYKEA).child(Constants.ORDERS).child(sharedPref.fetchUserId()).child(pushId).child("status").setValue(false).addOnCompleteListener(task -> {
-//                        if (task.isSuccessful())
-//
-//                            deleteOrder(sharedPref.fetchUserId(), activeRides.getDriverUserId());
-//
-//                    }).addOnFailureListener(e -> {
-//                        Toast.makeText(SearchingForDriverActivity.this, "Cancellation not completed", Toast.LENGTH_SHORT).show();
-//                    });
-//                } else {
-//                    Toast.makeText(SearchingForDriverActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                Toast.makeText(SearchingForDriverActivity.this, "" + error.getMessage(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
     }
 
     private void deleteOrder(String userId, String driverUserId) {
