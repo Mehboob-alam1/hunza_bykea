@@ -121,8 +121,8 @@ public class ActiveRideAdapter extends RecyclerView.Adapter<ActiveRideAdapter.vi
             holder.txtStatus.setText("Complete");
             holder.btnOrderRider.setVisibility(View.GONE);
             holder.imgCancelOrder.setVisibility(View.GONE);
-        } else if (status.equals("Cancelled")) {
-            holder.txtStatus.setText("Cancelled");
+        } else if (status.equals("CancelledAdapter")) {
+            holder.txtStatus.setText("CancelledAdapter");
             holder.btnOrderRider.setVisibility(View.GONE);
             holder.imgCancelOrder.setVisibility(View.GONE);
         }

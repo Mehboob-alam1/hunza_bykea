@@ -30,6 +30,8 @@ public class BookingFragment extends Fragment {
         adapter = new BookingTabsAdapter(requireActivity());
 
         binding.tabViewpager.setAdapter(adapter);
+
+
         binding.bookingTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {

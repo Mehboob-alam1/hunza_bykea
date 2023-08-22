@@ -55,6 +55,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/CompletedRideRec"
         android:layout_width="match_parent"
+        android:layout_marginTop="34dp"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
