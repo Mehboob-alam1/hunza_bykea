@@ -70,6 +70,7 @@ public class ActiveNowFragment extends Fragment {
                       adapter = new ActiveRideAdapter(listRider, getContext(),"Active");
                       binding.activeriderRec.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
                       binding.activeriderRec.setAdapter(adapter);
+
                   }else{
                       binding.noData.getRoot().setVisibility(View.VISIBLE);
                   }
@@ -78,6 +79,8 @@ public class ActiveNowFragment extends Fragment {
                 } else {
                     binding.noData.getRoot().setVisibility(View.VISIBLE);
                 }
+
+
             }
 
             @Override
@@ -85,6 +88,13 @@ public class ActiveNowFragment extends Fragment {
                 binding.noData.getRoot().setVisibility(View.VISIBLE);
             }
         });
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
 
     }
 }

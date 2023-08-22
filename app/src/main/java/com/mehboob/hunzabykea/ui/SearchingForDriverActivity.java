@@ -90,6 +90,7 @@ import com.mehboob.hunzabykea.databinding.ActivitySearchingForDriverBinding;
 import com.mehboob.hunzabykea.ui.models.ActiveOrders;
 import com.mehboob.hunzabykea.ui.models.ActiveRides;
 import com.mehboob.hunzabykea.ui.models.Available;
+import com.mehboob.hunzabykea.ui.models.CompletedRides;
 import com.mehboob.hunzabykea.ui.models.FareModel;
 import com.mehboob.hunzabykea.ui.models.LocationModel;
 import com.mehboob.hunzabykea.ui.models.NotifFirebase;
@@ -235,7 +236,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
             @Override
             public void onSlideDone() {
                 //   Toast.makeText(SearchingForDriverActivity.this, "juuu", Toast.LENGTH_SHORT).show();
-                deactivateOrder(pushId);
+                deactivateOrder(activeRides);
             }
         });
 
@@ -448,7 +449,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                             distanceTotal, currentTime, fetchPaymentMethod, origin.getLatitude(), origin.getLongitude(), destination.getLatitude(), destination.getLongitude(),
                             FirebaseAuth.getInstance().getCurrentUser().getUid(), true, "");
 
-                    uploadToCloud(activeRides);
+//                    uploadToCloud(activeRides);
                     databaseReference.child(Constants.USER_ACTIVE_RIDES).child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                             .setValue(activeRides)
                             .addOnCompleteListener(task -> {
@@ -869,31 +870,66 @@ binding.arrow.setVisibility(View.VISIBLE);
 
     }
 
-    private void deactivateOrder(String pushId) {
+    private void deactivateOrder(ActiveRides rideModel) {
 
 
-        mRef.child(Constants.HUNZA_BYKEA).child(Constants.ORDERS).child(sharedPref.fetchUserId()).child(pushId).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.child("status").exists()) {
-                    mRef.child(Constants.HUNZA_BYKEA).child(Constants.ORDERS).child(sharedPref.fetchUserId()).child(pushId).child("status").setValue(false).addOnCompleteListener(task -> {
-                        if (task.isSuccessful())
 
-                            deleteOrder(sharedPref.fetchUserId(), activeRides.getDriverUserId());
 
-                    }).addOnFailureListener(e -> {
-                        Toast.makeText(SearchingForDriverActivity.this, "Cancellation not completed", Toast.LENGTH_SHORT).show();
+
+
+
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+            String pushId=UUID.randomUUID().toString();
+
+
+            CompletedRides completedRides = new CompletedRides(rideModel,pushId);
+
+            databaseReference.child(Constants.USER_CANCELLED_RIDES).child(rideModel.getUserId()).child(pushId)
+                    .setValue(completedRides).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()){
+                            databaseReference.child(Constants.USER_ACTIVE_RIDES).child(rideModel.getUserId()).removeValue();
+
+                            databaseReference.child(Constants.RIDER_CANCELLED_RIDES).child(rideModel.getDriverUserId()).child(pushId)
+                                    .setValue(completedRides)
+                                    .addOnCompleteListener(task1 -> {
+                                        if (task1.isComplete() && task1.isSuccessful()){
+                                            databaseReference.child(Constants.RIDER_ACTIVE_RIDES).child(rideModel.getDriverUserId()).removeValue();
+                                            startActivity(new Intent(SearchingForDriverActivity.this, MapsActivity.class));
+                                            finishAffinity();
+//                                            showDialog(rideModel);
+                                        }
+                                    }).addOnFailureListener(e -> {
+                                        Toast.makeText(this
+                                                , ""+e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                    });
+                        }else{
+                            Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                        }
                     });
-                } else {
-                    Toast.makeText(SearchingForDriverActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
-                }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(SearchingForDriverActivity.this, "" + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+
+//        mRef.child(Constants.HUNZA_BYKEA).child(Constants.ORDERS).child(sharedPref.fetchUserId()).child(pushId).addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                if (snapshot.child("status").exists()) {
+//                    mRef.child(Constants.HUNZA_BYKEA).child(Constants.ORDERS).child(sharedPref.fetchUserId()).child(pushId).child("status").setValue(false).addOnCompleteListener(task -> {
+//                        if (task.isSuccessful())
+//
+//                            deleteOrder(sharedPref.fetchUserId(), activeRides.getDriverUserId());
+//
+//                    }).addOnFailureListener(e -> {
+//                        Toast.makeText(SearchingForDriverActivity.this, "Cancellation not completed", Toast.LENGTH_SHORT).show();
+//                    });
+//                } else {
+//                    Toast.makeText(SearchingForDriverActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//                Toast.makeText(SearchingForDriverActivity.this, "" + error.getMessage(), Toast.LENGTH_SHORT).show();
+//            }
+//        });
     }
 
     private void deleteOrder(String userId, String driverUserId) {

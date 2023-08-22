@@ -43,7 +43,7 @@ public class CancelledFragment extends Fragment {
         sharedPref = new SharedPref(getContext());
 
         listRider = new ArrayList<>();
-        fetchCancelledRide();
+//        fetchCancelledRide();
 
 
         return binding.getRoot();

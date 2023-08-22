@@ -15,6 +15,8 @@ public class Constants {
     public static final String RIDER_ACTIVE_RIDES="RiderActiveRides";
     public static final String USER_COMPLETED_RIDES="UserCompletedRides";
     public static final String RIDER_COMPLETED_RIDES="RiderCompletedRides";
+    public static final String USER_CANCELLED_RIDES="UserCancelledRides";
+    public static final String RIDER_CANCELLED_RIDES="RiderCancelledRides";
     public static final String TOPIC="/topics/hunzabykea";
     public static final String BASE_URL="https://fcm.googleapis.com";
     public static final String SERVER_KEY="AAAAGriD1uw:APA91bHV7PTVFTXFaCXBlgRrT8Lr8-G79rMZWb1aVDBCpphUykRKNNV73JH0nK8jEfsMqpzKRJ0rlxyS5-nAPkKHJKmoJ8wiMMElQRRM34TLJN4rv3WzmRvAtFk_J2aOsbP4f1_JEATu";

@@ -38,7 +38,9 @@ public class PaymentMethodActivity extends AppCompatActivity {
             else {
                 pushId = UUID.randomUUID().toString();
                 sharedPref.savePaymentMethod("Cash");
-                uploadToCloud(pushId, String.valueOf(System.currentTimeMillis()));
+                Intent i = new Intent(PaymentMethodActivity.this, SearchingForDriverActivity.class);
+                i.putExtra("pushId", pushId);
+                startActivity(i);
             }
         });
     }
@@ -53,9 +55,7 @@ public class PaymentMethodActivity extends AppCompatActivity {
                 addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         //Toast.makeText(this, "Order placed successfully", Toast.LENGTH_SHORT).show();
-                        Intent i = new Intent(PaymentMethodActivity.this, SearchingForDriverActivity.class);
-                        i.putExtra("pushId", pushId);
-                        startActivity(i);
+
                         // startActivity(new Intent(PaymentMethodActivity.this,SearchingForDriverActivity.class));
                     } else {
                         Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();

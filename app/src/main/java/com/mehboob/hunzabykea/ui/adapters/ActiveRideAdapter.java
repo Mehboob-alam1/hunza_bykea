@@ -142,6 +142,7 @@ String pushId=UUID.randomUUID().toString();
                                 .addOnCompleteListener(task1 -> {
                                     if (task1.isComplete() && task1.isSuccessful()){
                                         databaseReference.child(Constants.RIDER_ACTIVE_RIDES).child(rideModel.getDriverUserId()).removeValue();
+
                                         showDialog(rideModel);
                                     }
                                 }).addOnFailureListener(e -> {
