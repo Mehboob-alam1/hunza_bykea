@@ -35,6 +35,7 @@ import com.mehboob.hunzabykea.ui.DashboardActivity;
 import com.mehboob.hunzabykea.ui.SearchingForDriverActivity;
 import com.mehboob.hunzabykea.ui.models.ActiveRideModel;
 import com.mehboob.hunzabykea.ui.models.ActiveRides;
+import com.mehboob.hunzabykea.ui.models.CompletedRides;
 import com.mehboob.hunzabykea.ui.models.Rate;
 
 import java.text.SimpleDateFormat;
@@ -126,34 +127,31 @@ public class ActiveRideAdapter extends RecyclerView.Adapter<ActiveRideAdapter.vi
 
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+String pushId=UUID.randomUUID().toString();
 
 
-        databaseReference.child(Constants.USER_ACTIVE_RIDES).child(rideModel.getUserId())
-                .child("completed").setValue(true).addOnCompleteListener(task -> {
-                    if (task.isComplete() && task.isSuccessful()) {
+        CompletedRides completedRides = new CompletedRides(rideModel,pushId);
 
-                        databaseReference.child(Constants.USER_ACTIVE_RIDES).child(rideModel.getUserId())
-                                .child("status").removeValue();
-                        databaseReference.child(Constants.RIDER_ACTIVE_RIDES).child(rideModel.getDriverUserId()).child("completed")
-                                .setValue(true).addOnCompleteListener(task1 -> {
-                                    if (task1.isComplete() && task1.isSuccessful()) {
-                                        databaseReference.child(Constants.RIDER_ACTIVE_RIDES).child(rideModel.getDriverUserId()).child("status").removeValue();
-                                        Toast.makeText(context, "Order completed", Toast.LENGTH_SHORT).show();
+        databaseReference.child(Constants.USER_COMPLETED_RIDES).child(rideModel.getUserId()).child(pushId)
+                .setValue(completedRides).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()){
+                        databaseReference.child(Constants.USER_ACTIVE_RIDES).child(rideModel.getUserId()).removeValue();
 
+                        databaseReference.child(Constants.RIDER_COMPLETED_RIDES).child(rideModel.getDriverUserId()).child(pushId)
+                                .setValue(completedRides)
+                                .addOnCompleteListener(task1 -> {
+                                    if (task1.isComplete() && task1.isSuccessful()){
+                                        databaseReference.child(Constants.RIDER_ACTIVE_RIDES).child(rideModel.getDriverUserId()).removeValue();
                                         showDialog(rideModel);
-                                    } else {
-                                        Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
                                     }
                                 }).addOnFailureListener(e -> {
-                                    Toast.makeText(context, "" + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(context, ""+e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                                 });
-
-                    } else {
-                        Toast.makeText(context, "Cannot add the order to complete", Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
                     }
-                }).addOnFailureListener(e -> {
-                    Toast.makeText(context, "" + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                 });
+
     }
 
     private void showDialog(ActiveRides rideModel) {

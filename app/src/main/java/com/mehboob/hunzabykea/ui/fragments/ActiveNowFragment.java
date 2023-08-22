@@ -60,12 +60,21 @@ public class ActiveNowFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     ActiveRides rides = snapshot.getValue(ActiveRides.class);
+
+
                     listRider.clear();
-                    listRider.add(rides);
-                    binding.noData.getRoot().setVisibility(View.GONE);
-                    adapter = new ActiveRideAdapter(listRider, getContext(),"Active");
-                    binding.activeriderRec.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
-                    binding.activeriderRec.setAdapter(adapter);
+
+                  if (rides.isStatus()){
+                      listRider.add(rides);
+                      binding.noData.getRoot().setVisibility(View.GONE);
+                      adapter = new ActiveRideAdapter(listRider, getContext(),"Active");
+                      binding.activeriderRec.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
+                      binding.activeriderRec.setAdapter(adapter);
+                  }else{
+                      binding.noData.getRoot().setVisibility(View.VISIBLE);
+                  }
+
+
                 } else {
                     binding.noData.getRoot().setVisibility(View.VISIBLE);
                 }
