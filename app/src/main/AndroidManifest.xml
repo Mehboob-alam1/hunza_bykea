@@ -80,7 +80,7 @@
             android:exported="true"
             android:theme="@style/noactiondisplay" />
         <activity
-            android:name=".ui.OtpActivity"
+            android:name=".ui.SignUpActivity"
             android:exported="true"
             android:theme="@style/noactiondisplay">
             <meta-data

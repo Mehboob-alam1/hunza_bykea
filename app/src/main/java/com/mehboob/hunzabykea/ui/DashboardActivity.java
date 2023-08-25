@@ -13,9 +13,11 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
@@ -53,6 +55,7 @@ public class DashboardActivity extends AppCompatActivity {
     private TextView username ,userEmail;
     private String currentUser;
     private DatabaseReference userInfoRef;
+    private ImageView userImage;
 
 
     @Override
@@ -68,6 +71,8 @@ public class DashboardActivity extends AppCompatActivity {
         username = headerView.findViewById(R.id.usernameheader);
         userEmail = headerView.findViewById(R.id.useremailHeader);
 
+        userImage = headerView.findViewById(R.id.userPictureHeader);
+
         userInfoRef = FirebaseDatabase.getInstance().getReference("HunzaBykea");
         currentUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -80,6 +85,11 @@ public class DashboardActivity extends AppCompatActivity {
                     assert userInfo != null;
                     username.setText(userInfo.getName());
                     userEmail.setText(userInfo.getEmail());
+                    if (userInfo.getImage() !=null){
+                        Glide.with(DashboardActivity.this)
+                                .load(userInfo.getImage())
+                                .into(userImage);
+                    }
                 }
             }
 

@@ -4,10 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.LoginActivity">
-
-
-
+    tools:context=".ui.SignUpActivity">
 
 
     <ImageView
@@ -15,7 +12,7 @@
         android:layout_height="30dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-       android:id="@+id/imgBack"
+        android:id="@+id/imgBack"
         android:src="@drawable/ic_baseline_arrow_back_24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -111,14 +108,14 @@
 
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnSignIn"
+        android:id="@+id/btnSignUp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/btn_background"
-        android:text="SIGN In"
+        android:text="SIGN UP"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="16sp"
@@ -137,22 +134,22 @@
         android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnSignIn">
+        app:layout_constraintTop_toBottomOf="@+id/btnSignUp">
 
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="3"
-            android:text="Not a bykea user?"
+            android:text="Already have a hunza bykea account?"
             android:textColor="@color/black"
             />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:id="@+id/btnSignUp"
-            android:text="Sign Up"
+            android:id="@+id/btnSignIn"
+            android:text="Sign In"
             android:textColor="@color/green_700"
             />
     </LinearLayout>

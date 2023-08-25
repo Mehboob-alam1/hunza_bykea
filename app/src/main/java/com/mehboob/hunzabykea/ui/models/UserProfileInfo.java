@@ -3,14 +3,24 @@ package com.mehboob.hunzabykea.ui.models;
 public class UserProfileInfo {
 
     String name,email,phone;
+    private String image;
 
-    public UserProfileInfo(String name, String email, String phone) {
+    public UserProfileInfo(String name, String email, String phone, String image) {
         this.name = name;
         this.email = email;
         this.phone = phone;
+        this.image = image;
     }
 
     public UserProfileInfo() {
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public String getName() {

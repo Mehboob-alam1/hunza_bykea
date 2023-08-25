@@ -9,6 +9,12 @@
         <item name="windowActionModeOverlay">false</item>
         <item name="android:dialogTheme">@style/Dialog.Theme</item>
     </style>
+    <style name="name_edittext_style">
+        <item name="android:background">@drawable/edittext_back</item>
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:textSize">14sp</item>
+    </style>
 
     <style name="Dialog.Theme" parent="Theme.AppCompat.Light.Dialog">
         <item name="colorPrimary">@color/colorPrimary</item>

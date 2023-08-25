@@ -27,6 +27,7 @@ import com.mehboob.hunzabykea.ProfileActivity;
 import com.mehboob.hunzabykea.R;
 import com.mehboob.hunzabykea.databinding.FragmentAccountBinding;
 import com.mehboob.hunzabykea.ui.DashboardActivity;
+import com.mehboob.hunzabykea.ui.LoginActivity;
 import com.mehboob.hunzabykea.ui.models.UserProfileInfo;
 
 import java.util.Objects;
@@ -64,6 +65,13 @@ public class AccountFragment extends Fragment {
             enableEditText(binding.userEmailEditTxt);
 //            enableEditText(binding.userMobileNoEditTxt);
         });
+
+        binding.logout.setOnClickListener(v -> {
+
+            FirebaseAuth.getInstance().signOut();
+            startActivity(new Intent(getContext(), LoginActivity.class));
+            requireActivity().finishAffinity();
+        });
         binding.userDetailsDoneBtn.setOnClickListener(v -> {
 
                 dialog.show();
@@ -74,7 +82,7 @@ public class AccountFragment extends Fragment {
                 } else if (email.isEmpty()) {
                     binding.userEmailEditTxt.setError("Field Can't be Empty");
                 } else {
-                    profileInfo = new UserProfileInfo(name, email, binding.userMobileNoEditTxt.getText().toString());
+                    profileInfo = new UserProfileInfo(name, email, binding.userMobileNoEditTxt.getText().toString(),"");
                     userInfoRef.child("UserInfo")
                             .child(currentUser)
                             .setValue(profileInfo)
@@ -110,6 +118,7 @@ public class AccountFragment extends Fragment {
                     binding.userNameEditTxt.setText(userInfo.getName());
                     binding.userEmailEditTxt.setText(userInfo.getEmail());
                     binding.userMobileNoEditTxt.setText(userInfo.getPhone());
+
                 }
             }
 

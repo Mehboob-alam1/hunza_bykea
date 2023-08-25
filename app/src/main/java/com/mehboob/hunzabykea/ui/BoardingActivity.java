@@ -6,6 +6,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -40,7 +41,7 @@ public class BoardingActivity extends AppCompatActivity {
             binding.btnNext.setVisibility(View.GONE);
             binding.imageview.setVisibility(View.VISIBLE);
             binding.textView2.setVisibility(View.VISIBLE);
-
+            Log.d("onBoard","Activity to Dashboard");
             binding.dotsIndicator.setVisibility(View.GONE);
             startActivity(new Intent(BoardingActivity.this, DashboardActivity.class));
             finish();
@@ -85,7 +86,7 @@ public class BoardingActivity extends AppCompatActivity {
 
                         binding.btnStart.setOnClickListener(v -> {
                             // Intent intent = new Intent(BoardingActivity.this, LoginActivity.class);
-                            startActivity(new Intent(BoardingActivity.this, LoginActivity.class));
+                            startActivity(new Intent(BoardingActivity.this, SignUpActivity.class));
                         });
                 }
 

@@ -1,5 +1,7 @@
 package com.mehboob.hunzabykea.ui;
 
+import static com.mehboob.hunzabykea.utils.HideKeyboard.hideKeyboard;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -13,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
@@ -39,116 +42,70 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(binding.getRoot());
         progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Sending Otp");
+        progressDialog.setMessage("PLease Wait");
+        progressDialog.setCancelable(false);
 
         auth = FirebaseAuth.getInstance();
         sharedPref = new SharedPref(this);
-//        if (auth.getCurrentUser() !=null){
-//            startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
-//        }
 
 
-        binding.numberEditBox.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                changeButtonState(0);
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-        binding.connectBtn.setOnClickListener(new View.OnClickListener() {
+        binding.btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 checkValidation();
             }
         });
+
+
+        binding.btnSignUp.setOnClickListener(v -> {
+            startActivity(new Intent(LoginActivity.this,SignUpActivity.class));
+        });
     }
 
 
     private void checkValidation() {
 
-        if (binding.numberEditBox.getText().toString().isEmpty() || binding.numberEditBox
-                .getText().toString().trim().length() != 10) {
-            Toast.makeText(this, "Enter a Valid Number ", Toast.LENGTH_SHORT).show();
+        if (binding.etEmailAddress.getText().toString().isEmpty()) {
+            showSnackBar("Enter email");
 
-            binding.errorTxt.setVisibility(View.VISIBLE);
 
-            changeButtonState(1);
+        } else if (binding.etPassword.getText().toString().isEmpty()) {
+
+            showSnackBar("Enter password");
         } else {
-
-
-            changeButtonState(0);
-
-            String countryCode = binding.ccp.getSelectedCountryCode();
-            String number = binding.numberEditBox.getText().toString();
-            String phoneNumber = "+" + countryCode + number;
-            sendOtp(phoneNumber);
+            String email= binding.etEmailAddress.getText().toString();
+            String password= binding.etPassword.getText().toString();
+            hideKeyboard(this);
+            doLogin(email,password);
         }
     }
 
-    private void sendOtp(String phoneNumber) {
-        progressDialog.setTitle("Sending Otp");
-        progressDialog.setMessage("Please Wait");
-        progressDialog.setCancelable(false);
+    private void doLogin(String email, String password) {
+
         progressDialog.show();
-
-        PhoneAuthProvider.getInstance().verifyPhoneNumber(phoneNumber,
-                60L,
-                TimeUnit.SECONDS, LoginActivity.this,
-                new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-                    @Override
-                    public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
-
-                        progressDialog.dismiss();
-                    }
-
-                    @Override
-                    public void onVerificationFailed(@NonNull FirebaseException e) {
-
-                        Log.d("Exception", e.getMessage());
-
-                    }
-
-                    @Override
-                    public void onCodeSent(@NonNull String s, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-
-
-                        //progressDialog.dismiss();
-//                        sharedPref.saveUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
-
-                        Intent intent = new Intent(LoginActivity.this, OtpActivity.class);
-                        intent.putExtra("verificationID", s);
-                        intent.putExtra("number", phoneNumber);
-                        startActivity(intent);
-
-
-                    }
-
-                });
-    }
-
-    private void changeButtonState(int state) {
-        if (state == 0) {
-            binding.connectBtn.setBackground(ContextCompat.getDrawable(this, R.drawable.getstart_back));
-        } else {
-            binding.connectBtn.setBackground(ContextCompat.getDrawable(this, R.drawable.grey_back));
-        }
+        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                progressDialog.dismiss();
+                showSnackBar("User login successfull");
+                startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
+            } else {
+                progressDialog.dismiss();
+                showSnackBar("Something went wrong");
+            }
+        }).addOnFailureListener(e -> {
+            progressDialog.dismiss();
+            showSnackBar(e.getLocalizedMessage());
+        });
 
     }
+
 
     @Override
     protected void onStart() {
         super.onStart();
-        changeButtonState(1);
+
 
         if (auth.getCurrentUser() != null) {
             startActivity(new Intent(LoginActivity.this, MapsActivity.class));
@@ -162,5 +119,14 @@ public class LoginActivity extends AppCompatActivity {
         if ((progressDialog != null) && progressDialog.isShowing())
             progressDialog.dismiss();
         progressDialog = null;
+    }
+
+    private void showSnackBar(String message) {
+        Snackbar snackbar = Snackbar.make(
+                findViewById(android.R.id.content), message
+                ,
+                Snackbar.LENGTH_SHORT
+        );
+        snackbar.show();
     }
 }
