@@ -48,14 +48,14 @@ public class CancelledFragment extends Fragment {
         listRider = new ArrayList<>();
 //        fetchCancelledRide();
 
-        fetchCompletedRide();
+        fetchCancelledRide();
 
 
         return binding.getRoot();
     }
 
 
-    private void fetchCompletedRide() {
+    private void fetchCancelledRide() {
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(Constants.USER_CANCELLED_RIDES);
 
