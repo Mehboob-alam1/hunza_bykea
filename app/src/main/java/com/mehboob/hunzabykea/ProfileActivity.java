@@ -58,18 +58,21 @@ public class ProfileActivity extends AppCompatActivity {
 
             binding.submitBtn.setOnClickListener(v -> {
 
-                String name = binding.edittxtPersonName.getText().toString();
-                String email = binding.editEmail.getText().toString();
-                if (name.isEmpty()) {
+
+                if (binding.edittxtPersonName.getText().toString().isEmpty()) {
                     binding.edittxtPersonName.setError("Field Can't be Empty");
-                } else if (email.isEmpty()) {
+                } else if (binding.editEmail.getText().toString().isEmpty()) {
                     binding.editEmail.setError("Field Can't be Empty");
                 } else if (uri ==null) {
                     Toast.makeText(this, "Select an image", Toast.LENGTH_SHORT).show();
+                }else if(binding.editPhone.getText().toString().isEmpty()){
+                    binding.editPhone.setError("Field Can't be Empty");
                 }else{
-
+                    String name = binding.edittxtPersonName.getText().toString();
+                    String email = binding.editEmail.getText().toString();
+                    String phone = binding.editPhone.getText().toString();
                     hideKeyboard(this);
-                    profileInfo = new UserProfileInfo(name, email, phonenumber,"");
+                    profileInfo = new UserProfileInfo(name, email, phone,"");
                     uploadImage(uri,profileInfo);
 
 

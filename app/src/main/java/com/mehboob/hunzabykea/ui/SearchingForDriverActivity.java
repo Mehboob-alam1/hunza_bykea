@@ -173,7 +173,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
         mDialog.setCancelable(false);
 
         FirebaseMessaging.getInstance().subscribeToTopic(TOPIC);
-       // checkForAvailableDrivers();
+        // checkForAvailableDrivers();
 
         findNearestAvailableDriver();
 
@@ -214,7 +214,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
         });
 
         binding.arrow.setOnClickListener(v -> {
-            
+
         });
         binding.slideToConfirm.setSlideListener(new ISlideListener() {
             @Override
@@ -251,21 +251,24 @@ public class SearchingForDriverActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ArrayList<Available> availables = new ArrayList<>();
-
-                for (DataSnapshot snap : snapshot.getChildren()) {
-                    Available available = snap.getValue(Available.class);
-                    if (available.isAvailable()) {
-                        availables.add(available);
+                if (snapshot.exists()) {
+                    for (DataSnapshot snap : snapshot.getChildren()) {
+                        Available available = snap.getValue(Available.class);
+                        if (available.isAvailable()) {
+                            availables.add(available);
+                        }
                     }
-                }
 
-                checkAndFilterDrivers(availables);
+                    checkAndFilterDrivers(availables);
+                }else{
+                    showSnackBar("No available drivers");
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 mDialog.dismiss();
-                Toast.makeText(SearchingForDriverActivity.this, "No available vehicles: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+             showSnackBar(error.getMessage());
             }
         });
     }
@@ -283,6 +286,8 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                             VehicleDetailsClass detailsClass = snapshot.getValue(VehicleDetailsClass.class);
                             availableDriversWithVehicleSelected.add(detailsClass);
                         }
+                    }else{
+                        showSnackBar("No driver available");
                     }
 
                     if (available == availables.get(availables.size() - 1)) {
@@ -293,7 +298,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
                     mDialog.dismiss();
-                    Toast.makeText(SearchingForDriverActivity.this, "Error checking vehicles: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                   showSnackBar(error.getMessage());
                 }
             });
         }
@@ -314,6 +319,8 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                             driverLocations.add(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
                             driverUserIds.add(detailsClass.getUserId());
                         }
+                    }else{
+                        showSnackBar("No nearest driver");
                     }
 
                     if (detailsClass == availableDrivers.get(availableDrivers.size() - 1)) {
@@ -324,7 +331,6 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
                     mDialog.dismiss();
-                    Toast.makeText(SearchingForDriverActivity.this, "Error fetching driver locations: " + error.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -356,15 +362,13 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                 getRoute(mapboxMap, Point.fromLngLat(userLongitude, userLatitude), Point.fromLngLat(nearestDriverLocation.getLongitude(), nearestDriverLocation.getLatitude()));
             } else {
                 mDialog.dismiss();
-                Toast.makeText(SearchingForDriverActivity.this, "No near drivers found.", Toast.LENGTH_SHORT).show();
+              showSnackBar("No near driver found");
             }
         } else {
             mDialog.dismiss();
-            Toast.makeText(SearchingForDriverActivity.this, "No near drivers found.", Toast.LENGTH_SHORT).show();
+           showSnackBar("No near driver found");
         }
     }
-
-
 
 
     private void AddMarkerToMyLocation(LatLng position) {
@@ -447,7 +451,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                             , driverUserId, driverName, driverAddress, driverPhone, userInfo.getName(), userInfo.getEmail(), userInfo.getPhone(),
                             fareModel.getVehicle(), fareModel.getFare(), fareModel.getNearBy(),
                             distanceTotal, currentTime, fetchPaymentMethod, origin.getLatitude(), origin.getLongitude(), destination.getLatitude(), destination.getLongitude(),
-                            FirebaseAuth.getInstance().getCurrentUser().getUid(), true, "");
+                            FirebaseAuth.getInstance().getCurrentUser().getUid(), true, "",userInfo.getImage());
 
 //                    uploadToCloud(activeRides);
                     databaseReference.child(Constants.USER_ACTIVE_RIDES).child(FirebaseAuth.getInstance().getCurrentUser().getUid())
@@ -500,7 +504,14 @@ public class SearchingForDriverActivity extends AppCompatActivity {
         });
 
     }
-
+    private  void showSnackBar(String message){
+        Snackbar snackbar = Snackbar.make(
+                findViewById(android.R.id.content),message
+                ,
+                Snackbar.LENGTH_SHORT
+        );
+        snackbar.show();
+    }
 
     private void addActiveRidesToDriver(ActiveRides orders) {
 
@@ -511,7 +522,7 @@ public class SearchingForDriverActivity extends AppCompatActivity {
                     if (task.isComplete() && task.isSuccessful()) {
                         mDialog.dismiss();
 
-binding.arrow.setVisibility(View.VISIBLE);
+                        binding.arrow.setVisibility(View.VISIBLE);
                         getToken(orders);
 
 
@@ -544,7 +555,7 @@ binding.arrow.setVisibility(View.VISIBLE);
                         if (snapshot.exists()) {
                             DriverToken = snapshot.getValue(String.class);
 
-                            onSendNotification(order.getRiderName(), "Booked your ride", DriverToken,order);
+                            onSendNotification(order.getRiderName(), "Booked your ride", DriverToken, order);
                         }
                     }
 
@@ -575,7 +586,7 @@ binding.arrow.setVisibility(View.VISIBLE);
     @SuppressLint("SuspiciousIndentation")
     private void showDriverDialog(ActiveRides order) {
         getVehicle(order.getDriverUserId());
-         bottomSheetDialog = new BottomSheetDialog(SearchingForDriverActivity.this, R.style.AppBottomSheetDialogTheme);
+        bottomSheetDialog = new BottomSheetDialog(SearchingForDriverActivity.this, R.style.AppBottomSheetDialogTheme);
         View bottomSheetView = LayoutInflater.from(getApplicationContext())
                 .inflate(R.layout.driver_arriving_bottom, (LinearLayout) findViewById(R.id.driverArriving));
 
@@ -583,11 +594,9 @@ binding.arrow.setVisibility(View.VISIBLE);
         bottomSheetDialog.setContentView(bottomSheetView);
         try {
             bottomSheetDialog.show();
-        }
-        catch (WindowManager.BadTokenException e) {
+        } catch (WindowManager.BadTokenException e) {
             //use a log message
         }
-
 
 
         TextView txtMinutesDriver = bottomSheetView.findViewById(R.id.txtHowMinutes);
@@ -632,7 +641,7 @@ binding.arrow.setVisibility(View.VISIBLE);
         });
     }
 
-    private void onSendNotification(String name, String send_you_and_interest, String token,ActiveRides order) {
+    private void onSendNotification(String name, String send_you_and_interest, String token, ActiveRides order) {
         try {
 
             RequestQueue requestQueue = Volley.newRequestQueue(this);
@@ -654,16 +663,16 @@ binding.arrow.setVisibility(View.VISIBLE);
                         @Override
                         public void onResponse(JSONObject response) {
 
-                           showDriverDialog(order);
-                            saveNotifData(order,new NotifFirebase(order.getUserId(),name,send_you_and_interest,String.valueOf(System.currentTimeMillis()),String.valueOf(UUID.randomUUID().toString())));
+                            showDriverDialog(order);
+                            saveNotifData(order, new NotifFirebase(order.getUserId(), name, send_you_and_interest, String.valueOf(System.currentTimeMillis()), String.valueOf(UUID.randomUUID().toString())));
                             Log.d("Notification", "sent notification");
                         }
 
                     }, error -> {
-     showDriverDialog(order);
-                saveNotifData(order,new NotifFirebase(order.getUserId(),name,send_you_and_interest,String.valueOf(System.currentTimeMillis()),String.valueOf(UUID.randomUUID().toString())));
-                        Log.d("Notification", "sent not notification");
-                    }) {
+                showDriverDialog(order);
+                saveNotifData(order, new NotifFirebase(order.getUserId(), name, send_you_and_interest, String.valueOf(System.currentTimeMillis()), String.valueOf(UUID.randomUUID().toString())));
+                Log.d("Notification", "sent not notification");
+            }) {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     HashMap<String, String> map = new HashMap<>();
@@ -683,15 +692,15 @@ binding.arrow.setVisibility(View.VISIBLE);
 
     }
 
-    private void saveNotifData(ActiveRides order,NotifFirebase notifFirebase) {
+    private void saveNotifData(ActiveRides order, NotifFirebase notifFirebase) {
 
 
-        DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
         databaseReference.child(Constants.HUNZA_RIDER)
                 .child("UserNotifications")
                 .child(order.getDriverUserId())
                 .setValue(notifFirebase).addOnCompleteListener(task -> {
-                    if (task.isComplete() && task.isSuccessful()){
+                    if (task.isComplete() && task.isSuccessful()) {
 
                     }
                 }).addOnFailureListener(e -> {
@@ -853,7 +862,6 @@ binding.arrow.setVisibility(View.VISIBLE);
     }
 
 
-
     public static double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         final int EARTH_RADIUS = 6371;// in kilometers
 
@@ -873,39 +881,34 @@ binding.arrow.setVisibility(View.VISIBLE);
     private void deactivateOrder(ActiveRides rideModel) {
 
 
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        String pushId = UUID.randomUUID().toString();
 
 
+        CompletedRides completedRides = new CompletedRides(rideModel, pushId);
 
+        databaseReference.child(Constants.USER_CANCELLED_RIDES).child(rideModel.getUserId()).child(pushId)
+                .setValue(completedRides).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        databaseReference.child(Constants.USER_ACTIVE_RIDES).child(rideModel.getUserId()).removeValue();
 
-
-            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-            String pushId=UUID.randomUUID().toString();
-
-
-            CompletedRides completedRides = new CompletedRides(rideModel,pushId);
-
-            databaseReference.child(Constants.USER_CANCELLED_RIDES).child(rideModel.getUserId()).child(pushId)
-                    .setValue(completedRides).addOnCompleteListener(task -> {
-                        if (task.isSuccessful()){
-                            databaseReference.child(Constants.USER_ACTIVE_RIDES).child(rideModel.getUserId()).removeValue();
-
-                            databaseReference.child(Constants.RIDER_CANCELLED_RIDES).child(rideModel.getDriverUserId()).child(pushId)
-                                    .setValue(completedRides)
-                                    .addOnCompleteListener(task1 -> {
-                                        if (task1.isComplete() && task1.isSuccessful()){
-                                            databaseReference.child(Constants.RIDER_ACTIVE_RIDES).child(rideModel.getDriverUserId()).removeValue();
-                                            startActivity(new Intent(SearchingForDriverActivity.this, MapsActivity.class));
-                                            finishAffinity();
+                        databaseReference.child(Constants.RIDER_CANCELLED_RIDES).child(rideModel.getDriverUserId()).child(pushId)
+                                .setValue(completedRides)
+                                .addOnCompleteListener(task1 -> {
+                                    if (task1.isComplete() && task1.isSuccessful()) {
+                                        databaseReference.child(Constants.RIDER_ACTIVE_RIDES).child(rideModel.getDriverUserId()).removeValue();
+                                        startActivity(new Intent(SearchingForDriverActivity.this, MapsActivity.class));
+                                        finishAffinity();
 //                                            showDialog(rideModel);
-                                        }
-                                    }).addOnFailureListener(e -> {
-                                        Toast.makeText(this
-                                                , ""+e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                                    });
-                        }else{
-                            Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                                    }
+                                }).addOnFailureListener(e -> {
+                                    Toast.makeText(this
+                                            , "" + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                });
+                    } else {
+                        Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
 
     }
