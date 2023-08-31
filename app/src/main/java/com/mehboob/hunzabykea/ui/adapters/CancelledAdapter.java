@@ -57,34 +57,26 @@ public class CancelledAdapter extends RecyclerView.Adapter<CancelledAdapter.view
             holder.down.setVisibility(View.VISIBLE);
 
         });
-        holder.textView.setText(rideModel.getRides().getDriverName());
+        holder.textView.setText(rideModel.getDriverName());
 
         Glide.with(context)
-                .load(rideModel.getRides().getDriverImage())
+                .load(rideModel.getDriverImage())
                 .placeholder(R.drawable.user)
                 .into(holder.riderProfileImage);
 
-        holder.txtDistance.setText(rideModel.getRides().getTotalDistance());
+        holder.txtDistance.setText(rideModel.getTotalDistance());
         holder.txtTimeTake.setText("---");
-        holder.txtFare.setText(rideModel.getRides().getFare());
+        holder.txtFare.setText(rideModel.getFare());
         try {
-            holder.txtTime.setText(convertMillisToDate(Long.parseLong(rideModel.getRides().getCurrentTime())));
+            holder.txtTime.setText(convertMillisToDate(Long.parseLong(rideModel.getCurrentTime())));
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
-        holder.txtRiderVechileDetail.setText(rideModel.getRides().getVehicleType() + " " + rideModel.getRides().getVehicleModel());
-        holder.txtCurrentLocation.setText(rideModel.getRides().getUserOriginLatitude() + " " + rideModel.getRides().getUserOriginLongitude());
-        holder.txtDestinationLocation.setText(rideModel.getRides().getUserDestLatitude() + " " + rideModel.getRides().getUserDestLongitude());
+        holder.txtRiderVechileDetail.setText(rideModel.getVehicleType() + " " + rideModel.getVehicleModel());
+        holder.txtCurrentLocation.setText(rideModel.getUserOriginLatitude() + " " + rideModel.getUserOriginLongitude());
+        holder.txtDestinationLocation.setText(rideModel.getUserDestLatitude() + " " + rideModel.getUserDestLongitude());
 
-
-
-
-
-
-
-
-
-    }
+  }
 
 
     @Override

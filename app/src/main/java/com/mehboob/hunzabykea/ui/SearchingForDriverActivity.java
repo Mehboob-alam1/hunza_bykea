@@ -885,7 +885,11 @@ public class SearchingForDriverActivity extends AppCompatActivity {
         String pushId = UUID.randomUUID().toString();
 
 
-        CompletedRides completedRides = new CompletedRides(rideModel, pushId);
+        CompletedRides completedRides = new CompletedRides(rideModel.getVehicleType(),rideModel.getVehicleBrand(),rideModel.getVehicleModel(),rideModel.getVehicleColor(),rideModel.getDriverUserId()
+                ,rideModel.getDriverName(),rideModel.getDriverAddress(),rideModel.getDriverPhoneNumber(),rideModel.getRiderName(),rideModel.getRiderEmail(),rideModel.getRiderPhone(),
+                rideModel.getRiderVehicle(),rideModel.getFare(),rideModel.getNearBy(),rideModel.getTotalDistance(),rideModel.getCurrentTime(),rideModel.getPaymentMethod(),
+                rideModel.getUserOriginLatitude(),rideModel.getUserOriginLongitude(),rideModel.getUserDestLatitude(),
+                rideModel.getUserDestLongitude(),rideModel.getUserId(),rideModel.isStatus(),rideModel.getDriverImage(),rideModel.getUserImage(),pushId);
 
         databaseReference.child(Constants.USER_CANCELLED_RIDES).child(rideModel.getUserId()).child(pushId)
                 .setValue(completedRides).addOnCompleteListener(task -> {
